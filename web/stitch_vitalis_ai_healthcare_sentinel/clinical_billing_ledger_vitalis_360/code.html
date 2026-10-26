@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Billing Ledger | Vitalis-360</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#71a1ff",
+                    "on-primary-fixed-variant": "#005236",
+                    "inverse-on-surface": "#2d3133",
+                    "surface-container-high": "#272a2c",
+                    "on-surface": "#e0e3e5",
+                    "surface-dim": "#101415",
+                    "secondary-fixed": "#dae2fd",
+                    "on-error-container": "#ffdad6",
+                    "on-surface-variant": "#bbcabf",
+                    "on-error": "#690005",
+                    "on-primary": "#003824",
+                    "on-secondary": "#283044",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "background": "#101415",
+                    "surface-container-lowest": "#0b0f10",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-tint": "#4edea3",
+                    "outline": "#86948a",
+                    "surface-container-highest": "#323537",
+                    "primary-fixed": "#6ffbbe",
+                    "primary": "#4edea3",
+                    "on-secondary-container": "#adb4ce",
+                    "error-container": "#93000a",
+                    "inverse-surface": "#e0e3e5",
+                    "on-primary-container": "#00422b",
+                    "surface": "#101415",
+                    "primary-fixed-dim": "#4edea3",
+                    "outline-variant": "#3c4a42",
+                    "surface-container": "#1d2022",
+                    "secondary-container": "#3f465c",
+                    "on-tertiary": "#002e6a",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "surface-container-low": "#191c1e",
+                    "tertiary": "#adc6ff",
+                    "error": "#ffb4ab",
+                    "primary-container": "#10b981",
+                    "surface-variant": "#323537",
+                    "surface-bright": "#363a3b",
+                    "secondary": "#bec6e0",
+                    "on-tertiary-fixed": "#001a42",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-background": "#e0e3e5",
+                    "on-tertiary-fixed-variant": "#004395",
+                    "inverse-primary": "#006c49",
+                    "on-tertiary-container": "#00367a",
+                    "tertiary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#002113"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "stack-gap": "16px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "card-padding": "24px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "title-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #101415; color: #e0e3e5; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .glass-panel { background: rgba(29, 32, 34, 0.8); backdrop-filter: blur(12px); }
+        .emerald-glow { filter: drop-shadow(0 0 8px rgba(78, 222, 163, 0.3)); }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- SideNavBar (Authority: JSON) -->
+<nav class="h-full w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low border-r border-outline-variant z-50">
+<div class="p-gutter flex flex-col gap-2">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<h1 class="font-title-md text-title-md text-primary leading-tight">Aegis Finance</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Clinical Guardian Systems</p>
+</div>
+</div>
+<!-- Nav Tabs -->
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-primary font-bold border-r-4 border-primary bg-surface-container" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Financial Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-on-surface-variant font-medium hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Claims Tracking</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-on-surface-variant font-medium hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Revenue Cycle</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-on-surface-variant font-medium hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Reconciliation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-on-surface-variant font-medium hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label-md text-label-md">Audit Logs</span>
+</a>
+</div>
+</div>
+<div class="mt-auto p-4 flex flex-col gap-1 border-t border-outline-variant">
+<button class="w-full py-3 mb-4 bg-primary text-on-primary font-bold rounded hover:opacity-90 active:scale-95 transition-all">
+                Generate Report
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant font-medium hover:bg-surface-container-high rounded transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant font-medium hover:bg-surface-container-high rounded transition-colors" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Shell -->
+<main class="ml-64 flex flex-col h-screen overflow-hidden relative">
+<!-- TopAppBar (Authority: JSON) -->
+<header class="flex justify-between items-center w-full h-16 px-margin-desktop sticky top-0 z-40 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<h2 class="font-title-md text-title-md font-black text-on-surface">Financial Ledger</h2>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="bg-surface-container-high border-none rounded-lg pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary w-96 transition-all" placeholder="Search claims, patients, or codes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="text-right">
+<p class="text-label-md font-label-md text-on-surface font-bold">Admin Sarah Chen</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Finance Lead</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female hospital administrator in her 40s with a modern corporate look, soft cinematic lighting, deep obsidian and charcoal background, high-end healthcare tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvfueGixoPE9OOYCz4TGwtRSbiO5ztGfRw2dnN4qjd02RQFGg1tg_f57X1dy5vYgkdehgGP7C5VZZWyy0VKze82iiz5kzp16VX0bc7LhOEMEigAsFF4TzAOpwcLlqaYfcEvyKijWq2mlUsrTfHdndjQ-pXDE2hyB9Wnkv_TXrw_yRrGe2e2VI_u78k8_YUfKPbFc7NZZx82oHbyzuQ7DjDtee5DIKnX8RKNlTc8om8J5S7ZS8vzW2OrQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 overflow-y-auto p-gutter bg-surface-dim">
+<!-- Summary Statistics Bento -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container border border-outline-variant p-card-padding rounded-xl hover:border-primary transition-all">
+<p class="text-label-md font-label-md text-on-surface-variant mb-1">Total Outstanding Revenue</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">$12,482,904</h3>
+<div class="mt-4 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="text-label-sm font-label-sm">+4.2% from last month</span>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-card-padding rounded-xl">
+<p class="text-label-md font-label-md text-on-surface-variant mb-1">Avg. Claim Lifecycle</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">14.2 Days</h3>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined">timer</span>
+<span class="text-label-sm font-label-sm">Industry Avg: 22 Days</span>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-card-padding rounded-xl">
+<p class="text-label-md font-label-md text-on-surface-variant mb-1">Denial Rate (AI-Corrected)</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">1.8%</h3>
+<div class="mt-4 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="text-label-sm font-label-sm">842 auto-corrected today</span>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-card-padding rounded-xl">
+<p class="text-label-md font-label-md text-on-surface-variant mb-1">Monthly Reconciliation</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">92.4%</h3>
+<div class="mt-4 w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full emerald-glow" style="width: 92.4%;"></div>
+</div>
+</div>
+</div>
+<!-- Visualization & Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<!-- Revenue Chart -->
+<div class="lg:col-span-2 bg-surface-container border border-outline-variant p-card-padding rounded-xl min-h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Gross Charges vs. Net Collections</h4>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Performance metrics over the last 6 months</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-label-sm font-label-sm">Net Collections</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-outline"></span>
+<span class="text-label-sm font-label-sm">Gross Charges</span>
+</div>
+</div>
+</div>
+<div class="flex-1 relative">
+
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 flex flex-col justify-between py-2">
+<div class="w-full border-b border-outline-variant/30 h-px"></div>
+<div class="w-full border-b border-outline-variant/30 h-px"></div>
+<div class="w-full border-b border-outline-variant/30 h-px"></div>
+<div class="w-full border-b border-outline-variant/30 h-px"></div>
+<div class="w-full border-b border-outline-variant h-px"></div>
+</div>
+<!-- Chart Legend / Bars (Visual Representation) -->
+<div class="absolute inset-0 flex items-end justify-around px-8 pb-4">
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-32"></div>
+<div class="w-8 bg-primary rounded-t-sm h-24 -mt-32 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">JAN</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-40"></div>
+<div class="w-8 bg-primary rounded-t-sm h-32 -mt-40 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">FEB</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-36"></div>
+<div class="w-8 bg-primary rounded-t-sm h-28 -mt-36 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">MAR</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-44"></div>
+<div class="w-8 bg-primary rounded-t-sm h-38 -mt-44 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">APR</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-48"></div>
+<div class="w-8 bg-primary rounded-t-sm h-42 -mt-48 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">MAY</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-12">
+<div class="w-8 bg-outline rounded-t-sm h-52"></div>
+<div class="w-8 bg-primary rounded-t-sm h-46 -mt-52 relative z-10"></div>
+<span class="text-label-sm font-label-sm mt-2 text-on-surface-variant">JUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="bg-surface-container border border-outline-variant p-card-padding rounded-xl flex flex-col gap-4">
+<h4 class="font-title-md text-title-md text-on-surface mb-2">Queue Operations</h4>
+<button class="group w-full flex items-center justify-between p-4 bg-primary-container text-on-primary-container rounded-lg font-bold hover:brightness-110 active:scale-98 transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">send_and_archive</span>
+<span>Batch Submit Claims</span>
+</div>
+<span class="bg-on-primary-container/20 px-2 py-0.5 rounded text-label-sm">42 Pending</span>
+</button>
+<button class="group w-full flex items-center justify-between p-4 bg-surface-container-high border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-bright active:scale-98 transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<span>Run AI Reconciliation</span>
+</div>
+</button>
+<button class="group w-full flex items-center justify-between p-4 bg-surface-container-high border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-bright active:scale-98 transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">file_download</span>
+<span>Export Financial Report</span>
+</div>
+</button>
+<div class="mt-auto p-4 border border-primary/20 rounded-lg bg-primary/5">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined">bolt</span>
+<span class="text-label-md font-bold">Sentinel Insight</span>
+</div>
+<p class="text-label-sm font-label-sm text-on-surface-variant leading-relaxed">
+                            AI detected a pattern of denial for code E11.9 from BlueShield. Suggesting batch review before next submission cycle.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Claims Tracker & Detail Panel -->
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+<!-- Claims Table -->
+<div class="xl:col-span-3 bg-surface-container border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-title-md text-title-md text-on-surface">Recent Claims Activity</h4>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-label-sm text-on-surface cursor-pointer hover:bg-surface-bright">All</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-label-sm text-on-surface-variant cursor-pointer hover:bg-surface-bright">Pending</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-label-sm text-on-surface-variant cursor-pointer hover:bg-surface-bright">Flagged</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">
+<th class="px-6 py-4">Patient</th>
+<th class="px-6 py-4">Payer</th>
+<th class="px-6 py-4">Amount</th>
+<th class="px-6 py-4">Current Stage</th>
+<th class="px-6 py-4">Sentinel Score</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface-container-highest/20">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary-container text-secondary flex items-center justify-center text-label-sm font-bold">JD</div>
+<span class="text-body-md font-medium text-on-surface">Johnathan Doe</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label-md">Medicare Part B</td>
+<td class="px-6 py-4 font-bold text-on-surface">$2,840.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-label-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                            Adjudication
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-bold text-primary">98%</span>
+<div class="w-16 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 98%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-tertiary-container text-on-tertiary-container flex items-center justify-center text-label-sm font-bold">EM</div>
+<span class="text-body-md font-medium text-on-surface">Elena Martinez</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label-md">BlueShield PPO</td>
+<td class="px-6 py-4 font-bold text-on-surface">$14,200.50</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-error-container/20 text-error text-label-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                            Flagged
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-bold text-error">42%</span>
+<div class="w-16 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-error h-full" style="width: 42%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/20 text-primary flex items-center justify-center text-label-sm font-bold">RW</div>
+<span class="text-body-md font-medium text-on-surface">Robert Wilson</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label-md">UnitedHealth</td>
+<td class="px-6 py-4 font-bold text-on-surface">$890.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container/30 text-on-secondary-container text-label-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                            Submission
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-bold text-on-surface">85%</span>
+<div class="w-16 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary/60 h-full" style="width: 85%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Forensic Detail Side Panel -->
+<aside class="bg-surface-container border border-outline-variant rounded-xl flex flex-col h-full overflow-hidden">
+<div class="p-6 border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Forensic Detail</h4>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Claim ID: #V360-88492</p>
+</div>
+<span class="px-2 py-1 bg-primary/20 text-primary rounded text-[10px] font-bold uppercase">Active</span>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<!-- Verification Status -->
+<div class="p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-bold text-on-surface">Ready for Submission</span>
+</div>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+<!-- Coding Suggestions -->
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-3">Coding Verification (ICD-10)</p>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-surface-container-highest rounded border-l-4 border-primary">
+<div>
+<p class="text-label-md font-bold text-on-surface">E11.9</p>
+<p class="text-label-sm text-on-surface-variant">Type 2 diabetes mellitus</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">done_all</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-highest rounded border-l-4 border-outline">
+<div>
+<p class="text-label-md font-bold text-on-surface">Z79.4</p>
+<p class="text-label-sm text-on-surface-variant">Long term (current) use of insulin</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">info</span>
+</div>
+</div>
+</div>
+<!-- Payer Rule Check -->
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-3">Payer-Specific Rules</p>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">task_alt</span>
+<p class="text-label-md text-on-surface">Pre-auth documentation attached (CMS-1500)</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">task_alt</span>
+<p class="text-label-md text-on-surface">NPI Verification active</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant mt-0.5">circle</span>
+<p class="text-label-md text-on-surface-variant">Secondary payer waiver needed (Optional)</p>
+</div>
+</div>
+</div>
+<!-- Audit Trail -->
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-3">Audit Trail</p>
+<div class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-outline-variant">
+<div class="relative">
+<div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-primary"></div>
+<p class="text-label-md font-bold text-on-surface">AI Sentinel Verified</p>
+<p class="text-label-sm text-on-surface-variant">Today, 09:42 AM</p>
+</div>
+<div class="relative">
+<div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-outline"></div>
+<p class="text-label-md text-on-surface">Billing Scanned ICD codes</p>
+<p class="text-label-sm text-on-surface-variant">Yesterday, 04:15 PM</p>
+</div>
+<div class="relative">
+<div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-outline"></div>
+<p class="text-label-md text-on-surface">Initial Intake Recorded</p>
+<p class="text-label-sm text-on-surface-variant">Oct 12, 11:30 AM</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container-high border-t border-outline-variant">
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-all">
+                            Submit to Payer
+                        </button>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Flash effect for claim selection
+                row.classList.add('bg-primary/5');
+                setTimeout(() => row.classList.remove('bg-primary/5'), 300);
+                
+                // Logic to update side panel would go here
+            });
+        });
+
+        // Simple button active state visual
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>

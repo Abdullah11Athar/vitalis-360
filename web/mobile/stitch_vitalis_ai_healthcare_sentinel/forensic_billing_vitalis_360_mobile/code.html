@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Vitalis-360 | Forensic Billing Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "background": "#101415",
+                  "primary-container": "#10b981",
+                  "on-error-container": "#ffdad6",
+                  "error-container": "#93000a",
+                  "on-error": "#690005",
+                  "on-tertiary": "#002e6a",
+                  "surface-variant": "#323537",
+                  "on-surface": "#e0e3e5",
+                  "surface-container-high": "#272a2c",
+                  "on-primary": "#003824",
+                  "inverse-surface": "#e0e3e5",
+                  "secondary": "#bec6e0",
+                  "on-tertiary-container": "#00367a",
+                  "on-secondary-fixed": "#131b2e",
+                  "surface-container": "#1d2022",
+                  "secondary-container": "#3f465c",
+                  "secondary-fixed-dim": "#bec6e0",
+                  "surface-bright": "#363a3b",
+                  "surface": "#101415",
+                  "on-secondary": "#283044",
+                  "surface-tint": "#4edea3",
+                  "secondary-fixed": "#dae2fd",
+                  "on-primary-container": "#00422b",
+                  "surface-container-low": "#191c1e",
+                  "primary-fixed": "#6ffbbe",
+                  "error": "#ffb4ab",
+                  "on-primary-fixed-variant": "#005236",
+                  "inverse-on-surface": "#2d3133",
+                  "primary-fixed-dim": "#4edea3",
+                  "on-secondary-container": "#adb4ce",
+                  "tertiary": "#adc6ff",
+                  "outline": "#86948a",
+                  "tertiary-fixed-dim": "#adc6ff",
+                  "surface-container-highest": "#323537",
+                  "on-tertiary-fixed-variant": "#004395",
+                  "on-primary-fixed": "#002113",
+                  "on-tertiary-fixed": "#001a42",
+                  "surface-container-lowest": "#0b0f10",
+                  "tertiary-fixed": "#d8e2ff",
+                  "inverse-primary": "#006c49",
+                  "tertiary-container": "#71a1ff",
+                  "surface-dim": "#101415",
+                  "outline-variant": "#3c4a42",
+                  "on-secondary-fixed-variant": "#3f465c",
+                  "on-surface-variant": "#bbcabf",
+                  "on-background": "#e0e3e5",
+                  "primary": "#4edea3"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "margin-mobile": "16px",
+                  "margin-desktop": "40px",
+                  "stack-gap": "16px",
+                  "unit": "4px",
+                  "gutter": "24px",
+                  "card-padding": "24px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "headline-lg": ["Inter"],
+                  "headline-lg-mobile": ["Inter"],
+                  "label-sm": ["Inter"],
+                  "label-md": ["Inter"],
+                  "title-md": ["Inter"],
+                  "display-lg": ["Inter"],
+                  "body-md": ["Inter"]
+          },
+          "fontSize": {
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                  "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                  "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #101415;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #191c1e;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #323537;
+      border-radius: 10px;
+    }
+    /* Animated Gradient Border for high priority items */
+    .priority-border {
+      position: relative;
+      background: #1d2022;
+      border-radius: 0.75rem;
+      z-index: 0;
+    }
+    .priority-border::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      background: linear-gradient(45deg, #10b981, transparent, #ffb4ab);
+      border-radius: inherit;
+      opacity: 0.5;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background bg-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional medical clinician headshot with a confident expression, wearing a sleek modern navy blue medical uniform. The background is a clean, slightly blurred clinical setting with soft ambient lighting and emerald green color accents, reflecting a high-tech healthcare environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBksOYMqPsrmMK5s0eNhqzOEx2TnVoM7BEJr1i0Vmb4PEhAvgS40zfsMk9yuVBJNMV0of860h7yEfvZRmd68M8-RoH_u06K_Blo9E4DhgOHFhZ-AQCJslysjyg3y8QqewBJTAk8qyFTzPvyt8vHnTjwvznBFyzoE_VmLcKXtG-BuYbEqQ_P2Gz8t4VnG2iFayGeopOn9bk2OqfkGM9sog475E1_oy1lIjBLddS83XnzRL8jK8HaFtge9w"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-primary active:scale-95 duration-150">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="mt-16 p-margin-mobile space-y-6">
+<!-- Title Section -->
+<section>
+<h2 class="font-title-md text-title-md text-on-surface">Forensic Billing Audit</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Batch ID: #FB-992-DELTA</p>
+</section>
+<!-- Hero KPI Bento -->
+<div class="grid grid-cols-2 gap-4">
+<div class="col-span-2 bg-surface-container-low p-card-padding rounded-xl border border-outline-variant relative overflow-hidden">
+<div class="flex justify-between items-start relative z-10">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Leakage Risk</span>
+<div class="font-display-lg text-display-lg text-primary mt-1">$42,890.12</div>
+</div>
+<div class="bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+<span class="text-primary font-bold font-label-sm text-label-sm">+12.4% MoM</span>
+</div>
+</div>
+<div class="mt-6 flex gap-4 relative z-10">
+<div class="flex-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Potential Upcoding</span>
+<div class="font-title-md text-title-md text-on-surface">$28,140</div>
+</div>
+<div class="flex-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bundling Errors</span>
+<div class="font-title-md text-title-md text-on-surface">$14,750</div>
+</div>
+</div>
+<!-- Decorative subtle background SVG -->
+<div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4">
+<span class="material-symbols-outlined text-[120px]">account_balance_wallet</span>
+</div>
+</div>
+</div>
+<!-- Live Analysis Feed (Detailed Cards) -->
+<section class="space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+          Critical Detections
+          <span class="bg-error-container text-on-error-container px-2 py-0.5 rounded-full text-[10px] font-bold">4 HIGH</span>
+</h3>
+<button class="text-primary font-label-md text-label-md flex items-center gap-1">
+          Filter <span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+</div>
+<!-- Detection Card 1: Upcoding -->
+<div class="priority-border p-card-padding border border-outline-variant transition-all active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<div>
+<div class="font-title-md text-[16px] text-on-surface">99215 Level Deviation</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Provider: Dr. Sarah Jenkins</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-[16px] text-error">-$1,240.00</div>
+<div class="font-label-sm text-label-sm text-on-error-container">Variance: 84%</div>
+</div>
+</div>
+<div class="bg-background/50 rounded-lg p-3 mb-4 space-y-2 border border-outline-variant/30">
+<div class="flex justify-between text-[13px]">
+<span class="text-on-surface-variant">Claim ID:</span>
+<span class="text-on-surface font-mono">#CLM-827-X</span>
+</div>
+<div class="flex justify-between text-[13px]">
+<span class="text-on-surface-variant">Detection Engine:</span>
+<span class="text-primary">E/M Pattern AI</span>
+</div>
+<p class="text-[12px] text-on-surface-variant italic mt-2 border-l-2 border-error pl-2">
+            "Documentation lacks complex medical decision-making for Level 5 billing. Suggesting downgrade to 99214."
+          </p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container py-2 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-sm">check</span> Verify Adjustment
+          </button>
+<button class="w-12 bg-surface-container-highest text-on-surface-variant flex items-center justify-center rounded-lg hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm">flag</span>
+</button>
+</div>
+</div>
+<!-- Detection Card 2: Bundling Conflict -->
+<div class="bg-surface-container p-card-padding rounded-xl border border-outline-variant transition-all active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">layers</span>
+</div>
+<div>
+<div class="font-title-md text-[16px] text-on-surface">NCCI Bundling Conflict</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Claim ID: #CLM-901-B</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-[16px] text-on-surface">-$450.00</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Type: Manual Rejection</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-4">
+<div class="bg-surface-container-high p-2 rounded border border-outline-variant/20">
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Primary</div>
+<div class="text-sm font-bold text-on-surface">CPT 93000</div>
+</div>
+<div class="bg-surface-container-high p-2 rounded border border-outline-variant/20">
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Conflict</div>
+<div class="text-sm font-bold text-error">CPT 93010</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-surface-container-high text-on-surface py-2 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-bright transition-colors">
+            Review Documentation
+          </button>
+</div>
+</div>
+<!-- Detection Card 3: Anomaly -->
+<div class="bg-surface-container p-card-padding rounded-xl border border-outline-variant transition-all active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<div class="font-title-md text-[16px] text-on-surface">Provider Outlier Detected</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Dr. Alan Turing | Orthopedics</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-[16px] text-primary">$8,900.00</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Risk: Med-High</div>
+</div>
+</div>
+<div class="w-full h-12 flex items-end gap-1 mb-4">
+<!-- Mini-chart simulation -->
+<div class="bg-outline-variant w-full h-[40%] rounded-t-sm"></div>
+<div class="bg-outline-variant w-full h-[55%] rounded-t-sm"></div>
+<div class="bg-outline-variant w-full h-[45%] rounded-t-sm"></div>
+<div class="bg-primary w-full h-[95%] rounded-t-sm animate-pulse"></div>
+<div class="bg-outline-variant w-full h-[50%] rounded-t-sm"></div>
+<div class="bg-outline-variant w-full h-[60%] rounded-t-sm"></div>
+<div class="bg-outline-variant w-full h-[45%] rounded-t-sm"></div>
+</div>
+<p class="text-[12px] text-on-surface-variant mb-4">Modifier -25 usage is 4.5x higher than the peer group average for surgical procedures.</p>
+<button class="w-full border border-primary text-primary py-2 rounded-lg font-label-md text-label-md hover:bg-primary/5 transition-colors">
+          Open Case File
+        </button>
+</div>
+</section>
+<!-- Detailed Visual Analysis Tab -->
+<section class="bg-surface-container-lowest rounded-2xl p-card-padding border border-outline-variant">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-title-md text-title-md text-on-surface">Provider Benchmarking</h4>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</div>
+<div class="space-y-6">
+<!-- Metric 1 -->
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">E/M Level Distribution</span>
+<span class="font-label-md text-label-md text-primary">Critical Offset</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden flex">
+<div class="h-full bg-primary w-[30%]" title="Level 3"></div>
+<div class="h-full bg-tertiary w-[20%]" title="Level 4"></div>
+<div class="h-full bg-error w-[50%]" title="Level 5"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">
+<span>Level 3 (30%)</span>
+<span>Level 5 (50%)</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-4">
+<div class="flex gap-4 items-center">
+<div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10">
+<span class="material-symbols-outlined text-primary">insights</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant">Estimated Recovery</div>
+<div class="font-title-md text-title-md text-on-surface">$128,400.00</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/30 flex justify-between items-center">
+<span class="text-[12px] text-on-surface-variant">Audit Confidence Score</span>
+<span class="text-[14px] font-bold text-primary">98.2%</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest border-t-0 rounded-t-xl shadow-lg">
+<!-- Dashboard -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<!-- Patients (The Active Tab for this context) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-sm text-label-sm">Patients</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200 relative" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+<span class="absolute top-0 right-1 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<!-- Primary Action: Bulk Authorize Adjustments -->
+<button class="fixed bottom-24 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 600;">check_circle</span>
+</button>
+<script>
+    // Micro-interactions for clinical cards
+    document.querySelectorAll('.bg-surface-container, .priority-border').forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.classList.add('brightness-125');
+      });
+      card.addEventListener('touchend', () => {
+        card.classList.remove('brightness-125');
+      });
+    });
+
+    // Real-time number tick simulation for the Hero leakage risk
+    const leakageElement = document.querySelector('.font-display-lg');
+    if (leakageElement) {
+        let currentVal = 42890.12;
+        setInterval(() => {
+            let variance = (Math.random() - 0.5) * 2.5;
+            currentVal += variance;
+            leakageElement.textContent = '$' + currentVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }, 3000);
+    }
+  </script>
+</body></html>

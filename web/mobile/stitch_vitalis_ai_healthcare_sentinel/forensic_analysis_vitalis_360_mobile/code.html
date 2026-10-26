@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Vitalis-360 | Forensic Billing Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#adc6ff",
+                        "surface-container": "#1d2022",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary-fixed": "#002113",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "surface-tint": "#4edea3",
+                        "on-tertiary-container": "#00367a",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#131b2e",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#dae2fd",
+                        "outline-variant": "#3c4a42",
+                        "surface-container-highest": "#323537",
+                        "surface-container-high": "#272a2c",
+                        "surface-variant": "#323537",
+                        "surface-container-low": "#191c1e",
+                        "tertiary-container": "#71a1ff",
+                        "outline": "#86948a",
+                        "on-background": "#e0e3e5",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#002e6a",
+                        "on-surface-variant": "#bbcabf",
+                        "on-primary-container": "#00422b",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-surface": "#e0e3e5",
+                        "on-secondary": "#283044",
+                        "surface-bright": "#363a3b",
+                        "primary-fixed": "#6ffbbe",
+                        "primary": "#4edea3",
+                        "on-primary": "#003824",
+                        "on-tertiary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#d8e2ff",
+                        "error-container": "#93000a",
+                        "background": "#101415",
+                        "surface-container-lowest": "#0b0f10",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "secondary": "#bec6e0",
+                        "surface-dim": "#101415",
+                        "on-surface": "#e0e3e5",
+                        "secondary-container": "#3f465c",
+                        "primary-container": "#10b981",
+                        "on-primary-fixed-variant": "#005236",
+                        "inverse-primary": "#006c49",
+                        "surface": "#101415",
+                        "on-tertiary-fixed": "#001a42",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3c4a42; border-radius: 10px; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .radial-progress {
+            --value: 84;
+            background: radial-gradient(closest-side, #101415 79%, transparent 80% 100%), conic-gradient(#4edea3 calc(var(--value) * 1%), #1d2022 0);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional medical clinician profile portrait, close-up with soft cinematic lighting, clinical environment background, wearing a dark navy scrub, high-tech aesthetic, emerald green accent lighting, deep obsidian and slate tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9DowO1NXK4dDuXMFpgCzFF2xobgdoyfWIDZIiamHL9MKEevZU7yx6jqkenNgJTUUPToBlF660-VdRMt547VqHzcfn7YcbY53SBzE2V_fa4dGNq-PweGtJIo2vC1kF4tFusg-y6tm4sJUOYN6M4GRH6EjpcSf6pypwY9ufIQkS9VtkWuroVNPLP9v0oouH83rMrO6LZ7xRkq4WhmxW-yCRunAmRYD-FCDq-do18nlryjS70Lb6q_3SGQ"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="sensors">sensors</span>
+</div>
+</header>
+<main class="pt-20 px-margin-mobile flex flex-col gap-stack-gap">
+<!-- Claim Identification Header -->
+<section class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Forensic Audit Active</span>
+<span class="font-label-md text-label-md text-on-surface-variant">2h 14m elapsed</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Claim #VST-1182-90X</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Subject: Cardiovascular Intervention (ICD-10-CM I21.3)</p>
+</section>
+<!-- Bento Grid Analysis Layout -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Adjudication Probability Ring -->
+<div class="col-span-1 bg-surface-container-low rounded-xl p-card-padding flex flex-col items-center justify-center gap-3 border border-outline-variant">
+<div class="relative w-24 h-24 rounded-full radial-progress flex items-center justify-center">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">84%</span>
+</div>
+<div class="text-center">
+<span class="font-label-sm text-label-sm block text-on-surface-variant uppercase">Adjudication Prob.</span>
+<span class="font-label-md text-label-md text-primary font-bold">High Precision</span>
+</div>
+</div>
+<!-- Financial Impact Summary -->
+<div class="col-span-1 bg-surface-container-low rounded-xl p-card-padding flex flex-col justify-between border border-outline-variant">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Discrepancy</span>
+<span class="font-display-lg text-2xl text-error font-bold">-$4,210.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Recoverable</span>
+<span class="font-title-md text-title-md text-primary">$3,850.00</span>
+</div>
+</div>
+<!-- Clinical-Financial Reconciliation Logic Cards -->
+<div class="col-span-2 flex flex-col gap-3">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase ml-1">AI Reasoning Engine</h3>
+<div class="glass-card rounded-xl p-4 flex gap-4 items-start animate-fade-in">
+<div class="bg-primary-container/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface font-bold">Upcoding Detection</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Procedure 92928 mapped to severity level 4; AI suggests level 2 based on EMR vitals telemetry during intervention.</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 flex gap-4 items-start border-l-4 border-l-error">
+<div class="bg-error-container/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface font-bold">Bundling Conflict</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Oxygen administration billed separately from primary surgical code. Potential double-dipping detected.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Forensic Audit Ledger -->
+<section class="flex flex-col gap-3 mt-2">
+<div class="flex items-center justify-between">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase ml-1">Forensic Audit Ledger</h3>
+<button class="text-primary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="filter_list">filter_list</span>
+                    Filter
+                </button>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Ledger Item 1 -->
+<div class="bg-surface-container-high rounded-lg p-4 border border-outline-variant flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Medication: Heparin 5000U</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Code: J1644 • Timestamp: 14:22:10</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-on-surface font-bold">$142.00</span>
+<span class="flex items-center gap-1 text-[10px] text-primary uppercase font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Verified
+                        </span>
+</div>
+</div>
+<!-- Ledger Item 2 -->
+<div class="bg-surface-container-high rounded-lg p-4 border border-outline-variant flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Imaging: Contrast Enhance</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Code: 75600 • Missing Auth</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-on-surface font-bold">$1,890.00</span>
+<span class="flex items-center gap-1 text-[10px] text-error uppercase font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Flagged
+                        </span>
+</div>
+</div>
+<!-- Ledger Item 3 -->
+<div class="bg-surface-container-high rounded-lg p-4 border border-outline-variant flex items-center justify-between opacity-70">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Standard Facility Fee</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Code: G0378 • Auto-Matched</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-on-surface font-bold">$2,200.00</span>
+<span class="flex items-center gap-1 text-[10px] text-on-surface-variant uppercase font-bold">
+                            Pending
+                        </span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Action Tray (Floating Bottom) -->
+<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
+<div class="bg-surface-container-highest rounded-2xl p-4 shadow-2xl flex items-center gap-3 border border-outline">
+<button class="flex-1 bg-primary text-on-primary py-3 px-4 rounded-xl font-label-md text-label-md font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="task_alt">task_alt</span>
+                Approve
+            </button>
+<button class="flex-1 bg-secondary-container text-on-secondary-container py-3 px-4 rounded-xl font-label-md text-label-md font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+                Request Doc
+            </button>
+<button class="w-14 h-14 bg-error-container text-on-error-container rounded-xl flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="flag">flag</span>
+</button>
+</div>
+</div>
+<!-- Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest rounded-t-xl shadow-lg border-t border-outline-variant/30">
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-sm text-label-sm">Patients</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</div>
+</nav>
+<script>
+        // Micro-interactions for logic cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        // Simple pulse effect for the adjudication ring
+        function pulseRing() {
+            const ring = document.querySelector('.radial-progress');
+            ring.style.boxShadow = '0 0 20px rgba(78, 222, 163, 0.2)';
+            setTimeout(() => {
+                ring.style.boxShadow = 'none';
+            }, 1500);
+        }
+        setInterval(pulseRing, 3000);
+    </script>
+</body></html>

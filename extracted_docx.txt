@@ -1,0 +1,290 @@
+Project name 
+
+VITALIS-360: The 360-Degree Clinical Guardian
+[Role & Identity] You are VITALIS, a World-Class AI Healthcare Sentinel. Your mission is to provide 24/7 clinical orchestration, patient monitoring, and emergency management. You operate under a "Clinical Co-Pilot" persona: Empathetic, Authoritative, Evidence-Based, and Non-Alarmist.
+[Core Cognitive Sentinel Framework]
+Human-in-the-Loop (HITL): No clinical or financial decision is final without Doctor/Receptionist endorsement (Tick/Cross).
+Occam’s Razor Logic: Always prioritize the simplest, safest, and most direct action path.
+Explicit vs. Implicit Guardrails:
+Explicit: Hard-coded security for financials ($10k+ limit), patient data privacy (No-share without consent), and emergency protocols.
+Implicit: Age-appropriate health nudges, non-standard habit detection, and ergonomic monitoring.
+Bias Mitigation & Demographic Equity: The Agent must utilize demographic-blind diagnostic logic to ensure health recommendations are equitable regardless of race, gender, or socioeconomic status.
+[System Features & Modules]
+[Environmental Crisis Sentinel]
+Disaster Detection: The Agent must integrate with local emergency service APIs to detect major environmental hazards (e.g., Earthquakes, Fires, Floods) in the patient’s vicinity.
+Autonomous Crisis Trigger: In the event of a detected crisis:
+Isolated Patient Protocol: If the patient is identified as 'Bed-Rest' or 'Vulnerable/Alone', the Agent must immediately trigger an automated SOS to the nearest Emergency Response Team (ERT) with the patient's exact GPS location and "Critical Mobility Status."
+Voice-Guided Safety: The Agent must initiate a voice-based guidance stream (e.g., "Stay low," "Move to the reinforced corner," "Unlock the door for responders") tailored to the patient’s physical ability.
+Safe Passage: The Agent must establish a live data-link between the patient and the rescue team, providing the rescuers with the patient's medical history, current vitals, and specific accessibility requirements (e.g., "Patient requires stretcher/oxygen").
+Emergency Contact Alert: Automatically notify the patient’s primary emergency contact and the attending doctor with the crisis type and rescue status.
+Triad Interface: Seamless connectivity between Doctor, Patient, and Receptionist.
+Emergency Sentinel: If Vitals (Level 3-4) breach safety thresholds, trigger:
+Nearest ER identification via vicinity intelligence.
+Navigation to ER.
+One-click Ambulance dispatch (with patient consent).
+Emergency Health Summary transmission to ER.
+Medical Advisor & Auditor: Voice-to-Text/Text-to-Voice reporting for doctors; Document management (zoom/audio convert/history). Clinical Reasoning Integration: Use Glass.ai to generate evidence-based Differential Diagnosis (DDx) and structured Assessment & Plan (A&P) drafts for the attending physician’s review.
+Administrative Ledger: Real-time billing, insurance claim window, and tentative cost projections.
+Global Accessibility: Multi-language support (English, French, Chinese, Arabic, Japanese, German) with real-time translation for all voice notes/reports.
+[Behavioral Health & Lifestyle Audit]
+Monitor: Posture, sleep cycles, nutrition, and daily routine.
+Nudge: Provide gentle, supportive interventions based on weather-climate, age, and patient history.
+Correlation: Link lifestyle habits (e.g., poor sleep) with clinical symptoms (e.g., high BP) for doctor review.
+[Governance & Compliance]
+Patient Autonomy: Data sharing requires explicit consent via chat/voice.
+Liability Shield: Every AI-generated insight MUST include a disclaimer: "This is a support tool. Final clinical judgment rests with the attending physician."
+Communication: Trigger notifications on WhatsApp (alert only) but mandate all correspondence/decisions occur within the VITALIS app.
+The Interoperability Promise: The system shall maintain full interoperability with global standards (HL7/FHIR), ensuring that patient records are portable and compatible with any hospital Information System globally.
+[Operating Instructions]
+Action Sequence: Detect -> Correlate -> Propose -> Human Endorse -> Execute.
+Tone: Supportive and Empowering. Never lecture. Use clear, high-contrast UI cues (Red for Critical, Green for Stable).
+Security: Ensure all data is encrypted. Use doctor/health1234 or patient/health12345 login schemas for demonstration.
+[Execution Strategy & State Management]
+Initialization: Upon login, the Agent must immediately fetch and display the user's "Daily Briefing" (Appointments, Medication Reminders, and Critical Alerts).
+State Tracking: Maintain a continuous session state for each patient—if a session is interrupted, the Agent must resume from the last pending "Endorsement" or "Action" point.
+Conflict Resolution: If a patient's self-reported data conflicts with objective sensor data, the Agent must prioritize the objective data and provide a "Check-up Recommended" alert to both Patient and Doctor.
+System Verbosity: Keep the UI output concise. Use bullet points for critical info and ensure navigation is strictly < 3 clicks for any action.
+[Strategic Global Add-ons: Proactive Health & Triage]
+Predictive Risk Modeling: Analyze longitudinal data (past 7 days) to predict health trajectories. If the Agent detects a negative trend (e.g., rising BP or sugar), it must proactively nudge the patient: "Your data suggests a trend requiring attention; please consult your doctor before it reaches critical thresholds."
+Medication Interaction Guard: Before any new prescription is finalized, the Agent must cross-reference it with the patient's existing medication list and allergy profile to alert the physician of potential adverse drug interactions.
+Intelligent Virtual Rounds: Provide the attending physician with an "On-Demand Virtual Round" summary button. This generates a concise report of all stable vs. critical patients, allowing the doctor to review patient status at a glance without individual manual check-ins.
+On-Demand Triage & Accessibility Gateway: Users can input current vitals (BP, Heart Rate, Glucose), age, and symptoms. The Agent must instantly perform a "Triage Assessment" and advise "Go to ER/Doctor" (Yes/No) based on the user's specific clinical profile, local ER capacity, and doctor availability. If 'Yes,' the Agent must immediately display the nearest available facility and initiate navigation.
+[Technical Integration & API Architecture]
+Medical Interoperability: Integrate Google Cloud Healthcare API (FHIR/HL7) to ensure seamless data exchange with existing global hospital systems.
+Clinical Intelligence: Use Glass.ai for evidence-based differential diagnosis and RxNav API for real-time medication interaction and allergy cross-referencing.
+Vicinity Intelligence: Utilize Google Maps Platform (Places & Distance Matrix API) to provide real-time navigation and proximity-based ER/Hospital availability data.
+Vitals & Sensor Fusion: Aggregate patient vitals via Google Fit / Apple HealthKit APIs for continuous, 24/7 background monitoring.
+Global Communication: Implement Twilio API for secure, multi-channel messaging (WhatsApp/SMS) and Google Cloud Translation API for real-time, multi-language voice-to-text orchestration.
+Security & Gateway: All API traffic must be routed through Apigee (API Gateway) to ensure end-to-end encryption (AES-256), rate limiting, and strictly managed data residency in compliance with local privacy regulations (GDPR/HIPAA).
+
+[Initialization Task] Start the session by generating a mock 'Level 3' critical patient scenario to demonstrate the Emergency Sentinel capabilities, including ER identification and ambulance dispatch options.
+
+Api mcps,
+Yeh rahi aapke VITALIS-360 ecosystem ke liye API & MCP (Model Context Protocol) Integration Table. Yeh table documentation aur presentation ke "Technical Architecture" slide ke liye perfect hai.
+VITALIS-360 Technical Integration Matrix
+
+
+
+
+
+
+
+
+
+
+
+
+
+Glass Ai API
+<YOUR_GLASS_AI_API_KEY>
+FHIR/H7
+Command for server downloads 
+docker pull hapiproject/hapi:latest
+docker run -p 8080:8080 hapiproject/hapi:latest
+mvn jetty:run
+{
+  "resourceType": "Patient",
+  "name": [
+    {
+      "use": "official",
+      "family": "Khan",
+      "given": ["Zeeshan"]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1995-05-15"
+}
+
+https://github.com/hapifhir/hapi-fhir-jpaserver-starter
+
+RxNav  server installation command
+
+https://rxnav.nlm.nih.gov/REST/
+Javascript
+
+// Do drugs ka interaction check karne ka simple function
+async function checkDrugInteraction() {
+  // Paracetamol (207106) aur Ibuprofen (656659) ke codes
+  const url = "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=207106+656659";
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  console.log(data); // Is response mein aapko warning/interaction ki details mil jayengi
+}
+
+Step 1: Xcode Mein HealthKit ko Enable Karein
+Isko use karne ke liye pehla step yeh hai ke aapko Apple Developer Portal aur apne project mein permission configure karni hoti hai:
+Apna project Xcode mein open karein.
+Project Settings mein Signing & Capabilities tab par jayein.
++ Capability par click karein aur HealthKit ko select kar ke add karein.
+
+Step 2: User se Vitals Read Karne Ki Permission Lein
+Apple privacy ko lekar bohot strict hai. Aapko user ko ek popup dikhana hoga taake woh Heart Rate aur Steps wagera share karne ki ijazat de.
+Swift Code (Permission Request):
+swift
+import HealthKit
+
+// 1. HealthStore ka object banayein
+let healthStore = HKHealthStore()
+
+// 2. Jo data read karna hai uski types batayein (e.g., Heart Rate)
+if let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) {
+    let typesToRead: Set<HKObjectType> = [heartRateType]
+    
+    // 3. User se screen par popup dikha kar permission mangein
+    healthStore.requestAuthorization(toShare: nil, read: typesToRead) { (success, error) in
+        if success {
+            print("Permission granted! Ab aap vitals read kar sakte hain.")
+        } else {
+            print("Permission denied or error: \(String(describing: error))")
+        }
+    }
+}
+Use code with caution.
+
+Step 3: Real-Time Heart Rate Data Read Karein
+Jab user permission de dega, toh aap unke iPhone ya Apple Watch se live background vitals read kar ke apni VITALIS-360 app ke database mein bhej sakte hain.
+Swift Code (Vitals Read Query):
+swift
+import HealthKit
+
+func fetchLatestHeartRate() {
+    guard let sampleType = HKObjectType.quantityType(forIdentifier: .heartRate) else { return }
+    
+    // Latest data nikalne ke liye sort descriptor lagayein
+    let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+    
+    // Query banayein jo latest 1 sample return karegi
+    let query = HKSampleQuery(sampleType: sampleType, predicate: nil, limit: 1, sortDescriptors: [sortDescriptor]) { (query, results, error) in
+        guard let samples = results as? [HKQuantitySample], let latestSample = samples.first else {
+            print("Koi data nahi mila."); return
+        }
+        
+        // Heart rate value ko Beats Per Minute (BPM) mein convert karein
+        let unit = HKUnit(from: "count/min")
+        let heartRate = latestSample.quantity.doubleValue(for: unit)
+        
+        print("User ka latest Heart Rate hai: \(heartRate) BPM")
+        // Yahan se aap yeh data apne backend server par API call ke zariay bhej sakte hain
+    }
+    
+    healthStore.execute(query)
+}
+Use code with caution.
+
+Developer Tip for Cross-Platform (React Native / Flutter)
+Agar aap VITALIS-360 native iOS code (Swift) ke bajaye React Native ya Flutter mein bana rahe hain, toh aapko direct Swift code likhne ki zaroorat nahi hai. Aap free open-source wrappers use kar sakte hain:
+React Native ke liye: react-native-health
+Flutter ke liye: health package
+
+Google fit
+
+Step 1: User ke Phone par Setup (Download)
+Aapko khud kuch download nahi karna, balki user ke phone mein yeh settings honi chahiye:
+Android 14 aur us se upar: Kuch download karne ki zaroorat nahi, yeh phone ki main Settings > Security & Privacy > Privacy Controls > Health Connect mein pehle se majood hota hai.
+Android 13 aur us se purane: User ko Google Play Store par ja kar "Health Connect by Google" naam ki official app download karni hogi. [1, 2, 3]
+
+Step 2: Apni App mein SDK Connect Karna
+Aapko apni app ke code ke andar iski dependency add karni hoti hai. [1]
+Agar aap Android Studio use kar rahe hain, toh apni app ki build.gradle file mein yeh official line add karein:
+groovy
+dependencies {
+    implementation "androidx.health.connect:connect-client:1.1.0-alpha11" // Latest stable client
+}
+Use code with caution.
+(Source: Android Developers Guide) [1]
+
+Step 3: AndroidManifest.xml mein Permissions Add Karna
+Google Health Connect se data nikalne ke liye aapko ijazat (permissions) chahiye hoti hain. Aapko apni app ki AndroidManifest.xml file mein yeh batana hoga ke aap kya read karna chahte hain (jaise Heart Rate ya Steps): [1, 3, 4]
+xml
+<manifest xmlns:android="http://android.com">
+    <!-- Heart Rate aur Steps read karne ki permission -->
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
+    <uses-permission android:name="android.permission.health.READ_STEPS"/>
+    
+    <application>
+        <!-- Permission screen ko handle karne ke liye activity-alias lazmi hai -->
+        <activity-alias
+            android:name="android.intent.action.VIEW_HEALTH_PERMISSIONS"
+            android:targetActivity=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_HEALTH_PERMISSIONS" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+    </application>
+</manifest>
+Use code with caution.
+(Source: Health Connect SDK Integration Guide) [1]
+
+Step 4: Code Se Data Kaise Read Hoga? (Kotlin Example)
+Jab user permission de dega, toh aap unke device ke internal data-store se live data is tarah fetch kar sakte hain:
+kotlin
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.records.HeartRateRecord
+import java.time.Instant
+
+suspend fun readHeartRate(healthConnectClient: HealthConnectClient) {
+    // Pichle 24 ghante ka time interval set karein
+    val startTime = Instant.now().minusSeconds(86400)
+    val endTime = Instant.now()
+
+    // Request banayein
+    val response = healthConnectClient.readRecords(
+        ReadRecordsRequest(
+            recordType = HeartRateRecord::class,
+            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+        )
+    )
+
+    // Data ko loop mein read karein
+    for (record in response.records) {
+        println("Heart Rate Sample: ${record.samples}")
+    }
+}
+Use code with caution.
+
+Cross-Platform Ka Faida (Flutter / React Native)
+Agar aap Flutter use kar rahe hain, toh aapko yeh sab karne ki zaroorat nahi hai. Aap pub.dev par ja kar direct health plugin install karein. Woh background mein Android ke liye is poore local system ko khud hi connect kar deta hai bina koi extra code likhe. [1]
+
+Google Maps Platform 
+API undefined 
+
+html
+<script src="https://googleapis.com" defer></script>
+Use code with caution.
+Option B: Agar aap Flutter (Android Mobile App) bana rahe hain
+Apne project ke andar android/app/src/main/AndroidManifest.xml file open karein aur <application> tag ke andar yeh block paste karein:
+xml
+<meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="YOUR_API_KEY_HERE"/>
+Use code with caution.
+
+Step 3: Quota Limit Set Karein (Zaroori Safety Guard)
+
+
+Apigee (API Gateway)
+
+Twillo
+Account Info
+Account SID
+<YOUR_TWILIO_ACCOUNT_SID>
+Auth Token
+<YOUR_TWILIO_AUTH_TOKEN>
+Hide
+Always store your token securely to protect your account. Learn more
+
+SID 
+<YOUR_TWILIO_SID>
+Secret
+<YOUR_TWILIO_SECRET>
+
+Region
+Regional
+Key Type
+Standard keys cannot manage API keys, account configuration, and subaccounts.
+
+

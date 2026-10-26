@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vitalis-360 | Patient Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#3f465c",
+                    "outline-variant": "#3c4a42",
+                    "surface-tint": "#4edea3",
+                    "on-tertiary-fixed": "#001a42",
+                    "on-tertiary": "#002e6a",
+                    "inverse-surface": "#e0e3e5",
+                    "tertiary": "#adc6ff",
+                    "on-primary-fixed-variant": "#005236",
+                    "error-container": "#93000a",
+                    "background": "#101415",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#004395",
+                    "on-error": "#690005",
+                    "surface": "#101415",
+                    "primary": "#4edea3",
+                    "surface-dim": "#101415",
+                    "surface-bright": "#363a3b",
+                    "on-secondary-container": "#adb4ce",
+                    "surface-container-low": "#191c1e",
+                    "inverse-primary": "#006c49",
+                    "tertiary-fixed": "#d8e2ff",
+                    "on-background": "#e0e3e5",
+                    "secondary": "#bec6e0",
+                    "primary-fixed-dim": "#4edea3",
+                    "surface-container-highest": "#323537",
+                    "inverse-on-surface": "#2d3133",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "surface-variant": "#323537",
+                    "outline": "#86948a",
+                    "on-tertiary-container": "#00367a",
+                    "on-surface": "#e0e3e5",
+                    "on-primary-fixed": "#002113",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "surface-container-lowest": "#0b0f10",
+                    "surface-container-high": "#272a2c",
+                    "on-secondary": "#283044",
+                    "on-primary": "#003824",
+                    "primary-fixed": "#6ffbbe",
+                    "surface-container": "#1d2022",
+                    "on-surface-variant": "#bbcabf",
+                    "secondary-fixed": "#dae2fd",
+                    "on-secondary-fixed": "#131b2e",
+                    "on-primary-container": "#00422b",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "primary-container": "#10b981",
+                    "tertiary-container": "#71a1ff",
+                    "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "unit": "4px",
+                    "stack-gap": "16px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "card-padding": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #101415;
+            color: #e0e3e5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .vitals-sparkline {
+            height: 40px;
+            width: 100%;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .status-dot-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="dark selection:bg-primary selection:text-on-primary">
+<!-- Side Navigation Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col py-spacing-margin-desktop bg-background z-50">
+<div class="px-6 mb-10">
+<span class="font-headline-lg text-headline-lg font-black text-primary tracking-tighter">VITALIS-360</span>
+<div class="flex items-center mt-6 gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a senior physician with silver hair, wearing a white clinical coat and a stethoscope. The background is a soft-focus medical office with high-tech equipment and cool-toned lighting, reflecting a premium healthcare environment with high-contrast obsidian and emerald accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb3Iw_eonOtNbvRuVNobyWH7HIizU8HzHhmKhVWhJ-V7BQRmp3WlKl2ZLvQK1XLWbWZMekqwQE73ELuMxLoIeSP9UGIpsZLdnQY2rwqzQmv5tlB41iAHn85PkEkUbb6NlNACg1U9aP6qPXWSNJlz2rxY-4ly7nBOrrTb16ZevAQ38Bh4XULihw48ZSOW0cbtQuk8_dyhE77zF6Emw9XwsAq1Y4NGlRer0L0SNTyC2FfWruYc6IDiR45Q"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Dr. Julian Vance</p>
+<p class="text-[11px] text-outline uppercase tracking-widest font-bold">Clinical Lead</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-medium hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-medium hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-medium hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="emergency_home">emergency_home</span>
+<span class="font-label-md text-label-md">Emergency Sentinel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-medium hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="font-label-md">Add Patient</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen bg-background">
+<!-- Top Bar Shell -->
+<header class="h-20 flex justify-between items-center px-spacing-margin-desktop w-full border-b border-outline-variant bg-background sticky top-0 z-40">
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant w-96">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface font-body-md w-full placeholder:text-outline-variant" placeholder="Search patient ID, vitals, or labs..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-spacing-margin-desktop max-w-[1600px] mx-auto">
+<!-- Welcome Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Good Morning, Zeeshan. <span class="text-primary">Your vitals are stable.</span></h1>
+<p class="font-body-md text-outline-variant mt-1">Last updated: 2 minutes ago</p>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-full border border-outline-variant">
+<div class="w-2 h-2 rounded-full bg-primary status-dot-pulse"></div>
+<span class="text-[12px] font-bold text-primary uppercase tracking-widest">System Live</span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- 1. Vitals Monitor (8 Columns on Desktop) -->
+<section class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Heart Rate -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col justify-between h-48 border-l-4 border-l-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-outline uppercase tracking-wider">Heart Rate</span>
+<span class="material-symbols-outlined text-primary" data-icon="favorite">favorite</span>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">72</span>
+<span class="font-body-md text-outline">BPM</span>
+</div>
+</div>
+<div class="w-full mt-4 flex items-center justify-between">
+<div class="vitals-sparkline bg-gradient-to-r from-primary/10 to-transparent rounded flex items-center px-1">
+<svg class="w-full stroke-primary fill-none stroke-2" viewbox="0 0 100 20">
+<polyline points="0,10 10,12 20,8 30,11 40,9 50,15 60,10 70,12 80,5 90,10 100,8"></polyline>
+</svg>
+</div>
+<div class="flex items-center gap-1 text-primary ml-4">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold">NORMAL</span>
+</div>
+</div>
+</div>
+<!-- Blood Pressure -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col justify-between h-48 border-l-4 border-l-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-outline uppercase tracking-wider">Blood Pressure</span>
+<span class="material-symbols-outlined text-primary" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">120/80</span>
+<span class="font-body-md text-outline">mmHg</span>
+</div>
+</div>
+<div class="w-full mt-4 flex items-center justify-between">
+<div class="vitals-sparkline bg-gradient-to-r from-primary/10 to-transparent rounded flex items-center px-1">
+<svg class="w-full stroke-primary fill-none stroke-2" viewbox="0 0 100 20">
+<polyline points="0,10 20,10 25,2 35,18 40,10 60,10 65,5 75,15 80,10 100,10"></polyline>
+</svg>
+</div>
+<div class="flex items-center gap-1 text-primary ml-4">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold">IDEAL</span>
+</div>
+</div>
+</div>
+<!-- SpO2 -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col justify-between h-48 border-l-4 border-l-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-outline uppercase tracking-wider">Oxygen SpO2</span>
+<span class="material-symbols-outlined text-primary" data-icon="air">air</span>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">98</span>
+<span class="font-body-md text-outline">%</span>
+</div>
+</div>
+<div class="w-full mt-4 flex items-center justify-between">
+<div class="vitals-sparkline bg-gradient-to-r from-primary/10 to-transparent rounded flex items-center px-1">
+<svg class="w-full stroke-primary fill-none stroke-2" viewbox="0 0 100 20">
+<polyline points="0,10 10,10 20,9 30,10 40,11 50,10 60,10 70,9 80,10 90,10 100,10"></polyline>
+</svg>
+</div>
+<div class="flex items-center gap-1 text-primary ml-4">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold">STABLE</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Pending Actions (4 Columns) -->
+<section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-card-padding flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-md text-title-md text-on-surface">Pending Actions</h3>
+<span class="bg-primary/20 text-primary text-[10px] font-black px-2 py-1 rounded">2 NEW</span>
+</div>
+<div class="space-y-4">
+<!-- Medication -->
+<div class="flex items-center justify-between p-4 bg-surface-container-high rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="pill">pill</span>
+</div>
+<div>
+<p class="font-label-md font-bold text-on-surface">Paracetamol 500mg</p>
+<p class="text-xs text-outline">Due in 30min • Oral</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded bg-error/20 text-error flex items-center justify-center hover:bg-error/30 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary/20 text-primary flex items-center justify-center hover:bg-primary/30 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</button>
+</div>
+</div>
+<!-- Lab Result -->
+<div class="flex items-center justify-between p-4 bg-surface-container-high rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+</div>
+<div>
+<p class="font-label-md font-bold text-on-surface">Blood Chemistry</p>
+<p class="text-xs text-outline">Results Pending Endorsement</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded bg-error/20 text-error flex items-center justify-center hover:bg-error/30 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary/20 text-primary flex items-center justify-center hover:bg-primary/30 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</button>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full text-center py-2 border border-dashed border-outline-variant rounded-lg text-outline text-sm font-medium hover:border-primary hover:text-primary transition-all">
+                        View Audit Log
+                    </button>
+</section>
+<!-- 3. Today's Schedule (4 Columns) -->
+<section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-card-padding">
+<h3 class="font-title-md text-title-md text-on-surface mb-6">Today's Schedule</h3>
+<div class="relative pl-6 border-l-2 border-primary/30 py-2">
+<div class="absolute -left-[9px] top-4 w-4 h-4 bg-primary rounded-full border-4 border-background"></div>
+<div class="p-4 bg-surface-container-highest rounded-xl border border-outline-variant">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-md text-primary font-bold">2:00 PM</span>
+<h4 class="font-body-lg font-bold text-on-surface mt-1">Dr. Julian Vance</h4>
+<p class="text-sm text-outline">General Consultation</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+<img class="w-full h-full object-cover" data-alt="A focused headshot of Dr. Julian Vance, an elderly clinician with a kind face and professional demeanor. He is wearing a medical white coat and blue clinical scrubs underneath. The lighting is crisp and medical, with a subtle emerald glow in the background matching the dashboard's primary color." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1PBxUolJ2yp5cl2q6UTSXZXvfTExAUae7FEew5Z31vV0ToJZT_R8GAY_LDSaZ7825fLc0crSoDyqc1JxdEUKhUs--veLSlWoZ57UCcymg5LNBFj7l65itbVsJoM4ve9YZTJEwrbJZg_jd7ddY_LL-21Qy8fEWGE09DEu4jwwoSQelolokauvyYsSgx_svgZsER3SF13xfw9nVxA2pmBiUsXV3-9Fm_FRUUKUOxMIBSwzrN_VmIMjsQA"/>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="video_call">video_call</span>
+<span>Join Call</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 4. Lifestyle Insights (8 Columns) -->
+<section class="col-span-12 lg:col-span-8 glass-card rounded-xl p-card-padding">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-title-md text-title-md text-on-surface">Lifestyle Insights</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container-high rounded text-xs font-bold text-on-surface-variant hover:text-primary transition-colors">7D</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded text-xs font-bold">30D</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter">
+<!-- Sleep -->
+<div class="flex flex-col items-center p-6 bg-surface-container-low rounded-xl border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="w-14 h-14 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container mb-4">
+<span class="material-symbols-outlined text-3xl" data-icon="bedtime">bedtime</span>
+</div>
+<span class="font-display-lg text-display-lg text-on-surface">7.5<span class="text-headline-lg font-body-md text-outline">h</span></span>
+<span class="font-label-md text-outline uppercase tracking-widest mt-1">Deep Sleep</span>
+<div class="mt-4 w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full w-[85%]"></div>
+</div>
+</div>
+<!-- Steps -->
+<div class="flex flex-col items-center p-6 bg-surface-container-low rounded-xl border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined text-3xl" data-icon="footprint">footprint</span>
+</div>
+<span class="font-display-lg text-display-lg text-on-surface">8,432</span>
+<span class="font-label-md text-outline uppercase tracking-widest mt-1">Steps Today</span>
+<div class="mt-4 w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[70%]"></div>
+</div>
+</div>
+<!-- Posture -->
+<div class="flex flex-col items-center p-6 bg-surface-container-low rounded-xl border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="w-14 h-14 rounded-full bg-secondary-container/10 flex items-center justify-center text-secondary mb-4">
+<span class="material-symbols-outlined text-3xl" data-icon="accessibility_new">accessibility_new</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">Good</span>
+<span class="font-label-md text-outline uppercase tracking-widest mt-1">Posture</span>
+<div class="mt-4 flex gap-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer Shell -->
+<footer class="flex justify-center items-center w-full px-spacing-margin-desktop mt-12 py-8 bg-transparent border-t border-outline-variant/30">
+<div class="text-center max-w-2xl">
+<p class="font-body-md text-body-md text-outline italic">
+                    "This is a support tool. Final clinical judgment rests with the attending physician."
+                </p>
+<div class="mt-4 flex justify-center gap-6">
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Triage Gateway FAB -->
+<button class="fixed bottom-10 right-10 flex items-center gap-3 px-8 py-4 bg-error text-on-error rounded-full font-black text-lg shadow-2xl hover:scale-105 transition-transform active:scale-95 z-[100] group">
+<span class="material-symbols-outlined animate-pulse" data-icon="emergency_share" style="font-variation-settings: 'FILL' 1;">emergency_share</span>
+<span>Input Vitals / SOS</span>
+<div class="absolute -inset-1 bg-error/20 rounded-full blur-xl -z-10 group-hover:bg-error/40 transition-colors"></div>
+</button>
+<script>
+        // Micro-interactions for vitals cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Simulating live data update every 30s
+        setInterval(() => {
+            const timeSpan = document.querySelector('p.text-outline-variant');
+            if (timeSpan) {
+                timeSpan.innerText = 'Last updated: Just now';
+                setTimeout(() => {
+                    timeSpan.innerText = 'Last updated: 1 minute ago';
+                }, 60000);
+            }
+        }, 30000);
+    </script>
+</body></html>

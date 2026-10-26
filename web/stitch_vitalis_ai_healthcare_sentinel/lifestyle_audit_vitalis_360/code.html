@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lifestyle Audit | Sentinel AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#4edea3",
+                        "on-secondary-container": "#adb4ce",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#323537",
+                        "primary-fixed": "#6ffbbe",
+                        "surface-container-lowest": "#0b0f10",
+                        "surface-tint": "#4edea3",
+                        "outline": "#86948a",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-surface-variant": "#bbcabf",
+                        "on-error": "#690005",
+                        "on-primary": "#003824",
+                        "secondary-fixed": "#dae2fd",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "background": "#101415",
+                        "on-secondary": "#283044",
+                        "on-primary-fixed-variant": "#005236",
+                        "inverse-on-surface": "#2d3133",
+                        "surface-container-high": "#272a2c",
+                        "tertiary-container": "#71a1ff",
+                        "surface-dim": "#101415",
+                        "on-surface": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-background": "#e0e3e5",
+                        "secondary": "#bec6e0",
+                        "on-tertiary-fixed": "#001a42",
+                        "on-tertiary-container": "#00367a",
+                        "tertiary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#002113",
+                        "on-tertiary-fixed-variant": "#004395",
+                        "inverse-primary": "#006c49",
+                        "surface-variant": "#323537",
+                        "primary-container": "#10b981",
+                        "surface-bright": "#363a3b",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "surface-container-low": "#191c1e",
+                        "tertiary": "#adc6ff",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#e0e3e5",
+                        "on-primary-container": "#00422b",
+                        "surface-container": "#1d2022",
+                        "secondary-container": "#3f465c",
+                        "on-tertiary": "#002e6a",
+                        "surface": "#101415",
+                        "primary-fixed-dim": "#4edea3",
+                        "outline-variant": "#3c4a42"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #101415; color: #e0e3e5; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .chart-bar { transition: height 1s ease-out; }
+        .sparkline-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: dash 3s linear forwards; }
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant py-6 px-4 space-y-4 z-50">
+<div class="mb-8 px-2">
+<h1 class="text-headline-lg font-black text-primary tracking-tight">Sentinel AI</h1>
+<p class="text-label-md font-label-md text-on-surface-variant opacity-70">Clinical Guardian</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md font-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-md font-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">crisis_alert</span>
+<span class="text-label-md font-label-md">Emergency Sentinel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<button class="mt-auto w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-opacity">
+            New Patient Audit
+        </button>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 pb-12 overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 sticky top-0 z-40 bg-background/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 text-on-surface"><span class="material-symbols-outlined">menu</span></button>
+<div class="text-title-md font-title-md font-bold text-primary">Clinical Intelligence</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container px-4 py-1.5 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md placeholder:text-on-surface-variant/50 w-64" placeholder="Search patients or vitals..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant">help_outline</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a high-ranking medical executive in a dark navy blue scrubs, set against a blurred high-tech hospital environment with glowing monitors and emerald green accents. The lighting is dramatic and focused, highlighting the intelligence and authority of the Chief Medical Officer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg4Xo9ldxFz4wx6wG6p7ttaUwLi8yXBg-B0LX94K8qzW1-d4eQ77AG5m1UV5AatIsAGJ3BNK0CEv3QQVfBbr9GIdMO9CRLJ_kqCpfSkY5zFPzSN2UaJfg4qm-2e5OizM2hgrXRBmivc2NY6OafQW8StJGVySGWooSO1uogruBKsKsYaP57KFfmBIeDcCBrPgYkKeG7M_rzLkRToAPHS2lfeT0VMMkI_soibhd6UaxJ5y8oR4oUhJtoiA"/>
+</div>
+</div>
+</div>
+</header>
+<div class="px-margin-mobile md:px-margin-desktop mt-8">
+<!-- Breadcrumbs / Action Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Lifestyle Audit: Zeeshan Ali</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Correlating behavioral patterns with clinical outcomes.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-label-md font-label-md flex items-center gap-2 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-sm">download</span> Export Report
+                    </button>
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md flex items-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">refresh</span> Live Sync
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- 1. Correlation Insights Card (Span 8) -->
+<section class="md:col-span-8 glass-card rounded-xl p-card-padding relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl">troubleshoot</span>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<h3 class="text-title-md font-title-md text-on-surface">Critical Correlations</h3>
+</div>
+<div class="space-y-6">
+<div class="flex flex-col md:flex-row items-start md:items-center gap-6 p-4 rounded-lg bg-error-container/10 border-l-4 border-error">
+<div class="flex-1">
+<h4 class="text-label-md font-bold text-error uppercase tracking-wider mb-1">Sleep &amp; Hypertension Link</h4>
+<p class="text-body-md text-on-surface">3 consecutive nights of <span class="font-bold">&lt;5h sleep</span> correlated with <span class="text-error font-bold">18% spike</span> in Systolic BP.</p>
+</div>
+<div class="flex items-end gap-1 h-12 w-24">
+<div class="w-full bg-error-container/30 h-4 rounded-t"></div>
+<div class="w-full bg-error-container/40 h-6 rounded-t"></div>
+<div class="w-full bg-error h-12 rounded-t"></div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-start md:items-center gap-6 p-4 rounded-lg bg-primary-container/10 border-l-4 border-primary">
+<div class="flex-1">
+<h4 class="text-label-md font-bold text-primary uppercase tracking-wider mb-1">Recovery &amp; Mindfulness</h4>
+<p class="text-body-md text-on-surface">15min of evening breathing exercise correlates with a <span class="text-primary font-bold">22ms increase</span> in HRV next morning.</p>
+</div>
+<div class="flex items-end gap-1 h-12 w-24">
+<div class="w-full bg-primary-container/30 h-6 rounded-t"></div>
+<div class="w-full bg-primary-container/40 h-8 rounded-t"></div>
+<div class="w-full bg-primary h-12 rounded-t"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. AI Sentinel Recommendations (Span 4) -->
+<section class="md:col-span-4 glass-card rounded-xl p-card-padding bg-gradient-to-br from-surface to-surface-container">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title-md font-title-md text-primary">Sentinel AI</h3>
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+</div>
+<div class="space-y-4">
+<div class="p-3 bg-background rounded-lg border border-outline-variant">
+<p class="text-label-sm text-primary mb-1 uppercase tracking-tighter">Immediate Action</p>
+<p class="text-body-md font-medium">Initiate "Sentinel Quiet Hour" at 20:00 to improve sleep hygiene.</p>
+</div>
+<div class="p-3 bg-background rounded-lg border border-outline-variant">
+<p class="text-label-sm text-secondary mb-1 uppercase tracking-tighter">Ergonomic Alert</p>
+<p class="text-body-md font-medium">Increase standing desk ratio by 15% between 14:00-16:00 to combat fatigue.</p>
+</div>
+<div class="p-3 bg-background rounded-lg border border-outline-variant">
+<p class="text-label-sm text-on-surface-variant mb-1 uppercase tracking-tighter">Hydration Trace</p>
+<p class="text-body-md font-medium">Correlation detected: Morning headaches linked to low evening fluid intake.</p>
+</div>
+</div>
+</section>
+<!-- 3. Sleep Cycle Analysis (Span 12) -->
+<section class="md:col-span-12 glass-card rounded-xl p-card-padding">
+<div class="flex flex-col md:flex-row justify-between mb-8 gap-4">
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">Sleep Cycle Analysis</h3>
+<p class="text-label-md text-on-surface-variant">Last Session: 6h 42m (Efficiency: 88%)</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-tertiary"></span> <span class="text-label-sm">REM</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span> <span class="text-label-sm">Deep</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-secondary"></span> <span class="text-label-sm">Light</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span> <span class="text-label-sm">Awake</span></div>
+</div>
+</div>
+<div class="h-48 w-full flex items-end gap-1 mb-6">
+<!-- Sleep Timeline Placeholder -->
+<div class="w-full bg-secondary h-[40%] rounded-sm opacity-50"></div>
+<div class="w-full bg-tertiary h-[60%] rounded-sm"></div>
+<div class="w-full bg-primary h-[80%] rounded-sm"></div>
+<div class="w-full bg-secondary h-[30%] rounded-sm opacity-50"></div>
+<div class="w-full bg-error h-[10%] rounded-sm"></div>
+<div class="w-full bg-secondary h-[45%] rounded-sm opacity-50"></div>
+<div class="w-full bg-tertiary h-[65%] rounded-sm"></div>
+<div class="w-full bg-primary h-[90%] rounded-sm"></div>
+<div class="w-full bg-secondary h-[35%] rounded-sm opacity-50"></div>
+<div class="w-full bg-tertiary h-[55%] rounded-sm"></div>
+<div class="w-full bg-secondary h-[40%] rounded-sm opacity-50"></div>
+<div class="w-full bg-primary h-[85%] rounded-sm"></div>
+<div class="w-full bg-secondary h-[30%] rounded-sm opacity-50"></div>
+<div class="w-full bg-tertiary h-[60%] rounded-sm"></div>
+<div class="w-full bg-error h-[15%] rounded-sm"></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-outline-variant pt-6">
+<div class="text-center">
+<p class="text-label-sm text-on-surface-variant uppercase">Deep Sleep</p>
+<p class="text-title-md text-primary">1h 12m</p>
+<p class="text-label-sm text-primary-fixed">+8% vs. avg</p>
+</div>
+<div class="text-center">
+<p class="text-label-sm text-on-surface-variant uppercase">REM</p>
+<p class="text-title-md text-tertiary">1h 58m</p>
+<p class="text-label-sm text-error">-12% vs. avg</p>
+</div>
+<div class="text-center">
+<p class="text-label-sm text-on-surface-variant uppercase">Restless Moments</p>
+<p class="text-title-md text-on-surface">4</p>
+<p class="text-label-sm text-primary-fixed">Optimal</p>
+</div>
+<div class="text-center">
+<p class="text-label-sm text-on-surface-variant uppercase">7-Day Score</p>
+<p class="text-title-md text-secondary">74/100</p>
+<div class="w-full bg-surface-container rounded-full h-1 mt-2 overflow-hidden">
+<div class="bg-secondary h-full w-[74%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Physical Activity & Resilience (Span 6) -->
+<section class="md:col-span-6 glass-card rounded-xl p-card-padding">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title-md font-title-md text-on-surface">Activity Resilience</h3>
+<span class="material-symbols-outlined text-primary">monitoring</span>
+</div>
+<div class="flex items-center gap-8 mb-8">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="100" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-headline-lg font-bold">8.2k</span>
+<span class="text-label-sm text-on-surface-variant">Steps</span>
+</div>
+</div>
+<div class="flex-1 space-y-4">
+<div>
+<div class="flex justify-between text-label-sm mb-1">
+<span>Recovery Rate (HR)</span>
+<span class="text-primary">Excellent</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-primary h-full w-[92%] rounded-full"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-label-sm text-on-surface-variant">Active Min</p>
+<p class="text-title-md font-bold">42</p>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Cal Burn</p>
+<p class="text-title-md font-bold">420</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">history</span>
+<div class="flex-1">
+<p class="text-label-sm font-bold text-secondary uppercase">Sedentary History</p>
+<p class="text-body-md">3 alerts triggered yesterday during focus block.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Posture & Ergonomics (Span 6) -->
+<section class="md:col-span-6 glass-card rounded-xl p-card-padding">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title-md font-title-md text-on-surface">Posture &amp; Ergonomics</h3>
+<span class="material-symbols-outlined text-secondary">accessibility_new</span>
+</div>
+<div class="grid grid-cols-2 gap-6 mb-8">
+<div class="p-4 bg-surface-container rounded-xl flex flex-col items-center justify-center">
+<span class="text-display-lg font-black text-primary">82%</span>
+<p class="text-label-md font-bold uppercase tracking-widest text-on-surface-variant">Good Posture</p>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col">
+<span class="text-label-sm text-on-surface-variant">Sitting Time</span>
+<span class="text-body-lg font-bold">5h 12m</span>
+<div class="w-full bg-surface-container-high rounded-full h-1 mt-1">
+<div class="bg-secondary h-full w-3/4 rounded-full"></div>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm text-on-surface-variant">Standing Time</span>
+<span class="text-body-lg font-bold">2h 45m</span>
+<div class="w-full bg-surface-container-high rounded-full h-1 mt-1">
+<div class="bg-primary h-full w-1/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-body-md border-b border-outline-variant/30 pb-2">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> Lumbar Support Check</span>
+<span class="font-bold">Passed</span>
+</div>
+<div class="flex items-center justify-between text-body-md border-b border-outline-variant/30 pb-2">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-on-primary-container text-sm">schedule</span> Peak Slump Time</span>
+<span class="font-bold">15:45</span>
+</div>
+<div class="flex items-center justify-between text-body-md">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">straighten</span> Neck Incline</span>
+<span class="font-bold text-secondary">12° avg</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-8 px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-4 border-t border-outline-variant mt-12">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="text-label-sm font-semibold text-on-surface-variant">Sentinel AI Clinical Intelligence Platform</div>
+<p class="text-body-md text-on-surface-variant opacity-70">
+                    © 2024 Sentinel AI Clinical Intelligence Platform. Mandatory Clinical Disclaimer: This platform provides data-driven insights for clinical decision support only and does not constitute medical diagnosis or a primary life-safety system.
+                </p>
+</div>
+<div class="flex gap-6">
+<a class="text-label-sm text-on-surface-variant opacity-70 hover:text-on-surface transition-opacity" href="#">Privacy Policy</a>
+<a class="text-label-sm text-on-surface-variant opacity-70 hover:text-on-surface transition-opacity" href="#">Terms of Service</a>
+<a class="text-label-sm text-on-surface-variant opacity-70 hover:text-on-surface transition-opacity" href="#">FDA Compliance</a>
+</div>
+</footer>
+</main>
+<!-- FAB for Quick Audit (Only on Relevant Screens) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Micro-interaction: Dynamic Health Chips/Dots
+        document.querySelectorAll('.health-chip').forEach(chip => {
+            chip.addEventListener('mouseenter', () => {
+                chip.style.transform = 'scale(1.05)';
+            });
+            chip.addEventListener('mouseleave', () => {
+                chip.style.transform = 'scale(1)';
+            });
+        });
+
+        // Simple Chart Animation Simulation
+        window.addEventListener('load', () => {
+            console.log('Lifestyle Audit UI Initialized');
+        });
+    </script>
+</body></html>

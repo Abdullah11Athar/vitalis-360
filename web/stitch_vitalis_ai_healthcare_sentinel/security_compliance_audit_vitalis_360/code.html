@@ -1,0 +1,500 @@
+<!DOCTYPE html><html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#002113",
+            "primary-fixed-dim": "#4edea3",
+            "on-secondary-container": "#adb4ce",
+            "tertiary": "#adc6ff",
+            "surface-container": "#1d2022",
+            "surface-tint": "#4edea3",
+            "on-tertiary-container": "#00367a",
+            "on-secondary-fixed-variant": "#3f465c",
+            "error": "#ffb4ab",
+            "outline-variant": "#3c4a42",
+            "secondary-fixed": "#dae2fd",
+            "on-error": "#690005",
+            "on-secondary-fixed": "#131b2e",
+            "tertiary-container": "#71a1ff",
+            "outline": "#86948a",
+            "on-background": "#e0e3e5",
+            "tertiary-fixed-dim": "#adc6ff",
+            "surface-container-highest": "#323537",
+            "surface-container-high": "#272a2c",
+            "surface-container-low": "#191c1e",
+            "surface-variant": "#323537",
+            "on-primary-container": "#00422b",
+            "inverse-on-surface": "#2d3133",
+            "on-secondary": "#283044",
+            "inverse-surface": "#e0e3e5",
+            "on-tertiary": "#002e6a",
+            "on-surface-variant": "#bbcabf",
+            "on-tertiary-fixed-variant": "#004395",
+            "tertiary-fixed": "#d8e2ff",
+            "error-container": "#93000a",
+            "background": "#101415",
+            "surface-bright": "#363a3b",
+            "primary": "#4edea3",
+            "on-primary": "#003824",
+            "primary-fixed": "#6ffbbe",
+            "on-surface": "#e0e3e5",
+            "secondary-container": "#3f465c",
+            "surface-container-lowest": "#0b0f10",
+            "secondary-fixed-dim": "#bec6e0",
+            "secondary": "#bec6e0",
+            "surface-dim": "#101415",
+            "on-error-container": "#ffdad6",
+            "primary-container": "#10b981",
+            "surface": "#101415",
+            "on-tertiary-fixed": "#001a42",
+            "on-primary-fixed-variant": "#005236",
+            "inverse-primary": "#006c49"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "stack-gap": "16px",
+            "gutter": "24px",
+            "unit": "4px",
+            "card-padding": "24px",
+            "margin-desktop": "40px",
+            "margin-mobile": "16px"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "title-md": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+            "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-background text-on-surface font-body-md min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar Implementation -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface-dim border-b border-outline-variant">
+<div class="flex items-center gap-6">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</span>
+<nav class="hidden md:flex gap-6">
+<a href="#" class="text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200 px-2 py-1 rounded">Dashboard</a>
+<a href="#" class="text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200 px-2 py-1 rounded">Clinical</a>
+<a href="#" class="text-primary font-bold border-b-2 border-primary pb-1">Security</a>
+<a href="#" class="text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200 px-2 py-1 rounded">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input type="text" placeholder="Search logs..." class="bg-surface-container-high border-none rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-1 focus:ring-primary w-64">
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-primary">settings</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-primary">help</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution close-up portrait of a technology administrator in a modern hospital command center. The background features blurred turquoise and emerald data displays, with soft focus on a sharp, intelligent face. Professional dark mode lighting with subtle cyan rim lighting defines the features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR25dvcv-1awFTSvmCujngM1l-pVbtScHXcSr7azpVGvaKwObw0JJuzY_63ak6MldpF3NPNCRKMUSLTinUH3PvD9rPf2ERawcytPltVBZQJJXJl6gu6qQWtQkEsChlh8cBJp7LC46tChZYOS_0I6vqAa3Tub5qXqKXPGgYe41EZQw9BnuD-bHAkfEC2hTS_56pZ7zv4syeE1nYK1DGQpZqeMdzJIbPOi6zZud01YFf-WbaphpSRt_tEA">
+</div>
+</div>
+</header>
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex flex-col fixed left-0 top-16 bottom-0 w-64 p-4 gap-stack-gap bg-surface-container border-r border-outline-variant">
+<div class="mb-6 px-2">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-primary leading-tight">Admin Shell</h3>
+<p class="text-label-sm text-on-surface-variant">Financial Sentinel Active</p>
+</div>
+</div>
+</div>
+<nav class="flex-grow flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Financial Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-md text-label-md">Clinical Billing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-md text-label-md">Claims Sentinel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label-md text-label-md font-bold">Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 pt-16 min-h-screen flex flex-col lg:flex-row">
+<!-- Canvas -->
+<div class="flex-grow p-gutter flex flex-col gap-gutter">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Security &amp; Compliance Audit</h1>
+<p class="text-body-md text-on-surface-variant">Real-time blockchain-verified clinical governance monitoring.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-highest text-on-surface font-label-md text-label-md px-6 py-2 rounded-lg border border-outline-variant hover:bg-surface-bright transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span> Export Report
+          </button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span> Run Validation
+          </button>
+</div>
+</section>
+<!-- Forensic Overview Cards (Bento Grid) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-stack-gap">
+<div class="glass-card p-card-padding rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-wider">Active Access Sessions</span>
+<span class="material-symbols-outlined text-primary">sensors</span>
+</div>
+<div class="mt-4">
+<span class="text-display-lg font-display-lg text-on-surface">142</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-label-sm">+12% vs last hour</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-xl flex flex-col justify-between border-l-4 border-l-primary">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-wider">HIPAA Compliance Score</span>
+<div class="h-2 w-2 rounded-full bg-primary status-pulse"></div>
+</div>
+<div class="mt-4">
+<span class="text-display-lg font-display-lg text-on-surface">99.8<span class="text-title-md">%</span></span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="text-label-sm">High-Grade Stability</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-wider">AI Override Requests</span>
+<span class="material-symbols-outlined text-tertiary">psychology</span>
+</div>
+<div class="mt-4">
+<span class="text-display-lg font-display-lg text-on-surface">24</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="text-label-sm">7 pending human review</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-xl flex flex-col justify-between bg-error-container/10 border border-error/20">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-wider">Unauthorized Attempts</span>
+<span class="material-symbols-outlined text-error">gpp_maybe</span>
+</div>
+<div class="mt-4">
+<span class="text-display-lg font-display-lg text-on-surface">0</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-label-sm">Threat Level: Low</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Score Trend & System Visualization -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-stack-gap">
+<div class="lg:col-span-2 glass-card rounded-xl p-card-padding h-80 relative overflow-hidden">
+<div class="flex justify-between items-center mb-6 relative z-10">
+<div>
+<h2 class="font-title-md text-title-md">System Trust Score Trend</h2>
+<p class="text-label-sm text-on-surface-variant">Integrity metrics over the last 30 days</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded bg-surface-container-highest text-label-sm border border-outline-variant">30D</span>
+<span class="px-3 py-1 rounded hover:bg-surface-container-highest text-label-sm transition-all cursor-pointer">7D</span>
+</div>
+</div>
+<!-- Visualization Placeholder -->
+<div class="absolute inset-x-0 bottom-0 h-48 px-4 flex items-end justify-between gap-1">
+<!-- Simple Mock Chart Bars -->
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-32"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-28"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-36"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-40"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-32"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-38"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-42"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-34"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-44"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-40"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-38"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 transition-all rounded-t h-46"></div>
+<div class="flex-grow bg-primary/30 hover:bg-primary/50 transition-all rounded-t h-48 border-x border-t border-primary/50"></div>
+</div>
+</div>
+<div class="glass-card rounded-xl p-card-padding flex flex-col justify-between">
+<div>
+<h2 class="font-title-md text-title-md mb-2">Network Guard</h2>
+<p class="text-label-sm text-on-surface-variant">Active node distribution and regional gateway status.</p>
+</div>
+<div class="h-40 w-full relative bg-surface-container-low rounded-lg border border-outline-variant overflow-hidden group">
+<div class="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity">
+<!-- Map Background Visualization -->
+<div class="w-full h-full bg-cover bg-center" data-alt="A stylized digital map of the world rendered in obsidian and emerald tones. Concentric glowing circles emanate from major tech hubs representing active security nodes. The lighting is low-key with vibrant green highlights on a dark slate background, suggesting high-performance data monitoring." style="background-image: url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg')"></div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-4xl status-pulse rounded-full">location_searching</span>
+<span class="text-label-sm text-on-surface mt-2 bg-surface-container-high px-2 rounded">North America - West</span>
+</div>
+</div>
+</div>
+<div class="mt-4 flex justify-between items-center text-label-sm">
+<span class="text-on-surface-variant">Active Gateways: <span class="text-primary">12</span></span>
+<span class="text-on-surface-variant">Latency: <span class="text-primary">14ms</span></span>
+</div>
+</div>
+</section>
+<!-- Live Audit Stream -->
+<section class="glass-card rounded-xl overflow-hidden flex-grow flex flex-col min-h-[400px]">
+<div class="p-card-padding flex justify-between items-center border-b border-outline-variant">
+<h2 class="font-title-md text-title-md">Live Audit Stream</h2>
+<div class="flex gap-2">
+<button class="p-1 px-3 rounded-full bg-surface-container-highest text-label-sm border border-outline-variant">All Events</button>
+<button class="p-1 px-3 rounded-full hover:bg-surface-container-highest text-label-sm border border-transparent transition-all">Critical Only</button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar flex-grow">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low sticky top-0">
+<tr>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Timestamp</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">User/System</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Action Type</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Resource</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Verification</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-surface-container-high/50 cursor-pointer transition-colors group" onclick="showEventDetails('ov-001')">
+<td class="px-6 py-4 text-label-md font-mono text-on-surface-variant">14:22:15.003</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-md text-on-surface">Dr. Sarah Vance</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-tertiary-container/20 text-tertiary text-[11px] font-bold rounded border border-tertiary/20 uppercase">AI Plan Override</span>
+</td>
+<td class="px-6 py-4 font-label-md text-on-surface">Patient #VA-9022</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-sm">Blockchain-Signed</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 cursor-pointer transition-colors group" onclick="showEventDetails('ov-002')">
+<td class="px-6 py-4 text-label-md font-mono text-on-surface-variant">14:21:58.492</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-md text-on-surface">System Sentinel</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded border border-outline-variant uppercase">PHI Access</span>
+</td>
+<td class="px-6 py-4 font-label-md text-on-surface">Patient #VA-8812</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-label-sm">AI-Verified</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 cursor-pointer transition-colors group">
+<td class="px-6 py-4 text-label-md font-mono text-on-surface-variant">14:19:02.112</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+<span class="font-label-md text-on-surface">Admin Console (LAX-4)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded border border-outline-variant uppercase">Remote Login</span>
+</td>
+<td class="px-6 py-4 font-label-md text-on-surface">Global Config</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-sm">MFA-Confirmed</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 cursor-pointer transition-colors group">
+<td class="px-6 py-4 text-label-md font-mono text-on-surface-variant">14:15:33.880</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-md text-on-surface">Nurse J. Miller</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded border border-outline-variant uppercase">Vital Sign Update</span>
+</td>
+<td class="px-6 py-4 font-label-md text-on-surface">Patient #VA-9001</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-sm">Hash-Chain Valid</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low flex justify-between items-center">
+<span class="text-label-sm text-on-surface-variant">Showing 4 of 24,192 events today</span>
+<div class="flex gap-4">
+<button class="text-primary text-label-sm font-bold flex items-center gap-1">Previous <span class="material-symbols-outlined text-[16px]">chevron_left</span></button>
+<button class="text-primary text-label-sm font-bold flex items-center gap-1">Next <span class="material-symbols-outlined text-[16px]">chevron_right</span></button>
+</div>
+</div>
+</section>
+</div>
+<!-- Detailed Event Sidebar -->
+<aside class="hidden lg:flex w-80 bg-surface-container border-l border-outline-variant flex-col shrink-0 animate-fade-in overflow-y-auto" id="event-sidebar">
+<div class="p-6 border-b border-outline-variant flex justify-between items-start">
+<div>
+<h2 class="font-title-md text-title-md">Event Detail</h2>
+<p class="text-label-sm text-primary">Log ID: 0X9A22-VANCE</p>
+</div>
+<button class="p-1 hover:bg-surface-container-high rounded transition-all" onclick="hideEventDetails()">
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+</div>
+<div class="p-6 flex flex-col gap-6">
+<div class="bg-surface-container-high p-4 rounded-lg border border-outline-variant"><div class="flex justify-between items-center mb-3"><span class="text-label-sm text-on-surface-variant uppercase">AI Justification</span><div class="flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 border border-primary/30 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span><span class="text-[11px] font-bold text-primary">94% High Confidence</span></div></div><div class="space-y-3 mb-4"><div class="flex gap-3"><span class="text-[10px] font-bold text-primary uppercase shrink-0 w-24 pt-1">Primary Indicator</span><p class="text-label-md text-on-surface">Abnormal cardiac rhythm (Tachycardia)</p></div><div class="flex gap-3"><span class="text-[10px] font-bold text-on-surface-variant uppercase shrink-0 w-24 pt-1">Contextual Variable</span><p class="text-label-md text-on-surface">Patient age (68) and historical baseline comparison</p></div><div class="flex gap-3"><span class="text-[10px] font-bold text-on-surface-variant uppercase shrink-0 w-24 pt-1">Inference</span><p class="text-label-md text-on-surface italic">Correlation with previous atrial fibrillation episodes</p></div></div><div class="pt-3 border-t border-outline-variant/30"><span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-2">Clinical Variables</span><div class="flex flex-wrap gap-1.5"><span class="px-2 py-0.5 bg-surface-container-highest text-[10px] text-on-surface rounded border border-outline-variant">ECG Waveform</span><span class="px-2 py-0.5 bg-surface-container-highest text-[10px] text-on-surface rounded border border-outline-variant">Systolic BP</span><span class="px-2 py-0.5 bg-surface-container-highest text-[10px] text-on-surface rounded border border-outline-variant">Age Baseline</span><span class="px-2 py-0.5 bg-surface-container-highest text-[10px] text-on-surface rounded border border-outline-variant">History Match</span></div></div></div>
+<div class="space-y-4">
+<div>
+<span class="text-label-sm text-on-surface-variant uppercase block mb-1">Credential Level</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">military_tech</span>
+<span class="font-label-md font-bold">L4 - Senior Clinical Specialist</span>
+</div>
+</div>
+<div class="">
+<span class="text-label-sm text-on-surface-variant uppercase block mb-1">System Response</span>
+<div class="p-3 bg-primary-container/10 border border-primary/30 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">task_alt</span>
+<p class="text-label-md text-on-surface">Override approved. Sentinel monitoring frequency increased for 4 hours. Blockchain entry committed.</p>
+</div>
+</div>
+<div>
+<span class="text-label-sm text-on-surface-variant uppercase block mb-2">Clinical Context</span>
+<div class="aspect-video bg-surface-container-highest rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clinical monitor display showing a patient's vital heart rate graph in a deep emerald green pulse. The background is a dark, clean clinical dashboard with medical data overlays. High-contrast white and emerald green colors dominate the crisp, medical-grade visual." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzAhvrCfnXIWA4cmmgVsgD3QdpDi76YZzgJqjPRUBbX42sUBS3KWMG4heHjIFmoIH1VZUGpz4BAOYiS-TFr-OgvGP9o5Vi4v_xmS8-5IAiktRDGFNENY1DPSfmO3mwjaBDlIpSMPVHfhpwDWHlPrDGCDwYZfxmOQqIOQOXM3EbaXr-yZmXbK79aDy6dgZri7G3QogL8eth07CzqQ62vu4QK6KOcp_CMA28qAOKtq9j05AQ8btI7aycOg">
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant">
+<button class="w-full py-3 bg-surface-container-highest text-on-surface rounded-lg border border-outline-variant font-label-md hover:bg-surface-bright transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">description</span> View Full Clinical Record
+          </button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container border-t border-outline-variant h-16 flex items-center justify-around px-4 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Overview</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-bold">Billing</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+<span class="text-[10px] font-bold">Audit</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold">Reports</span>
+</button>
+</nav>
+<script>
+    function showEventDetails(id) {
+      const sidebar = document.getElementById('event-sidebar');
+      sidebar.classList.remove('hidden');
+      sidebar.classList.add('flex');
+    }
+
+    function hideEventDetails() {
+      const sidebar = document.getElementById('event-sidebar');
+      sidebar.classList.add('hidden');
+      sidebar.classList.remove('flex');
+    }
+
+    // Interactive Highlight on Row Selection
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+            document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-surface-container-highest'));
+            row.classList.add('bg-surface-container-highest');
+        });
+    });
+
+    // Auto-expand first row for demo
+    window.onload = () => {
+        if (window.innerWidth > 1024) {
+            showEventDetails('ov-001');
+            document.querySelector('tbody tr').classList.add('bg-surface-container-highest');
+        }
+    };
+  </script>
+
+</body></html>

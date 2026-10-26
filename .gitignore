@@ -1,0 +1,31 @@
+# API Keys and sensitive credentials
+API_KEYS.md
+.env*.local
+.env
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production / Next.js
+.next/
+out/
+build/
+dist/
+
+# Android / Mobile
+.gradle/
+captures/
+local.properties
+.idea/
+
+# OS / Temporary
+.DS_Store
+Thumbs.db
+*.log
+
+# Unrelated SEO skills / archives
+beyond-seo/
+Beyond SEO*.zip
+.agents/

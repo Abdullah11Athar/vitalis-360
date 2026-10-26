@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Vitalis-360 | Emergency Sentinel Audit Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#101415",
+                    "primary-container": "#10b981",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-error": "#690005",
+                    "on-tertiary": "#002e6a",
+                    "surface-variant": "#323537",
+                    "on-surface": "#e0e3e5",
+                    "surface-container-high": "#272a2c",
+                    "on-primary": "#003824",
+                    "inverse-surface": "#e0e3e5",
+                    "secondary": "#bec6e0",
+                    "on-tertiary-container": "#00367a",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-container": "#1d2022",
+                    "secondary-container": "#3f465c",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "surface-bright": "#363a3b",
+                    "surface": "#101415",
+                    "on-secondary": "#283044",
+                    "surface-tint": "#4edea3",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary-container": "#00422b",
+                    "surface-container-low": "#191c1e",
+                    "primary-fixed": "#6ffbbe",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#005236",
+                    "inverse-on-surface": "#2d3133",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-secondary-container": "#adb4ce",
+                    "tertiary": "#adc6ff",
+                    "outline": "#86948a",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "surface-container-highest": "#323537",
+                    "on-tertiary-fixed-variant": "#004395",
+                    "on-primary-fixed": "#002113",
+                    "on-tertiary-fixed": "#001a42",
+                    "surface-container-lowest": "#0b0f10",
+                    "tertiary-fixed": "#d8e2ff",
+                    "inverse-primary": "#006c49",
+                    "tertiary-container": "#71a1ff",
+                    "surface-dim": "#101415",
+                    "outline-variant": "#3c4a42",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-surface-variant": "#bbcabf",
+                    "on-background": "#e0e3e5",
+                    "primary": "#4edea3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "stack-gap": "16px",
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "card-padding": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .pdf-page-shadow { box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #323537; border-radius: 10px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 custom-scrollbar">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a female clinician wearing a white lab coat and a stethoscope, in a bright, modern medical facility with soft emerald green lighting accents. High-performance corporate photography style, crisp details, and a confident, empathetic expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzMrfWKetZRenVsRfm_cW-POLVmbsKbcTDsHEnCqWSkb70DBCR2SuS8OvelovOIewmvM_5f5RdK7cZIalnuHqqQl7TJ0G_18U4iAtTtQH3M2tR7Ibk6n_N3Zf-Cs0snutpoYsA21ff6AjwfUA5piIRsFWWZCaZANJClQ8fKUcHTBGZsgOc-D6CxzhFVZD0XYX8U4_33mCp16muwrYAc3JqOrFYxwxU7nC99XqwKJ3YXbONMCtM0bnL1A"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-4 max-w-md mx-auto">
+<!-- Header Actions -->
+<div class="flex items-center justify-between mb-6">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-primary uppercase tracking-wider">Audit Report</span>
+<h2 class="text-title-md font-title-md text-on-surface">Export Preview</h2>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg flex items-center gap-2 font-label-md text-label-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                PDF
+            </button>
+</div>
+<!-- PDF Style "Page" Mockup -->
+<div class="bg-[#f8fafc] text-slate-900 rounded-xl overflow-hidden pdf-page-shadow mb-8 relative">
+<!-- Report Header -->
+<div class="p-6 border-b border-slate-200 bg-white">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Vitalis-360 Sentinel Audit</span>
+<h3 class="text-xl font-extrabold text-slate-900 leading-tight mt-1">Q3 Life-Safety Performance Report</h3>
+<p class="text-[12px] text-slate-500 mt-1">Generated: Oct 24, 2023 • ID: V360-X92-2023</p>
+</div>
+<div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center border border-emerald-100">
+<span class="material-symbols-outlined text-emerald-600">security</span>
+</div>
+</div>
+</div>
+<!-- Bento Stats Grid (Mobile Optimized) -->
+<div class="p-6 space-y-4">
+<!-- Lives Saved Card -->
+<div class="bg-emerald-600 p-5 rounded-xl text-white flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="z-10">
+<span class="text-[11px] font-bold opacity-80 uppercase tracking-wider">Critical Interventions</span>
+<p class="text-4xl font-extrabold mt-1">142</p>
+</div>
+<div class="z-10 flex items-center gap-2">
+<span class="text-[11px] font-bold px-2 py-0.5 bg-white/20 rounded-full">LIVES SAVED</span>
+<span class="text-[11px] font-medium">+12% vs Q2</span>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-[120px] pointer-events-none">favorite</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Response Time Card -->
+<div class="bg-slate-900 p-4 rounded-xl text-white flex flex-col justify-between aspect-square border border-slate-800">
+<div>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Median Resp.</span>
+<p class="text-2xl font-extrabold mt-1">4.2<span class="text-sm font-normal text-slate-400">min</span></p>
+</div>
+<div class="flex items-center text-emerald-400 gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+<span class="text-[10px] font-bold">-0.8m</span>
+</div>
+</div>
+<!-- HITL Rate Card -->
+<div class="bg-white p-4 rounded-xl text-slate-900 flex flex-col justify-between aspect-square border border-slate-200">
+<div>
+<span class="text-[10px] font-bold text-slate-500 uppercase">HITL Endors.</span>
+<p class="text-2xl font-extrabold mt-1">98.4<span class="text-sm font-normal text-slate-500">%</span></p>
+</div>
+<div class="flex items-center text-emerald-600 gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span class="text-[10px] font-bold">Optimal</span>
+</div>
+</div>
+</div>
+<!-- Mini Chart Section -->
+<div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+<div class="flex justify-between items-center mb-4">
+<span class="text-[11px] font-bold text-slate-600 uppercase">Trend Analysis (90d)</span>
+<span class="text-[10px] text-slate-400">Weekly resolution</span>
+</div>
+<div class="h-20 flex items-end justify-between gap-1">
+<!-- Simulated Bars -->
+<div class="bg-slate-200 w-full h-[40%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[55%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[45%] rounded-t-sm"></div>
+<div class="bg-emerald-400 w-full h-[70%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[60%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[85%] rounded-t-sm"></div>
+<div class="bg-emerald-500 w-full h-[95%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[75%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[80%] rounded-t-sm"></div>
+<div class="bg-slate-200 w-full h-[65%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Signature Block -->
+<div class="pt-6 border-t border-slate-100 flex justify-between items-end">
+<div>
+<p class="text-[9px] text-slate-400 font-medium">CERTIFIED BY</p>
+<p class="text-xs font-bold text-slate-700 font-serif italic mt-1 border-b border-slate-300 pb-1">Dr. Eleanor Vance, CMO</p>
+</div>
+<div class="text-right">
+<p class="text-[8px] text-slate-300">SECURE HASH</p>
+<p class="text-[8px] font-mono text-slate-400">88F1-CA02-55E1</p>
+</div>
+</div>
+</div>
+<!-- Watermark -->
+<div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none rotate-45">
+<span class="text-8xl font-black">CONFIDENTIAL</span>
+</div>
+</div>
+<!-- Summary Notes Section -->
+<section class="space-y-4">
+<h4 class="text-label-md font-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                Analysis Summary
+            </h4>
+<div class="glass-card p-4 rounded-xl space-y-3">
+<div class="flex gap-3">
+<div class="w-1 h-auto bg-primary rounded-full"></div>
+<p class="text-label-md font-label-md text-on-surface-variant leading-relaxed">
+                        The Q3 report indicates a <strong class="text-primary">significant improvement</strong> in median response time, largely attributed to the AI-Sentinel predictive deployment algorithm.
+                    </p>
+</div>
+<div class="flex gap-3">
+<div class="w-1 h-auto bg-primary rounded-full"></div>
+<p class="text-label-md font-label-md text-on-surface-variant leading-relaxed">
+                        HITL Endorsement remains near perfect, ensuring that clinical empathy is maintained alongside technological speed.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest shadow-lg rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-sm text-label-sm">Patients</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</div>
+</nav>
+<script>
+        // Simple Micro-interaction for the PDF preview
+        document.addEventListener('DOMContentLoaded', () => {
+            const pdfPage = document.querySelector('.pdf-page-shadow');
+            
+            pdfPage.addEventListener('touchstart', () => {
+                pdfPage.style.transform = 'scale(0.98)';
+                pdfPage.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+
+            pdfPage.addEventListener('touchend', () => {
+                pdfPage.style.transform = 'scale(1)';
+            });
+
+            // Animate progress bars on load
+            const bars = document.querySelectorAll('.bg-slate-200, .bg-emerald-400, .bg-emerald-500');
+            bars.forEach((bar, index) => {
+                const targetHeight = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.transition = `height 1s cubic-bezier(0.23, 1, 0.32, 1) ${index * 0.05}s`;
+                    bar.style.height = targetHeight;
+                }, 100);
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Vitalis-360 | Claims Forensic Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#101415",
+                    "primary-container": "#10b981",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-error": "#690005",
+                    "on-tertiary": "#002e6a",
+                    "surface-variant": "#323537",
+                    "on-surface": "#e0e3e5",
+                    "surface-container-high": "#272a2c",
+                    "on-primary": "#003824",
+                    "inverse-surface": "#e0e3e5",
+                    "secondary": "#bec6e0",
+                    "on-tertiary-container": "#00367a",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-container": "#1d2022",
+                    "secondary-container": "#3f465c",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "surface-bright": "#363a3b",
+                    "surface": "#101415",
+                    "on-secondary": "#283044",
+                    "surface-tint": "#4edea3",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary-container": "#00422b",
+                    "surface-container-low": "#191c1e",
+                    "primary-fixed": "#6ffbbe",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#005236",
+                    "inverse-on-surface": "#2d3133",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-secondary-container": "#adb4ce",
+                    "tertiary": "#adc6ff",
+                    "outline": "#86948a",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "surface-container-highest": "#323537",
+                    "on-tertiary-fixed-variant": "#004395",
+                    "on-primary-fixed": "#002113",
+                    "on-tertiary-fixed": "#001a42",
+                    "surface-container-lowest": "#0b0f10",
+                    "tertiary-fixed": "#d8e2ff",
+                    "inverse-primary": "#006c49",
+                    "tertiary-container": "#71a1ff",
+                    "surface-dim": "#101415",
+                    "outline-variant": "#3c4a42",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-surface-variant": "#bbcabf",
+                    "on-background": "#e0e3e5",
+                    "primary": "#4edea3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "stack-gap": "16px",
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "card-padding": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #101415;
+            color: #e0e3e5;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .risk-gradient-low { background: linear-gradient(90deg, #10b981 0%, transparent 100%); }
+        .risk-gradient-med { background: linear-gradient(90deg, #f59e0b 0%, transparent 100%); }
+        .risk-gradient-high { background: linear-gradient(90deg, #ef4444 0%, transparent 100%); }
+        
+        /* Custom scrollbar for data lists */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A close-up professional headshot of a female clinician in her 40s wearing a modern white medical coat. The background is a blurred high-tech medical facility with cool obsidian and emerald lighting. The atmosphere is professional, empathetic, and technologically advanced, matching a premium healthcare brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYHQoD9n-DEBwdZXWfGT6QdgbHJBRNeFLZ_qI4AdEMVNq0UQrM_Fm-oDKXJMz1xHQZuZymNRV5J8mApD_S5pV0S2Ee3cn-Y9geagbTB0TzTcBeESHqSN4BOWF7YrpAeBUbp1rkU1oOyfWgD0ycrY0cJE-W-tppNmiZQlDbHqHQpx4IOm3xFtBFHrwZ5kH0gur0X_JfvS8KwihOmfFWSlxrBjdqNO1xztQk9WqJbjGsXNjHT3Y7u0NyNg"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+</header>
+<main class="pt-20 px-4 space-y-6">
+<!-- Animated Health Sentinel Background Visual (Shader Placeholder) -->
+<div class="relative w-full h-40 rounded-xl overflow-hidden glass-card">
+
+<div class="relative z-10 p-5 h-full flex flex-col justify-between">
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Forensic Overview</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Live Audit Cycle: #442-A</p>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex gap-4">
+<div class="text-center">
+<span class="block font-headline-lg-mobile text-headline-lg-mobile text-primary">842</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Scanned</span>
+</div>
+<div class="text-center">
+<span class="block font-headline-lg-mobile text-headline-lg-mobile text-error">12</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Critical</span>
+</div>
+</div>
+<div class="px-3 py-1 bg-primary-container/20 border border-primary/30 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-primary font-label-sm text-label-sm">System Guard Active</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Tabs -->
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+<button class="px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-md text-label-md whitespace-nowrap">Pending (28)</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap border border-outline-variant/30">Processed</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap border border-outline-variant/30">Flagged</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap border border-outline-variant/30">Archived</button>
+</div>
+<!-- Claims List -->
+<section class="space-y-4">
+<h3 class="font-label-md text-label-md text-on-surface-variant px-1 uppercase tracking-widest">High Priority Intercepts</h3>
+<!-- Claim Card 1: Critical -->
+<div class="glass-card rounded-xl p-4 space-y-4 relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 risk-gradient-high"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-error text-2xl">warning</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">CLM-99281-X</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Patient: Sarah J. | Orthopedics</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-title-md text-title-md text-primary">$12,450.00</p>
+<span class="inline-block px-2 py-0.5 rounded-md bg-error/10 text-error font-label-sm text-label-sm border border-error/20">98% Risk</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-2">
+<div class="bg-surface-container-low p-2 rounded-lg border border-outline-variant/20">
+<span class="block text-[10px] uppercase text-on-surface-variant font-bold">Anomaly Type</span>
+<span class="block font-label-md text-label-md text-on-surface">Double Billing</span>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg border border-outline-variant/20">
+<span class="block text-[10px] uppercase text-on-surface-variant font-bold">Latency</span>
+<span class="block font-label-md text-label-md text-on-surface">2.4h since entry</span>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-error-container text-on-error-container py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-lg">policy</span>
+                        Forensic Action
+                    </button>
+<button class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Claim Card 2: Moderate -->
+<div class="glass-card rounded-xl p-4 space-y-4 relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 risk-gradient-med"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-secondary text-2xl">pending_actions</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">CLM-88342-A</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Patient: Michael K. | Oncology</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-title-md text-title-md text-primary">$4,200.00</p>
+<span class="inline-block px-2 py-0.5 rounded-md bg-secondary/10 text-secondary font-label-sm text-label-sm border border-secondary/20">42% Risk</span>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-secondary-container text-on-secondary-container py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-lg">find_in_page</span>
+                        Forensic Action
+                    </button>
+<button class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Claim Card 3: Healthy/Low Risk -->
+<div class="glass-card rounded-xl p-4 space-y-4 relative overflow-hidden group opacity-80">
+<div class="absolute left-0 top-0 bottom-0 w-1 risk-gradient-low"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">CLM-77621-C</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Patient: Robert L. | Cardiology</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-title-md text-title-md text-primary">$890.50</p>
+<span class="inline-block px-2 py-0.5 rounded-md bg-primary-container/10 text-primary font-label-sm text-label-sm border border-primary/20">2% Risk</span>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-surface-container-highest text-on-surface py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 active:scale-95 transition-transform border border-outline-variant/30">
+<span class="material-symbols-outlined text-lg">verified</span>
+                        Mark as Clean
+                    </button>
+<button class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/50">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Stats Micro-bento -->
+<section class="grid grid-cols-2 gap-4">
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-32">
+<span class="material-symbols-outlined text-primary">savings</span>
+<div>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">$1.2M</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Recovered/Mo</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-32">
+<span class="material-symbols-outlined text-tertiary">bolt</span>
+<div>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">0.8s</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Audit Latency</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest rounded-t-xl shadow-lg">
+<!-- Dashboard Item -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<!-- Patients Item -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-sm text-label-sm">Patients</span>
+</a>
+<!-- Alerts Item (Active - Mapping to Claims/Forensics logic as primary intent) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</a>
+<!-- Settings Item -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<!-- Floating Action Button for High-Priority Triage -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform z-40 border-4 border-background">
+<span class="material-symbols-outlined text-3xl">add_moderator</span>
+</button>
+<script>
+        // Micro-interaction for claim cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.classList.add('scale-[0.98]', 'bg-surface-container-high/90');
+            });
+            card.addEventListener('touchend', function() {
+                this.classList.remove('scale-[0.98]', 'bg-surface-container-high/90');
+            });
+        });
+
+        // Simple pulse effect for the risk indicators
+        setInterval(() => {
+            document.querySelectorAll('.risk-gradient-high').forEach(el => {
+                el.style.opacity = el.style.opacity === '0.6' ? '1' : '0.6';
+            });
+        }, 1500);
+    </script>
+</body></html>

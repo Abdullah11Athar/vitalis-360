@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aegis Finance | On-Demand Triage Gateway</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#10b981",
+                        "surface-variant": "#323537",
+                        "surface-bright": "#363a3b",
+                        "secondary": "#bec6e0",
+                        "on-tertiary-fixed": "#001a42",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-background": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004395",
+                        "inverse-primary": "#006c49",
+                        "tertiary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#002113",
+                        "on-tertiary-container": "#00367a",
+                        "on-primary-container": "#00422b",
+                        "inverse-surface": "#e0e3e5",
+                        "surface": "#101415",
+                        "primary-fixed-dim": "#4edea3",
+                        "outline-variant": "#3c4a42",
+                        "surface-container": "#1d2022",
+                        "secondary-container": "#3f465c",
+                        "on-tertiary": "#002e6a",
+                        "surface-container-low": "#191c1e",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "tertiary": "#adc6ff",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-secondary-fixed": "#131b2e",
+                        "outline": "#86948a",
+                        "surface-tint": "#4edea3",
+                        "surface-container-highest": "#323537",
+                        "primary-fixed": "#6ffbbe",
+                        "error-container": "#93000a",
+                        "primary": "#4edea3",
+                        "on-secondary-container": "#adb4ce",
+                        "tertiary-container": "#71a1ff",
+                        "surface-container-high": "#272a2c",
+                        "on-primary-fixed-variant": "#005236",
+                        "inverse-on-surface": "#2d3133",
+                        "on-surface": "#e0e3e5",
+                        "surface-dim": "#101415",
+                        "secondary-fixed": "#dae2fd",
+                        "on-error-container": "#ffdad6",
+                        "on-primary": "#003824",
+                        "on-surface-variant": "#bbcabf",
+                        "on-error": "#690005",
+                        "on-secondary": "#283044",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "background": "#101415"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "stack-gap": "16px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Top Navigation Anchor (As specified in JSON) -->
+<header class="flex justify-between items-center w-full h-16 px-margin-desktop bg-surface border-b border-outline-variant fixed top-0 left-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-title-md text-title-md font-black text-on-surface">Financial Ledger</span>
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1 border border-outline-variant focus-within:ring-2 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 text-on-surface" placeholder="Search patient IDs or claims..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all">help_outline</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a healthcare administrator in a clinical environment, high-end studio lighting, soft focus background, professional attire, mirroring the Vitalis-360 deep slate and emerald green branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVSDTNVIX5Z-POjxIJ0X7EinRmdi_4Gp-wDFcSbOltXNqPk7VEPxPQDirI3b3sQ7PgND6eFy4UaWO1GIN9T6MfGc5T-moM21P90gSEirzbOw4-PU3IdNR_jM9Hz2TGPNvZHFGyJyaFsgxuIfSwfag1pUajgA8vZeDL1CvHxSpQ8ZBbKQPCQnyZk7t6KHrCXVJnY6bz7WgOUMXAx9wto6hG9JJD5StwXvIFMdVA6lNYlFciu16kkwD_PQ"/>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation Shell -->
+<aside class="h-full w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low border-r border-outline-variant pt-20 z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<div class="font-display-lg text-display-lg font-bold text-primary">Aegis Finance</div>
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Clinical Guardian Systems</div>
+</div>
+<nav class="flex-grow space-y-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Financial Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Claims Tracking</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Revenue Cycle</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Reconciliation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label-md text-label-md">Audit Logs</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add_chart</span>
+                Generate Report
+            </button>
+<div class="mt-6 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="text-sm">Support</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-0 md:ml-64 pt-24 px-4 md:px-margin-desktop pb-12 min-h-screen">
+<div class="max-w-6xl mx-auto space-y-gutter">
+<!-- Header Section -->
+<section class="space-y-unit">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">On-Demand Triage Gateway</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Enter your symptoms below. Our AI reasoning engine provides clinical-grade triage assessments while you wait for a human-in-the-loop verification.</p>
+</section>
+<!-- Bento Layout Container -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Input Panel (Large) -->
+<div class="lg:col-span-7 space-y-stack-gap">
+<div class="bg-surface-container rounded-xl p-card-padding border border-outline-variant glow-emerald relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-focus-within:opacity-30 transition-opacity">
+<span class="material-symbols-outlined text-6xl">psychology</span>
+</div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-2 h-8 bg-primary rounded-full"></div>
+<h2 class="font-title-md text-title-md">Symptom Description</h2>
+</div>
+<textarea class="w-full h-48 bg-surface-container-highest border border-outline-variant rounded-lg p-4 font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none" id="symptom-input" placeholder="Describe what you are feeling... (e.g., 'Mujhe seene mein dard hai aur saans lene mein takleef ho rahi hai')"></textarea>
+<div class="flex justify-between items-center mt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm animate-pulse-soft">language</span>
+<span class="text-sm font-label-md">Multi-lingual support active</span>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20" id="submit-assessment">
+                                Submit Assessment
+                                <span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+<!-- Ambient Visual Card -->
+<div class="hidden md:block bg-surface-container-low rounded-xl p-6 border border-outline-variant h-40 relative overflow-hidden">
+
+<div class="relative z-10 flex h-full items-center justify-between">
+<div class="max-w-xs">
+<h3 class="font-title-md text-on-surface">Neural Health Sync</h3>
+<p class="text-sm text-on-surface-variant">AI-driven diagnostics are processing 4,000+ clinical data points per second.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-4xl">dynamic_form</span>
+</div>
+</div>
+</div>
+<!-- Analysis Panel (Side) -->
+<div class="lg:col-span-5 space-y-stack-gap">
+<div class="bg-surface-container rounded-xl p-card-padding border border-outline-variant flex flex-col h-full">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-title-md text-title-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                                Real-time Triage Report
+                            </h2>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-widest">Processing</span>
+</div>
+<!-- Urgency Meter -->
+<div class="mb-8 space-y-4">
+<div class="flex justify-between items-end">
+<span class="text-on-surface-variant text-sm font-label-md">Urgency Level</span>
+<span class="text-error font-bold text-lg" id="urgency-status">Waiting for Input</span>
+</div>
+<div class="h-3 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-surface-variant w-0 transition-all duration-1000 ease-out" id="urgency-bar"></div>
+</div>
+</div>
+<!-- Symptom Mapping -->
+<div class="space-y-4 mb-8">
+<span class="text-on-surface-variant text-sm font-label-md">Detected Mappings</span>
+<div class="flex flex-wrap gap-2" id="mapping-chips">
+<div class="px-3 py-2 bg-surface-container-highest border border-outline-variant rounded-lg text-sm text-on-surface-variant flex items-center gap-2 opacity-50 italic">
+                                    Awaiting diagnostic string...
+                                </div>
+</div>
+</div>
+<!-- Recommended Action -->
+<div class="mt-auto bg-surface-container-highest rounded-xl p-4 border border-outline-variant border-l-4 border-l-primary">
+<div class="flex items-start gap-4">
+<div class="p-2 bg-primary/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">medical_information</span>
+</div>
+<div class="space-y-1">
+<p class="font-bold text-sm text-primary">Recommended Action</p>
+<p class="text-on-surface text-sm" id="recommended-action">Please describe your symptoms to generate a clinical pathway.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Analysis Section (Expanded Grid) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Clinical Card 1 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">monitor_heart</span>
+<h4 class="font-title-md text-on-surface">Vitals Proxy</h4>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-bold text-on-surface">--</span>
+<span class="text-on-surface-variant">BPM (Est)</span>
+</div>
+<div class="mt-4 h-12 w-full">
+
+</div>
+</div>
+<!-- Clinical Card 2 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">neurology</span>
+<h4 class="font-title-md text-on-surface">AI Confidence</h4>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-bold text-on-surface">0.0</span>
+<span class="text-on-surface-variant">% Match</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-2">Correlation with global medical database.</p>
+</div>
+<!-- Clinical Card 3 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant group hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">history</span>
+<h4 class="font-title-md text-on-surface">Historical Delta</h4>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined">trending_flat</span>
+<span>Stable</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-2">Comparison with your last assessment (14 days ago).</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant flex justify-around items-center h-16 z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="text-[10px] font-bold">Triage</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px]">History</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px]">Consult</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px]">Profile</span>
+</button>
+</nav>
+<script>
+        const symptomInput = document.getElementById('symptom-input');
+        const submitBtn = document.getElementById('submit-assessment');
+        const urgencyBar = document.getElementById('urgency-bar');
+        const urgencyStatus = document.getElementById('urgency-status');
+        const mappingChips = document.getElementById('mapping-chips');
+        const recommendedAction = document.getElementById('recommended-action');
+
+        // Simple mock behavior to simulate "AI Reasoning"
+        submitBtn.addEventListener('click', () => {
+            const val = symptomInput.value.toLowerCase();
+            
+            if (val.length < 5) {
+                alert('Please provide more detail for a valid assessment.');
+                return;
+            }
+
+            // Reset UI for "processing" state
+            submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Processing...`;
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                let urgency = 0;
+                let statusText = "Low Concern";
+                let colorClass = "bg-primary";
+                let chips = [];
+                let action = "Continue monitoring symptoms. Log any changes over the next 24 hours.";
+
+                // Mock logic for specific triggers
+                if (val.includes('dard') || val.includes('pain') || val.includes('seene')) {
+                    urgency = 85;
+                    statusText = "CRITICAL / URGENT";
+                    colorClass = "bg-error";
+                    chips = ['Chest Pain', 'Cardiac Marker', 'Hypoxia Risk'];
+                    action = "Immediate ER consultation recommended. Vital signals suggest cardiovascular stress. Notify your guardian contacts.";
+                } else if (val.includes('bukhar') || val.includes('fever') || val.includes('cold')) {
+                    urgency = 35;
+                    statusText = "MODERATE";
+                    colorClass = "bg-primary-container";
+                    chips = ['Infection', 'Febrile State', 'Inflammation'];
+                    action = "Schedule a virtual consultation within the next 4 hours. Stay hydrated and rest.";
+                } else {
+                    urgency = 20;
+                    statusText = "LOW";
+                    colorClass = "bg-primary";
+                    chips = ['General Malaise', 'Observation Mode'];
+                    action = "Monitor for 24 hours. No immediate action required based on current description.";
+                }
+
+                // Update UI
+                urgencyBar.style.width = `${urgency}%`;
+                urgencyBar.className = `h-full ${colorClass} transition-all duration-1000 ease-out`;
+                urgencyStatus.innerText = statusText;
+                urgencyStatus.className = `font-bold text-lg ${colorClass === 'bg-error' ? 'text-error' : 'text-primary'}`;
+                
+                mappingChips.innerHTML = chips.map(chip => `
+                    <div class="px-3 py-2 bg-primary/10 border border-primary/30 rounded-lg text-sm text-primary flex items-center gap-2 animate-pulse-soft">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        ${chip}
+                    </div>
+                `).join('');
+
+                recommendedAction.innerText = action;
+                
+                submitBtn.innerHTML = `Submit Assessment <span class="material-symbols-outlined">send</span>`;
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+
+        // Real-time input subtle feedback
+        symptomInput.addEventListener('input', (e) => {
+            if (e.target.value.length > 0) {
+                symptomInput.classList.add('border-primary/50');
+            } else {
+                symptomInput.classList.remove('border-primary/50');
+            }
+        });
+    </script>
+</body></html>

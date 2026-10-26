@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Vitalis-360 | Patient Rounds Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#adc6ff",
+                        "surface-container": "#1d2022",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary-fixed": "#002113",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "surface-tint": "#4edea3",
+                        "on-tertiary-container": "#00367a",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#131b2e",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#dae2fd",
+                        "outline-variant": "#3c4a42",
+                        "surface-container-highest": "#323537",
+                        "surface-container-high": "#272a2c",
+                        "surface-variant": "#323537",
+                        "surface-container-low": "#191c1e",
+                        "tertiary-container": "#71a1ff",
+                        "outline": "#86948a",
+                        "on-background": "#e0e3e5",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#002e6a",
+                        "on-surface-variant": "#bbcabf",
+                        "on-primary-container": "#00422b",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-surface": "#e0e3e5",
+                        "on-secondary": "#283044",
+                        "surface-bright": "#363a3b",
+                        "primary-fixed": "#6ffbbe",
+                        "primary": "#4edea3",
+                        "on-primary": "#003824",
+                        "on-tertiary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#d8e2ff",
+                        "error-container": "#93000a",
+                        "background": "#101415",
+                        "surface-container-lowest": "#0b0f10",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "secondary": "#bec6e0",
+                        "surface-dim": "#101415",
+                        "on-surface": "#e0e3e5",
+                        "secondary-container": "#3f465c",
+                        "primary-container": "#10b981",
+                        "on-primary-fixed-variant": "#005236",
+                        "inverse-primary": "#006c49",
+                        "surface": "#101415",
+                        "on-tertiary-fixed": "#001a42",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #101415;
+            color: #e0e3e5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .safe-area-top { padding-top: env(safe-area-inset-top); }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle { animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-background dark:bg-background border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a clinical director in a modern healthcare facility. The lighting is crisp and cool-toned, reflecting a high-tech obsidian medical office environment. The subject wears a clean white medical coat over a charcoal grey scrub, conveying authority, deep clinical empathy, and technological precision. The overall aesthetic is minimalist and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuYCPpBVZSTfmiISdpKp2Uzb5z2pLfHMILOSUAh26VEXWSOkJ90PfU1uzJ4KxTNqOko2hHi3QZuYTede-zsW7B9eXzerUuWzlukjVG4QmS2_rNOOmSeCldMTxKRmLhtzaS7tY7eNdd9fiU5oqEJq7wMwfGA_spcEw6zpV7NEAcmC8pMnM2BELguTo9-_GH_Vh0y-l0Z7v2ygIFUotZ0S_skEVl15xbiWcY9NnQRiB1dUsWBn7fX8S7DA"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Vitalis-360</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary">sensors</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 pb-24 px-margin-mobile pt-4">
+<!-- Header Section -->
+<div class="mb-6">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Rounds Queue</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">4 Patients requiring intervention</p>
+</div>
+<!-- Patients List -->
+<div class="flex flex-col gap-4">
+<!-- Patient Card 1: CRITICAL -->
+<div class="glass-card rounded-xl overflow-hidden transition-all duration-300">
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Elena Rodriguez</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">ID: #VX-9021</p>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-error-container/20 rounded-full border border-error/30">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-error">Critical - Vitals Breach</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">BPM</span>
+<span class="font-title-md text-title-md text-error">138</span>
+</div>
+<div class="flex flex-col border-x border-outline-variant/30 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">SpO2</span>
+<span class="font-title-md text-title-md text-error">89%</span>
+</div>
+<div class="flex flex-col pl-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">MAP</span>
+<span class="font-title-md text-title-md text-on-surface">62</span>
+</div>
+</div>
+<!-- Glass.ai DDx Draft (Expandable Component) -->
+<div class="mt-2 bg-surface-container-low rounded-lg border border-primary/20 overflow-hidden">
+<button class="w-full flex items-center justify-between p-3 text-left" onclick="toggleDraft('draft-1')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-md text-label-md text-primary font-bold">Glass.ai DDx Draft</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" id="icon-draft-1">expand_more</span>
+</button>
+<div class="hidden px-3 pb-3" id="draft-1">
+<div class="space-y-3">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    Possible acute decompensated heart failure (ADHF) secondary to tachyarrhythmia. Vitals show rapid decline in oxygenation.
+                                </p>
+<div class="bg-primary/5 p-3 rounded border border-primary/10">
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase block mb-1">Recommended Intervention</span>
+<p class="font-body-md text-body-md text-on-surface">Administer 40mg Furosemide IV and initiate BIPAP titration.</p>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 py-3 bg-primary text-on-primary font-label-md text-label-md rounded-lg font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                        Approve
+                                    </button>
+<button class="flex-1 py-3 bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded-lg font-bold border border-outline-variant active:scale-95 transition-transform">
+                                        Reject
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Patient Card 2: STABLE/WARNING -->
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Marcus Chen</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">ID: #VX-7742</p>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Stable - Monitoring</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">BPM</span>
+<span class="font-title-md text-title-md text-on-surface">74</span>
+</div>
+<div class="flex flex-col border-x border-outline-variant/30 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">SpO2</span>
+<span class="font-title-md text-title-md text-on-surface">98%</span>
+</div>
+<div class="flex flex-col pl-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Temp</span>
+<span class="font-title-md text-title-md text-on-surface">37.1</span>
+</div>
+</div>
+<button class="w-full py-2 flex items-center justify-center gap-2 font-label-md text-label-md text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]">history</span>
+                        View History
+                    </button>
+</div>
+</div>
+<!-- Patient Card 3: WARNING -->
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Sarah Jenkins</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">ID: #VX-4410</p>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-tertiary-container/10 rounded-full border border-tertiary/30">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-tertiary">Warning - Trend Shift</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">BPM</span>
+<span class="font-title-md text-title-md text-on-surface">92</span>
+</div>
+<div class="flex flex-col border-x border-outline-variant/30 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">SBP</span>
+<span class="font-title-md text-title-md text-tertiary">148</span>
+</div>
+<div class="flex flex-col pl-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">RR</span>
+<span class="font-title-md text-title-md text-on-surface">18</span>
+</div>
+</div>
+<!-- Expandable Draft 2 -->
+<div class="mt-2 bg-surface-container-low rounded-lg border border-outline-variant/30 overflow-hidden">
+<button class="w-full flex items-center justify-between p-3 text-left" onclick="toggleDraft('draft-2')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[20px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-md text-label-md text-tertiary font-bold">Glass.ai DDx Draft</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" id="icon-draft-2">expand_more</span>
+</button>
+<div class="hidden px-3 pb-3" id="draft-2">
+<div class="space-y-3">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                    Upward trend in systolic blood pressure noted over the last 4 hours. No reported symptoms of headache or vision changes.
+                                </p>
+<div class="bg-tertiary/5 p-3 rounded border border-tertiary/10">
+<span class="font-label-sm text-label-sm text-tertiary font-bold uppercase block mb-1">Recommended Intervention</span>
+<p class="font-body-md text-body-md text-on-surface">Re-check manual BP; if &gt;150/90, administer Amlodipine 5mg.</p>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 py-3 bg-tertiary text-on-tertiary font-label-md text-label-md rounded-lg font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                        Approve
+                                    </button>
+<button class="flex-1 py-3 bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded-lg font-bold border border-outline-variant active:scale-95 transition-transform">
+                                        Reject
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Patient Card 4: STABLE -->
+<div class="glass-card rounded-xl overflow-hidden opacity-80">
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Lila Thorne</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">ID: #VX-2119</p>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Stable</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest dark:bg-surface-container-lowest shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-sm text-label-sm mt-1">Patients</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="font-label-sm text-label-sm mt-1">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm mt-1">Settings</span>
+</a>
+</nav>
+<!-- Micro-interactions Script -->
+<script>
+        function toggleDraft(id) {
+            const draft = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (draft.classList.contains('hidden')) {
+                draft.classList.remove('hidden');
+                draft.classList.add('animate-in', 'fade-in', 'slide-in-from-top-2', 'duration-300');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                draft.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Pulse the critical indicator on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pre-expand the critical patient's draft for visibility
+            setTimeout(() => {
+                toggleDraft('draft-1');
+            }, 500);
+        });
+    </script>
+</body></html>
