@@ -9,7 +9,7 @@
 * **Competition:** [5-Day AI Agents Intensive: Vibe Coding Course with Google](https://www.kaggle.com/competitions/5-day-ai-agents-intensive-vibecoding-course-with-google)
 * **Capstone Track:** **Agents for Good** *(Secondary: Concierge Agents)*
 * **Live Production Application:** [https://projects.aaenterprisetech.com/kaggle/project](https://projects.aaenterprisetech.com/kaggle/project)
-* **GitHub Repository:** `[Insert your public GitHub repository URL here]`
+* **GitHub Repository:** [https://github.com/Abdullah11Athar/vitalis-360](https://github.com/Abdullah11Athar/vitalis-360)
 * **Demo Video Walkthrough (YouTube):** `[Insert your 2-3 minute YouTube video link here]`
 * **Interactive Demo Credentials:**
   * **Doctor Portal:** Username: `doctor` | Password: `health1234`
