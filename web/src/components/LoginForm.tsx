@@ -74,15 +74,44 @@ export default function LoginForm({ initialRole = null }: LoginFormProps) {
     setErrorMsg('');
     setIsSubmitting(true);
 
-    if (selectedRole === 'doctor' && usernameInput === 'doctor' && passwordInput === 'health1234') {
+    const uInput = usernameInput.trim().toLowerCase();
+
+    if (selectedRole === 'doctor' && uInput === 'doctor' && passwordInput === 'health1234') {
       const session = { role: 'Doctor', username: 'Dr. Julian Vance' };
       localStorage.setItem("vitalis_user", JSON.stringify(session));
       window.location.href = getApiPath('/doctor/rounds');
-    } else if (selectedRole === 'patient' && usernameInput === 'patient' && passwordInput === 'health12345') {
-      const session = { role: 'Patient', username: 'Zeeshan Ali' };
+    } else if (selectedRole === 'patient' && passwordInput === 'health12345') {
+      let patientName = 'Zeeshan Ali';
+      let activePatientId = '8829-XL';
+
+      if (uInput.includes('umar')) {
+        patientName = 'Umar Farooq';
+        activePatientId = '5512-UF';
+      } else if (uInput.includes('sadia')) {
+        patientName = 'Sadia Khan';
+        activePatientId = '3389-SK';
+      } else if (uInput.includes('tani')) {
+        patientName = 'Tani Tariq';
+        activePatientId = '6643-TT';
+      } else if (uInput.includes('elena')) {
+        patientName = 'Elena Rostova';
+        activePatientId = '9912-KA';
+      } else if (uInput.includes('marcus')) {
+        patientName = 'Marcus Vance';
+        activePatientId = '7734-BM';
+      } else if (uInput.includes('sarah')) {
+        patientName = 'Sarah Jenkins';
+        activePatientId = '4421-SP';
+      } else if (uInput !== 'patient' && uInput.length > 2) {
+        patientName = usernameInput.trim();
+        activePatientId = 'PT-' + Math.floor(1000 + Math.random() * 9000);
+      }
+
+      localStorage.setItem('vitalis_active_patient_id', activePatientId);
+      const session = { role: 'Patient', username: patientName };
       localStorage.setItem("vitalis_user", JSON.stringify(session));
       window.location.href = getApiPath('/patient/dashboard');
-    } else if (selectedRole === 'staff' && usernameInput === 'staff' && passwordInput === 'health1234') {
+    } else if (selectedRole === 'staff' && uInput === 'staff' && passwordInput === 'health1234') {
       const session = { role: 'Staff', username: 'Emma Watson (Lead Receptionist)' };
       localStorage.setItem("vitalis_user", JSON.stringify(session));
       window.location.href = getApiPath('/patient');
@@ -148,6 +177,34 @@ export default function LoginForm({ initialRole = null }: LoginFormProps) {
               className="w-full bg-surface-container border border-outline-variant/50 rounded-xl p-3.5 text-sm text-on-surface focus:outline-none focus:border-primary placeholder:text-on-surface-variant/45 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               required
             />
+            {selectedRole === 'patient' && (
+              <div className="pt-1">
+                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">
+                  Demo Patient Selection:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { name: 'Umar Farooq', label: 'Umar (Fever)', id: '5512-UF' },
+                    { name: 'Sadia Khan', label: 'Sadia (Appendicitis)', id: '3389-SK' },
+                    { name: 'Tani Tariq', label: 'Tani (Migraine)', id: '6643-TT' },
+                    { name: 'Zeeshan Ali', label: 'Zeeshan (Tachycardia)', id: '8829-XL' }
+                  ].map((p) => (
+                    <button
+                      key={p.name}
+                      type="button"
+                      onClick={() => setUsernameInput(p.name)}
+                      className={`px-2 py-1 text-[10px] font-bold rounded-lg border transition-colors cursor-pointer ${
+                        usernameInput.toLowerCase().includes(p.name.toLowerCase().split(' ')[0])
+                          ? 'bg-primary text-on-primary border-primary shadow-xs'
+                          : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface border-outline-variant'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

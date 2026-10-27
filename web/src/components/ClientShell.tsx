@@ -205,12 +205,36 @@ export default function ClientShell({ children }: { children: React.ReactNode })
     window.dispatchEvent(new CustomEvent('show-toast', { detail: `👨‍⚕️ ${newDoc.role} "${newDoc.name}" added to Clinical Directory! WhatsApp linked: ${newDocPhone}` }));
   };
 
+  const getActivePatientInfo = () => {
+    if (typeof window !== 'undefined') {
+      const storedActiveId = localStorage.getItem('vitalis_active_patient_id');
+      const savedPatients = localStorage.getItem('vitalis_patients');
+      if (savedPatients) {
+        try {
+          const list = JSON.parse(savedPatients);
+          if (storedActiveId) {
+            const match = list.find((p: any) => p.id === storedActiveId);
+            if (match) return { id: match.id, name: match.name };
+          }
+          if (user?.role === 'Patient' && user.username) {
+            const match = list.find((p: any) => p.name.toLowerCase().includes(user.username.toLowerCase()) || user.username.toLowerCase().includes(p.name.toLowerCase()));
+            if (match) return { id: match.id, name: match.name };
+          }
+          if (list.length > 0) return { id: list[0].id, name: list[0].name };
+        } catch (e) {}
+      }
+    }
+    return { id: '8829-XL', name: user?.role === 'Patient' ? user.username : 'Zeeshan Ali' };
+  };
+
   // Submit Vitals / SOS Action
   const submitVitals = async (isSOS: boolean) => {
     setIsVitalsLoading(true);
+    const active = getActivePatientInfo();
     try {
       const vitalsPayload = {
-        patientId: '8829-XL',
+        patientId: active.id,
+        patientName: active.name,
         heartRate: parseInt(inputHR) || 75,
         bp: inputBP,
         spO2: parseInt(inputSpO2) || 98,
@@ -296,8 +320,8 @@ export default function ClientShell({ children }: { children: React.ReactNode })
               <div className="bg-surface-container-high rounded-2xl p-4 border border-outline-variant/30 border-l-4 border-l-error flex gap-4">
                 <span className="material-symbols-outlined text-error text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
                 <div>
-                  <h4 className="font-bold text-sm text-error">Critical Telemetry Alert</h4>
-                  <p className="text-xs text-on-surface-variant mt-0.5">Tachycardia warning active for patient #8829-XL (Zeeshan Ali).</p>
+                  <h4 className="font-bold text-sm text-error">Critical Telemetry Alerts</h4>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Tachycardia warning active for #8829-XL (Zeeshan Ali) & High Fever 102.4°F alert for #5512-UF (Umar Farooq).</p>
                 </div>
               </div>
             </div>
@@ -552,7 +576,10 @@ export default function ClientShell({ children }: { children: React.ReactNode })
               <span className="material-symbols-outlined text-primary">monitor_heart</span>
               Record Vitals Telemetry
             </h3>
-            <p className="text-xs text-on-surface-variant mb-4">Patient: Zeeshan Ali (#8829-XL)</p>
+            {(() => {
+              const active = getActivePatientInfo();
+              return <p className="text-xs text-on-surface-variant mb-4">Patient: {active.name} (#{active.id})</p>;
+            })()}
 
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2">

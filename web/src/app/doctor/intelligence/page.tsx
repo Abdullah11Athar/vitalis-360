@@ -144,15 +144,23 @@ Ensure the output contains ONLY valid JSON and no markdown formatting wrappers.`
 
   const templates = [
     {
-      label: "RLQ Abdominal Pain",
-      text: "Patient presents with recurring abdominal pain localized in the right lower quadrant, persistent for 48 hours. Intensity reported at 7/10. No rebound tenderness noted on physical exam. Patient denies nausea or vomiting. History of appendectomy ruled out."
+      label: "Febrile Bronchitis (Umar)",
+      text: "Patient Umar Farooq presents with persistent productive cough, bilateral bronchial rhonchi, and acute pyrexia with core temperature spiking to 102.4°F. Chest auscultation indicates bronchial inflammation without dense consolidation."
     },
     {
-      label: "Acute Chest Pain",
+      label: "Acute Appendicitis (Sadia)",
+      text: "Patient Sadia Khan presents with severe localized right lower quadrant pain, positive McBurney's sign, localized muscular guarding, and elevated WBC at 16.8k. Suspected acute surgical appendicitis."
+    },
+    {
+      label: "Migraine with Aura (Tani)",
+      text: "Patient Tani Tariq reports severe unilateral pulsating hemicranial pain preceded by visual scintillating scotoma (aura), marked photophobia, and nausea. Neurological reflexes intact."
+    },
+    {
+      label: "Acute Chest Pain (STEMI)",
       text: "Patient presents with crushing substernal chest pain radiating to left shoulder and jaw, initiated 30 minutes ago. Diaphoretic, SpO2 is 92% on room air. History of coronary artery disease. EKG shows ST elevation in leads V1-V4."
     },
     {
-      label: "Hypertensive Crises",
+      label: "Hypertensive Crisis",
       text: "Patient reports severe throbbing headache, visual disturbances, and acute chest tightness. Blood pressure is extremely elevated at 210/120 mmHg. Cardiac telemetry shows sinus tachycardia at 115 bpm. No focal neurological deficits."
     }
   ];

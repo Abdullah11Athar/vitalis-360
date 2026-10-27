@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getApiPath } from '@/lib/config';
 
 export default function BillingLedger() {
+  const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState('Doctor');
   const [outstanding, setOutstanding] = useState(142.50);
   const [cardNumber, setCardNumber] = useState('');
@@ -23,8 +24,11 @@ export default function BillingLedger() {
   useEffect(() => {
     const saved = localStorage.getItem("vitalis_user");
     if (saved) {
-      const u = JSON.parse(saved);
-      setRole(u.role);
+      try {
+        const u = JSON.parse(saved);
+        setUser(u);
+        setRole(u.role);
+      } catch (e) {}
     }
   }, []);
 
@@ -62,14 +66,16 @@ export default function BillingLedger() {
     setDeclineCode(null);
 
     try {
+      const patientName = user?.role === 'Patient' ? user.username : 'Zeeshan Ali';
+      const patientId = user?.role === 'Patient' ? 'PT-ACTIVE' : '8829-XL';
       // Real Stripe PaymentIntent via secure server endpoint passing user card details
       const response = await fetch(getApiPath('/api/stripe/payment'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: outstanding,
-          patientName: 'Zeeshan Ali',
-          patientId: '8829-XL',
+          patientName,
+          patientId,
           cardNumber,
           expiry,
           cvv
@@ -94,7 +100,7 @@ export default function BillingLedger() {
       });
 
       // Dispatch WhatsApp confirmation
-      const msg = `🚨 [VITALIS-360] Stripe Payment Confirmed! Received $${data.amount.toFixed(2)} from Zeeshan Ali. Stripe Ref: ${data.paymentIntentId}. Account balance is clear.`;
+      const msg = `🚨 [VITALIS-360] Stripe Payment Confirmed! Received $${data.amount.toFixed(2)} from ${patientName}. Stripe Ref: ${data.paymentIntentId}. Account balance is clear.`;
       
       fetch(getApiPath('/api/whatsapp'), {
         method: 'POST',
@@ -113,6 +119,7 @@ export default function BillingLedger() {
 
   const handleDownloadReceipt = () => {
     if (!stripeReceipt) return;
+    const patientName = user?.role === 'Patient' ? user.username : 'Zeeshan Ali';
     const content = `======================================================
 VITALIS-360 STRIPE PAYMENT RECEIPT
 ======================================================
@@ -121,9 +128,9 @@ Stripe Charge ID: ${stripeReceipt.chargeId}
 Timestamp: ${stripeReceipt.date}
 Status: ${stripeReceipt.status.toUpperCase()}
 Amount Paid: $${stripeReceipt.amount.toFixed(2)} USD
-Patient: Zeeshan Ali (#8829-XL)
-Ward: Telemetry Ward 4B
-
+Patient: ${patientName}
+Ward: Hospital EMR Inpatient
+======================================================
 PAYMENT GATEWAY SPECIFICATIONS:
 - Gateway Provider: Stripe Inc. (Production/Test)
 - Cryptographic Tokenization: 256-bit TLS / PCI DSS Level 1

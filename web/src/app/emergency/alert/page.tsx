@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function EmergencyAlert() {
+  const [user, setUser] = useState<any>(null);
   const [countdown, setCountdown] = useState(60);
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatched, setDispatched] = useState(false);
@@ -22,6 +23,12 @@ export default function EmergencyAlert() {
     if (saved) {
       setProfile(JSON.parse(saved));
     }
+    const savedUser = localStorage.getItem('vitalis_user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {}
+    }
   }, []);
 
   useEffect(() => {
@@ -37,8 +44,9 @@ export default function EmergencyAlert() {
   const handleDispatch = () => {
     setIsDispatching(true);
     setDispatchLogs([]);
+    const patientName = user?.username || 'Zeeshan Ali';
     const logs = [
-      `🔍 Fetching EMR rescue parameters for patient Zeeshan Ali...`,
+      `🔍 Fetching EMR rescue parameters for patient ${patientName}...`,
       `📍 Coordinates loaded: ${profile.address}, Floor: Flat 402, 4th Floor, ${profile.city}`,
       `📞 Emergency Contact loaded: ${profile.emergencyContactName} (${profile.emergencyContactPhone})`,
       `🏥 Preferred ER Target selected: ${profile.preferredHospital}`,

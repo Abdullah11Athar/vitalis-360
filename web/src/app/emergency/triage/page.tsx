@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { getApiPath } from '@/lib/config';
 
 export default function TriageGateway() {
   const [symptomText, setSymptomText] = useState('');
@@ -13,56 +14,138 @@ export default function TriageGateway() {
   const [chips, setChips] = useState<string[]>([]);
   const [action, setAction] = useState('Please describe your symptoms to generate a clinical pathway.');
 
-  const handleSubmit = () => {
-    if (symptomText.length < 5) {
+  const handleSubmit = async (overrideText?: string) => {
+    const textToUse = overrideText || symptomText;
+    if (textToUse.length < 5) {
       window.dispatchEvent(new CustomEvent('show-toast', { detail: "⚠️ Please provide more detail (at least 5 characters) for a valid assessment." }));
       return;
     }
 
     setIsProcessing(true);
 
-    setTimeout(() => {
-      let newUrgency = 0;
-      let newStatus = "Low Concern";
-      let newColor = "text-primary";
-      let newBarColor = "bg-primary";
-      let newChips: string[] = [];
-      let newAction = "Continue monitoring symptoms. Log any changes over the next 24 hours.";
+    const val = textToUse.toLowerCase();
 
-      const val = symptomText.toLowerCase();
+    // Try calling /api/gemini for real-time generative triage
+    let liveReply: any = null;
+    try {
+      const res = await fetch(getApiPath('/api/gemini'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `Clinical triage emergency assessment for patient presenting with: "${textToUse}". Provide structured triage JSON.`
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.reply) {
+          let cleaned = data.reply.trim();
+          if (cleaned.startsWith('```')) {
+            cleaned = cleaned.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
+          }
+          liveReply = JSON.parse(cleaned);
+        }
+      }
+    } catch (e) {
+      // Fallback cleanly to local rule engine
+    }
 
-      // Mock logic for specific triggers
-      if (val.includes('dard') || val.includes('pain') || val.includes('seene')) {
-        newUrgency = 85;
+    let newUrgency = 20;
+    let newStatus = "LOW";
+    let newColor = "text-primary";
+    let newBarColor = "bg-primary";
+    let newChips: string[] = ['General Malaise', 'Observation Mode'];
+    let newAction = "Monitor for 24 hours. No immediate action required based on current description.";
+
+    // Accurate multi-symptom differentiation
+    const isChest = val.includes('seene') || val.includes('chest') || val.includes('cardiac') || val.includes('chhati') || (val.includes('saans') && (val.includes('takleef') || val.includes('shortness')));
+    const isAbdomen = val.includes('append') || val.includes('pet') || val.includes('stomach') || val.includes('abdomen') || val.includes('abdominal') || val.includes('rlq') || val.includes('guarding') || val.includes('belly') || val.includes('mcburney');
+    const isHeadache = val.includes('migraine') || val.includes('sar') || val.includes('sir') || val.includes('headache') || val.includes('aura') || val.includes('photophobia');
+    const isFever = val.includes('bukhar') || val.includes('fever') || val.includes('temp') || val.includes('cold') || val.includes('cough') || val.includes('khansi') || val.includes('bronch');
+
+    if (liveReply && liveReply.icd10Code) {
+      if (liveReply.icd10Code.startsWith('I21') || isChest) {
+        newUrgency = 90;
+        newStatus = "CRITICAL / URGENT";
+        newColor = "text-error";
+        newBarColor = "bg-error";
+        newChips = ['Chest Pain', 'Cardiac Marker', 'Hypoxia Risk', liveReply.icd10Code];
+        newAction = liveReply.summary || "Immediate ER consultation recommended. Vital signals suggest cardiovascular stress.";
+      } else if (liveReply.icd10Code.startsWith('K35') || isAbdomen) {
+        newUrgency = 82;
+        newStatus = "HIGH CONCERN";
+        newColor = "text-error";
+        newBarColor = "bg-error";
+        newChips = ['Acute Abdomen', 'Peritoneal Signs', liveReply.icd10Code, 'Surgical STAT'];
+        newAction = liveReply.summary || "STAT surgical evaluation recommended. Fasting (NPO) and emergency abdominal ultrasound.";
+      } else if (liveReply.icd10Code.startsWith('G43') || isHeadache) {
+        newUrgency = 45;
+        newStatus = "MODERATE";
+        newColor = "text-primary-container";
+        newBarColor = "bg-primary-container";
+        newChips = ['Cephalea', 'Sensory Aura', liveReply.icd10Code];
+        newAction = liveReply.summary || "Rest in dark quiet room. Administer abortive migraine protocol.";
+      } else if (liveReply.icd10Code.startsWith('J20') || isFever) {
+        newUrgency = 55;
+        newStatus = "MODERATE - FEBRILE";
+        newColor = "text-primary-container";
+        newBarColor = "bg-primary-container";
+        newChips = ['Infection', 'Febrile State', liveReply.icd10Code, 'Bronchial Strain'];
+        newAction = liveReply.summary || "Schedule virtual consultation. Hydrate generously and follow antipyretic protocol.";
+      } else {
+        newUrgency = 30;
+        newStatus = "EVALUATED";
+        newColor = "text-primary";
+        newBarColor = "bg-primary";
+        newChips = [liveReply.icd10Code, 'Clinical Observation'];
+        newAction = liveReply.summary || "Follow clinical guidance and monitor vitals over next 24h.";
+      }
+    } else {
+      // Local fallback rules
+      if (isChest) {
+        newUrgency = 88;
         newStatus = "CRITICAL / URGENT";
         newColor = "text-error";
         newBarColor = "bg-error";
         newChips = ['Chest Pain', 'Cardiac Marker', 'Hypoxia Risk'];
         newAction = "Immediate ER consultation recommended. Vital signals suggest cardiovascular stress. Notify your guardian contacts.";
-      } else if (val.includes('bukhar') || val.includes('fever') || val.includes('cold')) {
-        newUrgency = 35;
+      } else if (isAbdomen) {
+        newUrgency = 78;
+        newStatus = "HIGH CONCERN";
+        newColor = "text-error";
+        newBarColor = "bg-error";
+        newChips = ['Acute Abdomen', 'Appendiceal Suspect', 'RLQ Guarding'];
+        newAction = "STAT surgical evaluation recommended. Maintain NPO (nothing by mouth). Diagnostic ultrasound and surgical triage indicated.";
+      } else if (isHeadache) {
+        newUrgency = 45;
         newStatus = "MODERATE";
         newColor = "text-primary-container";
         newBarColor = "bg-primary-container";
-        newChips = ['Infection', 'Febrile State', 'Inflammation'];
-        newAction = "Schedule a virtual consultation within the next 4 hours. Stay hydrated and rest.";
+        newChips = ['Migraine with Aura', 'Cephalea', 'Neurologic Triage'];
+        newAction = "Rest in a darkened, quiet environment. Administer prescribed abortive migraine therapy and avoid electronic screens.";
+      } else if (isFever) {
+        newUrgency = 52;
+        newStatus = "MODERATE - FEBRILE";
+        newColor = "text-primary-container";
+        newBarColor = "bg-primary-container";
+        newChips = ['Febrile Syndrome', 'Respiratory Strain', 'Infection Protocol'];
+        newAction = "Antipyretic protocol recommended. Hydrate generously and schedule virtual consultation if temperature persists above 101°F.";
       } else {
         newUrgency = 20;
         newStatus = "LOW";
         newColor = "text-primary";
         newBarColor = "bg-primary";
         newChips = ['General Malaise', 'Observation Mode'];
-        newAction = "Monitor for 24 hours. No immediate action required based on current description.";
+        newAction = "Monitor for 24 hours. No immediate emergency intervention required based on provided symptoms.";
       }
+    }
 
-      setUrgency(newUrgency);
-      setStatusText(newStatus);
-      setColorClass(newColor);
-      setBarColor(newBarColor);
-      setChips(newChips);
-      setAction(newAction);
-      setIsProcessing(false);
-    }, 1500);
+    setUrgency(newUrgency);
+    setStatusText(newStatus);
+    setColorClass(newColor);
+    setBarColor(newBarColor);
+    setChips(newChips);
+    setAction(newAction);
+    setIsProcessing(false);
   };
 
   return (
@@ -85,9 +168,32 @@ export default function TriageGateway() {
                 <span className="material-symbols-outlined text-6xl">psychology</span>
               </div>
               
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-2 h-8 bg-primary rounded-full"></div>
-                <h2 className="font-title-md text-title-md">Symptom Description</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-8 bg-primary rounded-full"></div>
+                  <h2 className="font-title-md text-title-md">Symptom Description</h2>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">Presets:</span>
+                  {[
+                    { label: 'High Fever (Umar)', text: 'Tez bukhar (102.4°F) hai, seene mein balgham aur shadeed khansi chal rahi hai.' },
+                    { label: 'Appendicitis (Sadia)', text: 'Severe right lower quadrant abdominal pain with muscular guarding and localized tenderness.' },
+                    { label: 'Migraine Aura (Tani)', text: 'Shadeed adha sar dard (migraine), ankhon ke samne roshni ke jhatke (aura) aur nausea.' },
+                    { label: 'Chest Pain (STAT)', text: 'Crushing retrosternal chest pain radiating to left arm with acute diaphoresis.' }
+                  ].map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setSymptomText(p.text);
+                        handleSubmit(p.text);
+                      }}
+                      className="px-2.5 py-1 bg-surface-container-high hover:bg-primary hover:text-on-primary text-[10px] font-bold rounded-lg border border-outline-variant transition-colors cursor-pointer"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               </div>
               
               <textarea 
@@ -104,7 +210,7 @@ export default function TriageGateway() {
                   End-to-End Encrypted
                 </p>
                 <button 
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit()}
                   disabled={isProcessing}
                   className="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
                 >

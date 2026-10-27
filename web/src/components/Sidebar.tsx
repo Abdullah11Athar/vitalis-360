@@ -209,7 +209,6 @@ export default function Sidebar({
     };
   }, []);
 
-  const prefix = user?.role === 'Doctor' ? '/portal/doctor' : user?.role === 'Staff' ? '/portal/staff' : '/portal/patient';
 
   const navGroups = [
     {
@@ -364,7 +363,7 @@ export default function Sidebar({
       >
         <div className="p-5 pb-4 border-b border-outline-variant/50 sticky top-0 bg-background z-10">
           <div className="flex items-center justify-between">
-            <Link href={user?.role === 'Doctor' ? '/portal/doctor/rounds' : user?.role === 'Staff' ? '/portal/staff' : '/portal/patient/dashboard'} prefetch={true} className="flex items-center gap-2.5 hover:opacity-85 transition-opacity cursor-pointer min-w-0">
+            <Link href={user?.role === 'Doctor' ? '/doctor/rounds' : user?.role === 'Staff' ? '/patient' : '/patient/dashboard'} prefetch={true} className="flex items-center gap-2.5 hover:opacity-85 transition-opacity cursor-pointer min-w-0">
               <img src={getAssetPath('/favicon.png')} alt="VITALIS-360" className="h-8 w-auto object-contain shrink-0" />
               <span className="font-headline-lg text-2xl font-black text-primary tracking-tighter truncate">VITALIS-360</span>
             </Link>

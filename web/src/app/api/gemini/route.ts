@@ -35,7 +35,46 @@ export async function POST(request: Request) {
     const lowerPrompt = (prompt || "").toLowerCase();
     let fallbackJson = "";
 
-    if (lowerPrompt.includes("chest pain") || lowerPrompt.includes("substernal") || lowerPrompt.includes("st elevation") || lowerPrompt.includes("ekg")) {
+    if (lowerPrompt.includes("fever") || lowerPrompt.includes("temp") || lowerPrompt.includes("bronch") || lowerPrompt.includes("cough") || lowerPrompt.includes("bukhar") || lowerPrompt.includes("pyrexia")) {
+      fallbackJson = JSON.stringify({
+        summary: "Acute febrile syndrome accompanied by productive cough and bronchial rhonchi. High clinical suspicion for acute infectious bronchitis with secondary systemic pyrexia.",
+        icd10Code: "J20.9",
+        icd10Desc: "Acute bronchitis, unspecified",
+        confidence: "95%",
+        proposedOrders: [
+          { name: "PA & Lateral Chest Radiography", type: "Stat Request" },
+          { name: "Blood Cultures x 2 & Sputum Gram Stain", type: "Routine Panel" },
+          { name: "Oral Azithromycin 500mg & Antipyretic Protocol", type: "Medication Protocol" }
+        ],
+        billingImpact: 1450
+      });
+    } else if (lowerPrompt.includes("append") || lowerPrompt.includes("mcburney") || lowerPrompt.includes("guarding") || lowerPrompt.includes("rlq")) {
+      fallbackJson = JSON.stringify({
+        summary: "Acute peritoneal signs localized to right iliac fossa with muscular guarding. Clinical presentation strongly correlates with acute appendicitis. Urgent surgical evaluation indicated.",
+        icd10Code: "K35.80",
+        icd10Desc: "Unspecified acute appendicitis",
+        confidence: "97%",
+        proposedOrders: [
+          { name: "STAT Abdominal & Pelvic Ultrasound", type: "Stat Request" },
+          { name: "Emergency General Surgery Consultation", type: "Surgical Order" },
+          { name: "NPO Protocol & IV Fluid Hydration", type: "Medication Protocol" }
+        ],
+        billingImpact: 2600
+      });
+    } else if (lowerPrompt.includes("migraine") || lowerPrompt.includes("headache") || lowerPrompt.includes("aura") || lowerPrompt.includes("photophobia")) {
+      fallbackJson = JSON.stringify({
+        summary: "Severe unilateral hemicranial headache preceded by visual scintillations and prominent photophobia. Consistent with acute migraine with visual aura.",
+        icd10Code: "G43.109",
+        icd10Desc: "Migraine with aura, not intractable",
+        confidence: "94%",
+        proposedOrders: [
+          { name: "IV Magnesium Sulfate 1g in D5W", type: "Medication Protocol" },
+          { name: "Dark Room Quietude Protocol", type: "Care Protocol" },
+          { name: "Outpatient Brain MRI Consultation", type: "Routine Panel" }
+        ],
+        billingImpact: 1250
+      });
+    } else if (lowerPrompt.includes("chest pain") || lowerPrompt.includes("substernal") || lowerPrompt.includes("st elevation") || lowerPrompt.includes("ekg")) {
       fallbackJson = JSON.stringify({
         summary: "Acute crushing substernal chest pain radiating to jaw/shoulder with ST elevation in leads V1-V4. High clinical certainty for Anterior ST-Elevation Myocardial Infarction (STEMI). Emergent reperfusion protocol initiated.",
         icd10Code: "I21.09",

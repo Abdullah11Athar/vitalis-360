@@ -42,7 +42,7 @@ export async function POST(request: Request) {
             headers: { 'Authorization': `Bearer ${apiToken}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
               chatId: "923000000000@c.us",
-              message: `🚨 *[VITALIS-360 EMERGENCY SOS DISPATCHED]*\n\nAmbulance E911 dispatched for Patient *${body.patientId || 'Zeeshan Ali'}*!\n\n🩺 *Vitals at Dispatch:*\n• Heart Rate: *${body.heartRate || 142} bpm*\n• Blood Pressure: *${body.bp || '110/70'}*\n• SpO2: *${body.spO2 || 88}%*\n\n📍 *Location:* 123 Recovery Lane, Apt 4B\n⏱️ *Response Time:* Estimated < 4 minutes.`
+              message: `🚨 *[VITALIS-360 EMERGENCY SOS DISPATCHED]*\n\nAmbulance E911 dispatched for Patient *${body.patientName || body.patientId || 'Active Patient'}*!\n\n🩺 *Vitals at Dispatch:*\n• Heart Rate: *${body.heartRate || 142} bpm*\n• Blood Pressure: *${body.bp || '110/70'}*\n• SpO2: *${body.spO2 || 88}%*\n\n📍 *Location:* 123 Recovery Lane, Apt 4B\n⏱️ *Response Time:* Estimated < 4 minutes.`
             })
           });
           console.log('--- WAAPI WHATSAPP SOS ALERT SENT ---');

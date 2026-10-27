@@ -22,7 +22,6 @@ export default function Topbar({
   const [showLanguages, setShowLanguages] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
 
-  const prefix = user?.role === 'Doctor' ? '/portal/doctor' : user?.role === 'Staff' ? '/portal/staff' : '/portal/patient';
 
   useEffect(() => {
     const savedLang = localStorage.getItem('vitalis_lang');
@@ -32,9 +31,10 @@ export default function Topbar({
   }, []);
 
   const notifications = [
-    { id: 1, title: 'Tachycardia Alert', desc: 'Patient Zeeshan Ali HR spiked to 142 bpm.', time: '2m ago', priority: 'critical' },
-    { id: 2, title: 'Glucose Spike Warning', desc: 'Zeeshan Ali glucose reached 185 mg/dL.', time: '18m ago', priority: 'warning' },
-    { id: 3, title: 'Compliance Audit Due', desc: 'Nyquist security verification required.', time: '1h ago', priority: 'normal' }
+    { id: 1, title: 'Tachycardia Alert', desc: 'Patient Zeeshan Ali HR spiked to 142 bpm.', time: '2m ago', priority: 'critical', href: '/patient/detail?id=8829-XL' },
+    { id: 2, title: 'High Fever Spike', desc: 'Patient Umar Farooq core temp spiked to 102.4°F.', time: '4m ago', priority: 'critical', href: '/patient/detail?id=5512-UF' },
+    { id: 3, title: 'Acute Guarding Alert', desc: 'Patient Sadia Khan suspected acute appendicitis RLQ pain.', time: '8m ago', priority: 'critical', href: '/patient/detail?id=3389-SK' },
+    { id: 4, title: 'Compliance Audit Due', desc: 'Nyquist security verification required.', time: '1h ago', priority: 'normal', href: '/audits/nyquist' }
   ];
 
   const languages = ['English', 'Urdu / Hindi', 'Arabic', 'Chinese', 'Spanish', 'French'];
@@ -108,13 +108,13 @@ export default function Topbar({
               <div className="fixed sm:absolute top-20 sm:top-full left-3 right-3 sm:left-auto sm:right-0 mt-1 sm:w-80 bg-surface-container-low border border-outline-variant rounded-2xl shadow-2xl p-4 space-y-3 z-50">
                 <div className="flex justify-between items-center border-b border-outline-variant/30 pb-2.5">
                   <span className="text-xs font-bold text-on-surface uppercase tracking-wider">Clinical Alerts</span>
-                  <span className="text-[10px] text-error font-bold bg-error/15 px-2 py-0.5 rounded-md border border-error/20">3 Active</span>
+                  <span className="text-[10px] text-error font-bold bg-error/15 px-2 py-0.5 rounded-md border border-error/20">{notifications.length} Active</span>
                 </div>
                 <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar">
                   {notifications.map((n) => (
                     <Link 
                       key={n.id}
-                      href="/patient/detail?id=8829-XL"
+                      href={n.href}
                       prefetch={true}
                       onClick={() => setShowNotifications(false)}
                       className="block p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors border border-outline-variant/20 cursor-pointer"

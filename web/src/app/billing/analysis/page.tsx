@@ -88,8 +88,6 @@ export default function ForensicAnalysis() {
     window.dispatchEvent(new CustomEvent('show-toast', { detail: `🚩 Claim escalated to ${flagCommittee} (Case #${caseId})!` }));
   };
 
-  const prefix = role === 'doctor' ? '/portal/doctor' : role === 'staff' ? '/portal/staff' : '/portal/patient';
-
   const ledgerItems = [
     {
       id: 1,
@@ -150,10 +148,10 @@ export default function ForensicAnalysis() {
           <p className="font-label-md text-sm text-on-surface-variant">Real-time AI reasoning engine and clinical-financial reconciliation</p>
         </div>
         <div className="flex gap-3">
-          <Link href={`${prefix}/billing/ledger`} prefetch={true} className="px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all cursor-pointer">
+          <Link href="/billing/ledger" prefetch={true} className="px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all cursor-pointer">
             Ledger
           </Link>
-          <Link href={`${prefix}/billing/claims`} prefetch={true} className="px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all cursor-pointer">
+          <Link href="/billing/claims" prefetch={true} className="px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all cursor-pointer">
             Claims
           </Link>
         </div>

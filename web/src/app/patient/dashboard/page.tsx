@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { initializePatients, PatientRecord } from '@/lib/patientData';
 
 export default function PatientDashboard() {
   const [user, setUser] = useState<any>(null);
+  const [patient, setPatient] = useState<PatientRecord | null>(null);
   const [lastUpdated, setLastUpdated] = useState('Just now');
   const [reports, setReports] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -26,12 +28,25 @@ export default function PatientDashboard() {
       setLastUpdated('1 minute ago');
     }, 60000);
 
+    const allPatients = initializePatients();
+    let currentPatient: PatientRecord | null = null;
+
     const savedUser = localStorage.getItem('vitalis_user');
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        const u = JSON.parse(savedUser);
+        setUser(u);
+        if (u.role === 'Patient') {
+          currentPatient = allPatients.find(p => p.name.toLowerCase().includes(u.username.toLowerCase()) || u.username.toLowerCase().includes(p.name.toLowerCase())) || null;
+        }
       } catch (e) {}
     }
+
+    if (!currentPatient) {
+      const storedActiveId = localStorage.getItem('vitalis_active_patient_id');
+      currentPatient = allPatients.find(p => p.id === storedActiveId) || allPatients[0];
+    }
+    setPatient(currentPatient);
 
     const saved = localStorage.getItem('vitalis_uploaded_reports');
     if (saved) {
@@ -109,19 +124,24 @@ export default function PatientDashboard() {
   };
 
   const handleDownload = (rep: any) => {
+    const pName = patient ? patient.name : (user?.username || 'Zeeshan Ali');
+    const pId = patient ? patient.id : '8829-XL';
+    const pWard = patient ? patient.ward : 'Telemetry Ward 4B';
+    const pDiag = patient ? patient.diagnosis : 'Stable rhythm';
+
     const content = `VITALIS-360 CLINICAL VAULT REPORT
 ==================================================
 Document: ${rep.title}
-Patient: ${user?.username || 'Zeeshan Ali'} (ID: 8829-XL)
-Ward: Telemetry Ward 4B
+Patient: ${pName} (ID: ${pId})
+Ward: ${pWard}
 Uploader: ${rep.uploader}
 Date: ${rep.date}
 SHA-256 Hash: ${rep.hash}
 Security Audit: VERIFIED & COMPLIANT
 
 CLINICAL FINDINGS & AI SYNTHESIS:
-- Primary Biomarkers: HbA1c 6.1%, LDL 112 mg/dL, Resting HR 74 bpm.
-- Diagnostic Status: Stable circadian rhythm with mild post-prandial glycemic excursions.
+- Primary Assessment: ${pDiag}
+- Telemetry Baseline: HR ${patient?.hr || 74} bpm, BP ${patient?.bp || '120/80'}, SpO2 ${patient?.spo2 || 98}%, Temp ${patient?.temp || '98.6°F'}.
 - Regulatory Standard: HIPAA / GDPR Cryptographically Sealed by VITALIS-360 Guardian.
 ==================================================`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -143,184 +163,216 @@ CLINICAL FINDINGS & AI SYNTHESIS:
     window.dispatchEvent(new CustomEvent('show-toast', { detail: `🗑️ Report "${title}" deleted from Vault.` }));
   };
 
+  const tempVal = parseFloat(patient?.temp || '98.6');
+  const isFever = tempVal > 100;
+  const isTachy = (patient?.hr || 72) > 100;
+  const isHypoxia = (patient?.spo2 || 98) < 95;
+  const isHypertensive = patient?.bp ? parseInt(patient.bp.split('/')[0]) >= 140 : false;
+  const firstName = patient ? patient.name.split(' ')[0] : (user?.username?.split(' ')[0] || 'Patient');
+
   return (
     <div className="p-4 md:p-spacing-margin-desktop max-w-[1600px] mx-auto pb-36 md:pb-12">
       {/* Welcome Header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Good Morning, {user?.username?.split(' ')[0] || 'Zeeshan'}. <span className="text-primary">Your vitals are stable.</span></h1>
-          <p className="font-body-md text-outline-variant mt-1">Last updated: {lastUpdated}</p>
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 border border-primary/20 text-primary font-bold text-[9px] uppercase tracking-wider rounded-full">
-              <span className="material-symbols-outlined text-[12px] animate-pulse">fitbit</span>
-              Google Fit API: Active
-            </span>
-            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-tertiary/10 border border-tertiary/20 text-tertiary font-bold text-[9px] uppercase tracking-wider rounded-full">
-              <span className="material-symbols-outlined text-[12px] animate-ping">favorite</span>
-              Apple HealthKit: Connected
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-full border border-outline-variant shrink-0 self-start md:self-auto">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-          <span className="text-[10px] font-bold text-primary uppercase tracking-widest whitespace-nowrap">Health Connect Live</span>
-        </div>
-      </div>
-
-      {/* Bento Grid Layout */}
-      <div className="grid grid-cols-12 gap-gutter">
-        {/* 1. Vitals Monitor */}
-        <section className="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
-          {/* Heart Rate */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-38 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Heart Rate</span>
-              <span className="material-symbols-outlined text-primary animate-pulse">favorite</span>
-            </div>
-            <div className="flex items-baseline justify-between gap-1 mt-1">
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-on-surface">72</span>
-                <span className="text-[9px] font-bold text-outline uppercase">BPM</span>
+              <div>
+                <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+                  Good Morning, {firstName}.{" "}
+                  <span className={isFever || isTachy ? "text-error" : "text-primary"}>
+                    {isFever
+                      ? "Core temperature elevated (Febrile Bronchitis)."
+                      : isTachy
+                      ? "Elevated heart rate telemetry detected."
+                      : "Your vitals are stable."}
+                  </span>
+                </h1>
+                <p className="font-body-md text-outline-variant mt-1">
+                  Active Patient Record: <strong className="text-on-surface">{patient?.name || 'Zeeshan Ali'}</strong> ({patient?.id || '8829-XL'} • {patient?.ward || 'Telemetry Ward 4B'})
+                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 border border-primary/20 text-primary font-bold text-[9px] uppercase tracking-wider rounded-full">
+                    <span className="material-symbols-outlined text-[12px] animate-pulse">fitbit</span>
+                    Google Fit API: Active
+                  </span>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-tertiary/10 border border-tertiary/20 text-tertiary font-bold text-[9px] uppercase tracking-wider rounded-full">
+                    <span className="material-symbols-outlined text-[12px] animate-ping">favorite</span>
+                    Apple HealthKit: Connected
+                  </span>
+                </div>
               </div>
-              
-              {/* Animated ECG Waveform */}
-              <div className="w-24 h-6 overflow-hidden shrink-0 opacity-70">
-                <svg className="w-full h-full text-primary" viewBox="0 0 100 20" preserveAspectRatio="none">
-                  <path 
-                    d="M0,10 L25,10 L30,10 L33,2 L37,18 L41,10 L45,10 L65,10 L68,2 L72,18 L76,10 L100,10" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeDasharray="100" 
-                    strokeDashoffset="100"
-                    style={{ animation: "dash 2s linear infinite" }}
-                  />
-                </svg>
-                <style>{`
-                  @keyframes dash {
-                    to {
-                      stroke-dashoffset: -200;
-                    }
-                  }
-                `}</style>
+              <div className="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-full border border-outline-variant shrink-0 self-start md:self-auto">
+                <div className={`w-2 h-2 rounded-full ${isFever || isTachy ? "bg-error animate-ping" : "bg-primary animate-pulse"}`}></div>
+                <span className={`text-[10px] font-bold uppercase tracking-widest whitespace-nowrap ${isFever || isTachy ? "text-error" : "text-primary"}`}>
+                  {isFever || isTachy ? "Telemetry Alert Active" : "Health Connect Live"}
+                </span>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">NORMAL</span>
-            </div>
-          </div>
 
-          {/* Blood Pressure */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Blood Pressure</span>
-              <span className="material-symbols-outlined text-primary animate-pulse-gentle">monitor_heart</span>
-            </div>
-            <div className="mt-2 flex flex-col">
-              <span className="text-2xl font-black text-on-surface leading-tight">120/80</span>
-              <span className="text-[9px] font-bold text-outline uppercase tracking-wider leading-none">mmHg</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">IDEAL</span>
-            </div>
-          </div>
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-12 gap-gutter">
+              {/* 1. Vitals Monitor */}
+              <section className="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                {/* Heart Rate */}
+                <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-38 border-l-4 ${isTachy ? 'border-l-error' : 'border-l-primary'} hover:-translate-y-1 transition-transform shadow-sm`}>
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Heart Rate</span>
+                    <span className={`material-symbols-outlined ${isTachy ? 'text-error' : 'text-primary'} animate-pulse`}>favorite</span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-1 mt-1">
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-2xl font-black ${isTachy ? 'text-error' : 'text-on-surface'}`}>{patient?.hr || 72}</span>
+                      <span className="text-[9px] font-bold text-outline uppercase">BPM</span>
+                    </div>
+                    
+                    {/* Animated ECG Waveform */}
+                    <div className="w-24 h-6 overflow-hidden shrink-0 opacity-70">
+                      <svg className={`w-full h-full ${isTachy ? 'text-error' : 'text-primary'}`} viewBox="0 0 100 20" preserveAspectRatio="none">
+                        <path 
+                          d="M0,10 L25,10 L30,10 L33,2 L37,18 L41,10 L45,10 L65,10 L68,2 L72,18 L76,10 L100,10" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeDasharray="100" 
+                          strokeDashoffset="100"
+                          style={{ animation: isTachy ? "dash 0.8s linear infinite" : "dash 2s linear infinite" }}
+                        />
+                      </svg>
+                      <style>{`
+                        @keyframes dash {
+                          to {
+                            stroke-dashoffset: -200;
+                          }
+                        }
+                      `}</style>
+                    </div>
+                  </div>
+                  <div className={`flex items-center gap-1 ${isTachy ? 'text-error' : 'text-primary'} mt-1`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isTachy ? 'bg-error animate-ping' : 'bg-primary'}`}></span>
+                    <span className="text-[9px] font-bold">{isTachy ? 'TACHYCARDIA SPIKE' : 'NORMAL'}</span>
+                  </div>
+                </div>
 
-          {/* SpO2 */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Oxygen SpO2</span>
-              <span className="material-symbols-outlined text-primary animate-wave-flow">air</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-black text-on-surface">98</span>
-              <span className="text-[9px] font-bold text-outline uppercase">%</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">STABLE</span>
-            </div>
-          </div>
+                {/* Blood Pressure */}
+                <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 ${isHypertensive ? 'border-l-amber-500' : 'border-l-primary'} hover:-translate-y-1 transition-transform shadow-sm`}>
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Blood Pressure</span>
+                    <span className={`material-symbols-outlined ${isHypertensive ? 'text-amber-500' : 'text-primary'} animate-pulse-gentle`}>monitor_heart</span>
+                  </div>
+                  <div className="mt-2 flex flex-col">
+                    <span className="text-2xl font-black text-on-surface leading-tight">{patient?.bp || '120/80'}</span>
+                    <span className="text-[9px] font-bold text-outline uppercase tracking-wider leading-none">mmHg</span>
+                  </div>
+                  <div className={`flex items-center gap-1 ${isHypertensive ? 'text-amber-500' : 'text-primary'} mt-1`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isHypertensive ? 'bg-amber-500' : 'bg-primary'}`}></span>
+                    <span className="text-[9px] font-bold">{isHypertensive ? 'ELEVATED BP' : 'IDEAL'}</span>
+                  </div>
+                </div>
 
-          {/* Temperature */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Temperature</span>
-              <span className="material-symbols-outlined text-primary animate-pulse">thermostat</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-black text-on-surface">98.6</span>
-              <span className="text-[9px] font-bold text-outline uppercase">°F</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">NORMAL</span>
-            </div>
-          </div>
+                {/* SpO2 */}
+                <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 ${isHypoxia ? 'border-l-error' : 'border-l-primary'} hover:-translate-y-1 transition-transform shadow-sm`}>
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Oxygen SpO2</span>
+                    <span className={`material-symbols-outlined ${isHypoxia ? 'text-error' : 'text-primary'} animate-wave-flow`}>air</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className={`text-2xl font-black ${isHypoxia ? 'text-error' : 'text-on-surface'}`}>{patient?.spo2 || 98}</span>
+                    <span className="text-[9px] font-bold text-outline uppercase">%</span>
+                  </div>
+                  <div className={`flex items-center gap-1 ${isHypoxia ? 'text-error' : 'text-primary'} mt-1`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isHypoxia ? 'bg-error' : 'bg-primary'}`}></span>
+                    <span className="text-[9px] font-bold">{isHypoxia ? 'HYPOXIA RISK' : 'STABLE'}</span>
+                  </div>
+                </div>
 
-          {/* Respiratory Rate */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Resp. Rate</span>
-              <span className="material-symbols-outlined text-primary animate-wave-flow">pulmonology</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-black text-on-surface">16</span>
-              <span className="text-[9px] font-bold text-outline uppercase">br/min</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">EUPNEA</span>
-            </div>
-          </div>
+                {/* Temperature */}
+                <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 ${isFever ? 'border-l-error' : 'border-l-primary'} hover:-translate-y-1 transition-transform shadow-sm`}>
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Temperature</span>
+                    <span className={`material-symbols-outlined ${isFever ? 'text-error animate-bounce' : 'text-primary'} animate-pulse`}>thermostat</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className={`text-2xl font-black ${isFever ? 'text-error font-black' : 'text-on-surface'}`}>
+                      {patient?.temp ? patient.temp.replace('°F', '') : '98.6'}
+                    </span>
+                    <span className="text-[9px] font-bold text-outline uppercase">°F</span>
+                  </div>
+                  <div className={`flex items-center gap-1 ${isFever ? 'text-error' : 'text-primary'} mt-1`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isFever ? 'bg-error animate-ping' : 'bg-primary'}`}></span>
+                    <span className="text-[9px] font-bold">{isFever ? 'FEBRILE / PYREXIA' : 'NORMAL'}</span>
+                  </div>
+                </div>
 
-          {/* Glucose Level */}
-          <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Blood Glucose</span>
-              <span className="material-symbols-outlined text-primary animate-pulse">bloodtype</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-black text-on-surface">104</span>
-              <span className="text-[9px] font-bold text-outline uppercase">mg/dL</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary mt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              <span className="text-[9px] font-bold">FASTING</span>
-            </div>
-          </div>
-        </section>
+                {/* Respiratory Rate */}
+                <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Resp. Rate</span>
+                    <span className="material-symbols-outlined text-primary animate-wave-flow">pulmonology</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-on-surface">{isFever ? 22 : 16}</span>
+                    <span className="text-[9px] font-bold text-outline uppercase">br/min</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-primary mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    <span className="text-[9px] font-bold">{isFever ? 'TACHYPNEA' : 'EUPNEA'}</span>
+                  </div>
+                </div>
 
-        {/* 2. AI Medical Advisor Quick-Check */}
-        <section className="col-span-12 lg:col-span-4 bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm">
-          <div className="absolute -right-6 -bottom-6 w-48 h-48 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div>
-            <div className="flex items-center gap-2 text-primary mb-3">
-              <span className="material-symbols-outlined animate-spin-slow">smart_toy</span>
-              <span className="font-bold text-xs uppercase tracking-wider">Autonomous AI Medical Advisor</span>
-            </div>
-            <h2 className="text-xl font-bold text-on-surface">Continuous Clinical Sentinel</h2>
-            <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
-              VITALIS-360 AI is continuously monitoring your telemetry streams. No anomalies detected across 42 biomarkers in the past 24 hours.
-            </p>
-          </div>
+                {/* Glucose Level */}
+                <div className="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-36 border-l-4 border-l-primary hover:-translate-y-1 transition-transform shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-wider">Blood Glucose</span>
+                    <span className="material-symbols-outlined text-primary animate-pulse">bloodtype</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-on-surface">
+                      {patient?.diagnosis?.toLowerCase().includes('diabet') ? 168 : 104}
+                    </span>
+                    <span className="text-[9px] font-bold text-outline uppercase">mg/dL</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-primary mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    <span className="text-[9px] font-bold">
+                      {patient?.diagnosis?.toLowerCase().includes('diabet') ? 'POST-PRANDIAL' : 'FASTING'}
+                    </span>
+                  </div>
+                </div>
+              </section>
 
-          <div className="mt-6 pt-6 border-t border-outline-variant/50 space-y-3">
-            <div className="flex justify-between text-xs font-bold">
-              <span className="text-outline">Circadian Rhythm Stability</span>
-              <span className="text-primary">94%</span>
-            </div>
-            <div className="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-              <div className="bg-primary h-full w-[94%] rounded-full"></div>
-            </div>
+              {/* 2. AI Medical Advisor Quick-Check */}
+              <section className="col-span-12 lg:col-span-4 bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm">
+                <div className="absolute -right-6 -bottom-6 w-48 h-48 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                  <div className="flex items-center gap-2 text-primary mb-3">
+                    <span className="material-symbols-outlined animate-spin-slow">smart_toy</span>
+                    <span className="font-bold text-xs uppercase tracking-wider">Autonomous AI Medical Advisor</span>
+                  </div>
+                  <h2 className="text-xl font-bold text-on-surface">Continuous Clinical Sentinel</h2>
+                  <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
+                    {patient
+                      ? `VITALIS-360 AI is continuously monitoring telemetry for ${patient.name}. Primary diagnosis: ${patient.diagnosis}. Differential evaluations and Glass.ai protocols are active.`
+                      : "VITALIS-360 AI is continuously monitoring your telemetry streams. No anomalies detected across 42 biomarkers in the past 24 hours."}
+                  </p>
+                </div>
 
-            <Link href="/patient/advisor" prefetch={true} className="w-full mt-4 py-3 bg-primary text-on-primary font-bold text-xs rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-md block text-center cursor-pointer">
-              <span>Ask Medical Advisor Question</span>
-              <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </Link>
-          </div>
-        </section>
+                <div className="mt-6 pt-6 border-t border-outline-variant/50 space-y-3">
+                  <div className="flex justify-between text-xs font-bold">
+                    <span className="text-outline">Circadian Rhythm Stability</span>
+                    <span className="text-primary">{isFever ? '78%' : '94%'}</span>
+                  </div>
+                  <div className="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+                    <div className="bg-primary h-full rounded-full" style={{ width: isFever ? '78%' : '94%' }}></div>
+                  </div>
+
+                  <Link 
+                    href={patient ? `/patient/advisor?id=${patient.id}` : "/patient/advisor"} 
+                    prefetch={true} 
+                    className="w-full mt-4 py-3 bg-primary text-on-primary font-bold text-xs rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-md block text-center cursor-pointer"
+                  >
+                    <span>Ask Medical Advisor Question</span>
+                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  </Link>
+                </div>
+              </section>
 
         {/* 3. Interactive Health & Diagnostic Tools */}
         <section className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-gutter">
