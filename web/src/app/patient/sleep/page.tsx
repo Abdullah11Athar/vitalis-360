@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { getPatientById, PatientRecord } from '@/lib/patientData';
 
 function SleepAuditContent() {
   const searchParams = useSearchParams();
@@ -11,11 +12,7 @@ function SleepAuditContent() {
   const [syncComplete, setSyncComplete] = useState(false);
   const [txnId, setTxnId] = useState('');
   const [role, setRole] = useState('patient');
-  const [patient, setPatient] = useState({
-    id: '8829-XL',
-    name: 'Zeeshan Ali',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
-  });
+  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(patientId));
 
   useEffect(() => {
     const savedUser = localStorage.getItem('vitalis_user');
@@ -26,14 +23,8 @@ function SleepAuditContent() {
       } catch (e) {}
     }
 
-    const savedPatients = localStorage.getItem('vitalis_patients');
-    if (savedPatients) {
-      const list = JSON.parse(savedPatients);
-      const found = list.find((p: any) => p.id === patientId);
-      if (found) {
-        setPatient(found);
-      }
-    }
+    const currentRecord = getPatientById(patientId);
+    setPatient(currentRecord);
   }, [patientId]);
 
   const handleCommit = () => {
@@ -43,7 +34,18 @@ function SleepAuditContent() {
     setTimeout(() => {
       setIsSyncing(false);
       setSyncComplete(true);
+      window.dispatchEvent(new CustomEvent('show-toast', { detail: `✅ Sleep Fidelity Audit for ${patient.name} cryptographically logged to EMR!` }));
     }, 1200);
+  };
+
+  const sl = patient.sleep || {
+    sleepScore: 82,
+    sleepHours: 7.4,
+    remPercentage: 20,
+    deepSleep: '1.5h',
+    circadianStability: '85%',
+    respiratoryRate: 16,
+    sleepEfficiency: '82%'
   };
 
   return (
@@ -51,7 +53,7 @@ function SleepAuditContent() {
       {/* Header Profile Section */}
       <section className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant pb-6">
         <div className="flex items-center gap-4">
-          <Link href={`/patient/detail?id=${patient.id}`} prefetch={true} className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 duration-150 border border-outline-variant">
+          <Link href={`/patient/detail?id=${patient.id}`} prefetch={true} className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 duration-150 border border-outline-variant cursor-pointer">
             <span className="material-symbols-outlined text-primary">arrow_back</span>
           </Link>
           <div className="w-14 h-14 rounded-full bg-surface-container-high border-2 border-primary/40 overflow-hidden flex items-center justify-center shadow-md shrink-0">
@@ -64,7 +66,7 @@ function SleepAuditContent() {
           <div>
             <span className="font-label-sm text-xs text-primary uppercase tracking-widest font-bold">Clinical Audit</span>
             <h1 className="font-headline-lg text-2xl md:text-3xl text-on-surface font-bold">{patient.name}</h1>
-            <p className="text-xs text-on-surface-variant font-medium">Fidelity metrics & circadian analysis for patient #{patient.id}</p>
+            <p className="text-xs text-on-surface-variant font-medium">Fidelity metrics & circadian analysis for #{patient.id} ({patient.diagnosis})</p>
           </div>
         </div>
 
@@ -89,17 +91,19 @@ function SleepAuditContent() {
           <div className="relative z-10">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
               <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Architecture Fidelity Score</span>
-              <span className="bg-primary/20 text-primary px-2.5 py-1 rounded-xl text-xs font-bold uppercase border border-primary/30 whitespace-nowrap">
-                Optimal Tier
+              <span className={`px-2.5 py-1 rounded-xl text-xs font-bold uppercase border whitespace-nowrap ${
+                sl.sleepScore >= 75 ? 'bg-primary/20 text-primary border-primary/30' : 'bg-amber-500/20 text-amber-500 border-amber-500/30'
+              }`}>
+                {sl.sleepScore >= 75 ? 'Optimal Tier' : 'Impaired Sleep Tier'}
               </span>
             </div>
             <div className="flex items-baseline gap-3">
-              <span className="text-6xl font-black text-primary">94</span>
+              <span className="text-6xl font-black text-primary">{sl.sleepScore}</span>
               <span className="text-2xl font-bold text-on-surface-variant">/ 100</span>
             </div>
             <div className="mt-6 flex items-center gap-2 text-primary font-bold text-sm bg-primary/10 px-3.5 py-2 rounded-xl border border-primary/20 w-fit">
               <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-              <span>Clinical threshold surpassed</span>
+              <span>{sl.sleepHours} hours recorded telemetry</span>
             </div>
           </div>
         </div>
@@ -107,22 +111,22 @@ function SleepAuditContent() {
         <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-tertiary transition-all">
           <div>
             <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-2">REM Efficiency</span>
-            <div className="text-4xl font-black text-tertiary">22%</div>
+            <div className="text-4xl font-black text-tertiary">{sl.remPercentage}%</div>
             <p className="text-xs text-on-surface-variant mt-1 font-medium">Target: 20-25% of total sleep</p>
           </div>
           <div className="w-full bg-surface-container h-2 rounded-full mt-4 overflow-hidden">
-            <div className="bg-tertiary h-full rounded-full w-[85%] shadow-sm shadow-tertiary"></div>
+            <div className="bg-tertiary h-full rounded-full shadow-sm shadow-tertiary transition-all duration-500" style={{ width: `${Math.min(100, sl.remPercentage * 4)}%` }}></div>
           </div>
         </div>
 
         <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-primary transition-all">
           <div>
-            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-2">Deep Sleep Stability</span>
-            <div className="text-4xl font-black text-primary">19%</div>
-            <p className="text-xs text-on-surface-variant mt-1 font-medium">Target: 15-20% Slow-Wave</p>
+            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-2">Deep Slow-Wave Sleep</span>
+            <div className="text-4xl font-black text-primary">{sl.deepSleep}</div>
+            <p className="text-xs text-on-surface-variant mt-1 font-medium">Circadian: {sl.circadianStability}</p>
           </div>
           <div className="w-full bg-surface-container h-2 rounded-full mt-4 overflow-hidden">
-            <div className="bg-primary h-full rounded-full w-[76%] shadow-sm shadow-primary"></div>
+            <div className="bg-primary h-full rounded-full shadow-sm shadow-primary w-[76%]"></div>
           </div>
         </div>
       </div>
@@ -132,10 +136,10 @@ function SleepAuditContent() {
         <div className="p-4 sm:p-6 border-b border-outline-variant/50 flex flex-wrap justify-between items-center gap-2 bg-surface-container/30">
           <h3 className="font-bold text-base sm:text-lg text-on-surface flex items-center gap-2.5">
             <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">analytics</span>
-            Hypnogram Phase Distribution
+            Hypnogram Phase Distribution ({patient.name})
           </h3>
           <span className="text-[11px] sm:text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-xl border border-primary/20 whitespace-nowrap">
-            8h 12m total duration
+            {sl.sleepHours}h total duration
           </span>
         </div>
 
@@ -161,84 +165,54 @@ function SleepAuditContent() {
             ))}
           </div>
 
-          {/* Legend */}
-          <div className="w-full md:w-1/4 flex md:flex-col justify-around md:justify-center gap-4 bg-surface-container p-5 rounded-2xl border border-outline-variant/40">
+          {/* Legend and Summary */}
+          <div className="w-full md:w-1/4 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 bg-tertiary rounded-md shadow-sm"></div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface block">REM Sleep</span>
-                <span className="text-[10px] text-on-surface-variant">Cognitive & Memory</span>
+              <span className="w-3.5 h-3.5 rounded bg-tertiary shadow-sm shadow-tertiary shrink-0"></span>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-on-surface">REM Phase</div>
+                <div className="text-[10px] text-on-surface-variant font-medium">{sl.remPercentage}% of Total Window</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 bg-secondary/60 rounded-md"></div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface block">Light Sleep</span>
-                <span className="text-[10px] text-on-surface-variant">Baseline Recovery</span>
+              <span className="w-3.5 h-3.5 rounded bg-secondary/60 shrink-0"></span>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-on-surface">Light Stage</div>
+                <div className="text-[10px] text-on-surface-variant font-medium">55% of Total Window</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 bg-primary rounded-md shadow-sm"></div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface block">Deep Sleep</span>
-                <span className="text-[10px] text-on-surface-variant">Physical & Cellular</span>
+              <span className="w-3.5 h-3.5 rounded bg-primary shadow-sm shadow-primary shrink-0"></span>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-on-surface">Deep Slow-Wave</div>
+                <div className="text-[10px] text-on-surface-variant font-medium">{sl.deepSleep} Duration</div>
               </div>
+            </div>
+            <div className="pt-2 border-t border-outline-variant/40 mt-2">
+              <span className="text-[10px] uppercase font-bold text-on-surface-variant block">Nocturnal Respiration</span>
+              <span className="text-sm font-black text-on-surface">{sl.respiratoryRate} breaths / min</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Biological Indicators */}
-      <section className="mb-8">
-        <h3 className="font-bold text-sm text-on-surface uppercase tracking-wider mb-4">Vital Synchrony During Nocturnal Cycle</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Cardiac Stability Card */}
-          <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-5 flex items-center gap-5 shadow-sm hover:border-primary transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 animate-pulse">
-              <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-baseline">
-                <h4 className="font-bold text-base text-on-surface">Cardiac Stability</h4>
-                <span className="text-primary font-black text-xl">54 BPM</span>
-              </div>
-              <p className="text-xs text-on-surface-variant mt-1 font-medium">Tonal variance: 2.1% (Ideal Autonomic Balance)</p>
-            </div>
-          </div>
-
-          {/* Respiratory Flux Card */}
-          <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-5 flex items-center gap-5 shadow-sm hover:border-tertiary transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary border border-tertiary/20">
-              <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>air</span>
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-baseline">
-                <h4 className="font-bold text-base text-on-surface">Respiratory Flux</h4>
-                <span className="text-tertiary font-black text-xl">14 RR</span>
-              </div>
-              <p className="text-xs text-on-surface-variant mt-1 font-medium">Rhythm coherence: High stability across all stages</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Clinical Insights */}
-      <section className="bg-surface-container rounded-2xl p-6 md:p-8 border border-primary/30 shadow-lg shadow-primary/5">
+      {/* Observation Section */}
+      <section className="bg-surface-container rounded-2xl p-6 md:p-8 border border-outline-variant shadow-md">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <span className="material-symbols-outlined text-xl">auto_awesome</span>
+          <div className="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary border border-tertiary/20">
+            <span className="material-symbols-outlined text-xl">bedtime</span>
           </div>
-          <h3 className="font-bold text-base md:text-lg text-on-surface uppercase tracking-wider">AI Sleep Architecture Observation</h3>
+          <h3 className="font-bold text-base md:text-lg text-on-surface uppercase tracking-wider">AI Sleep Architecture Observation ({patient.name})</h3>
         </div>
         <p className="font-body-md text-base text-on-surface leading-relaxed mb-6 bg-background/50 p-5 rounded-xl border border-outline-variant/40">
-          Patient shows exceptional <span className="text-primary font-bold">Deep Sleep latency</span>, entering Stage 3 slow-wave sleep within 18 minutes of sleep onset. REM cycles are well-distributed with significant density in the final 120 minutes of the nocturnal window, suggesting high cognitive recovery fidelity and optimal neuro-metabolic clearance.
+          {patient.name} ({patient.diagnosis}) shows {sl.sleepScore >= 75 ? 'well-preserved' : 'altered'} sleep architecture with {sl.deepSleep} in restorative slow-wave state. Circadian stability index is logged at {sl.circadianStability}. Respiratory parameters during sleep remained steady at {sl.respiratoryRate} breaths per minute.
         </p>
         <button 
           onClick={handleCommit}
           className="w-full py-3 sm:py-3.5 px-4 bg-primary text-on-primary font-bold text-xs sm:text-sm rounded-xl transition-all active:scale-98 hover:opacity-90 shadow-md flex items-center justify-center gap-2 cursor-pointer"
         >
           <span className="material-symbols-outlined text-base sm:text-lg shrink-0">verified</span>
-          <span className="text-center">Log & Verify Sleep Architecture Fidelity</span>
+          <span className="text-center">Log & Verify Sleep Architecture Fidelity for {patient.name}</span>
         </button>
       </section>
 
@@ -270,7 +244,7 @@ function SleepAuditContent() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-on-surface-variant font-medium">Patient Signature</span>
-                    <span className="text-on-surface font-bold">Zeeshan Ali</span>
+                    <span className="text-on-surface font-bold">{patient.name}</span>
                   </div>
                   <div className="flex flex-col gap-1 pt-1.5 border-t border-outline-variant/30">
                     <span className="text-on-surface-variant font-medium text-left">Ledger Transaction Hash</span>
@@ -291,8 +265,6 @@ function SleepAuditContent() {
     </div>
   );
 }
-
-import { Suspense } from 'react';
 
 export default function SleepAudit() {
   return (

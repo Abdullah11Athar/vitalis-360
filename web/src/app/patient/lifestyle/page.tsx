@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { getPatientById, PatientRecord } from '@/lib/patientData';
 
 function LifestyleAuditContent() {
   const searchParams = useSearchParams();
@@ -10,11 +11,7 @@ function LifestyleAuditContent() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncComplete, setSyncComplete] = useState(false);
   const [role, setRole] = useState('patient');
-  const [patient, setPatient] = useState({
-    id: '8829-XL',
-    name: 'Zeeshan Ali',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
-  });
+  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(patientId));
 
   useEffect(() => {
     const savedUser = localStorage.getItem('vitalis_user');
@@ -25,14 +22,8 @@ function LifestyleAuditContent() {
       } catch (e) {}
     }
 
-    const saved = localStorage.getItem('vitalis_patients');
-    if (saved) {
-      const list = JSON.parse(saved);
-      const found = list.find((p: any) => p.id === patientId);
-      if (found) {
-        setPatient(found);
-      }
-    }
+    const currentRecord = getPatientById(patientId);
+    setPatient(currentRecord);
   }, [patientId]);
 
   const handleCommit = () => {
@@ -40,8 +31,19 @@ function LifestyleAuditContent() {
     setTimeout(() => {
       setIsSyncing(false);
       setSyncComplete(true);
-      window.dispatchEvent(new CustomEvent('show-toast', { detail: "✅ Clinical recommendation endorsed into EMR Care Plan!" }));
+      window.dispatchEvent(new CustomEvent('show-toast', { detail: `✅ Clinical recommendation endorsed into ${patient.name}'s EMR Care Plan!` }));
     }, 1200);
+  };
+
+  const ls = patient.lifestyle || {
+    wellnessScore: 80,
+    summary: 'Biometric telemetry demonstrates steady adaptation to active therapy.',
+    sleepHours: 7.2,
+    sleepDelta: 'Normal for inpatient',
+    dailySteps: 4500,
+    stepPercentage: 56,
+    stressScore: 40,
+    stressLabel: 'Moderate'
   };
 
   return (
@@ -64,6 +66,7 @@ function LifestyleAuditContent() {
               <span className="font-label-sm text-xs text-on-surface-variant uppercase tracking-wider font-bold">Lifestyle Audit</span>
             </div>
             <h1 className="font-headline-lg text-2xl md:text-3xl text-on-surface font-bold">{patient.name}</h1>
+            <p className="text-xs text-on-surface-variant font-medium">Primary Condition: {patient.diagnosis}</p>
           </div>
         </div>
 
@@ -80,20 +83,20 @@ function LifestyleAuditContent() {
         </div>
         <div className="relative z-10">
           <p className="font-body-md text-base md:text-lg text-on-surface max-w-2xl font-medium leading-relaxed">
-            Comprehensive behavioral analysis indicates stable metabolic recovery and high stress resilience across the current 24-hour telemetry cycle.
+            {ls.summary}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
             <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/50">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Overall Wellness</span>
-              <p className="text-2xl font-black text-primary mt-1">94 / 100</p>
+              <p className="text-2xl font-black text-primary mt-1">{ls.wellnessScore} / 100</p>
             </div>
             <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/50">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Audit Period</span>
               <p className="text-sm font-bold text-on-surface mt-2">Last 24 Hours</p>
             </div>
             <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/50">
-              <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Metabolic Score</span>
-              <p className="text-sm font-bold text-primary mt-2">Optimal Tier</p>
+              <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Status Acuity</span>
+              <p className={`text-sm font-bold mt-2 ${patient.statusColor === 'error' ? 'text-error' : 'text-primary'}`}>{patient.status}</p>
             </div>
             <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/50">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Circadian Drift</span>
@@ -115,14 +118,14 @@ function LifestyleAuditContent() {
               <div className="min-w-0">
                 <h3 className="font-bold text-base text-on-surface truncate">Sleep Quality</h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-primary shrink-0"></span>
-                  <span className="text-[11px] font-bold text-primary truncate">Optimal Recovery</span>
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${ls.sleepHours >= 7 ? 'bg-primary' : 'bg-amber-500'}`}></span>
+                  <span className="text-[11px] font-bold text-primary truncate">{ls.sleepHours >= 7 ? 'Restorative' : 'Disrupted Recovery'}</span>
                 </div>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-2xl font-black text-on-surface leading-tight">8.2h</div>
-              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">+12% vs last night</span>
+              <div className="text-2xl font-black text-on-surface leading-tight">{ls.sleepHours}h</div>
+              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">{ls.sleepDelta}</span>
             </div>
           </div>
 
@@ -159,48 +162,48 @@ function LifestyleAuditContent() {
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-2xl font-black text-on-surface leading-tight">6,420</div>
-              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">72% of goal</span>
+              <div className="text-2xl font-black text-on-surface leading-tight">{ls.dailySteps.toLocaleString()}</div>
+              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">{ls.stepPercentage}% of goal</span>
             </div>
           </div>
 
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="relative w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
-              <div className="absolute top-0 left-0 h-full bg-primary w-[72%] rounded-full shadow-sm shadow-primary"></div>
+              <div className="absolute top-0 left-0 h-full bg-primary rounded-full shadow-sm shadow-primary transition-all duration-500" style={{ width: `${Math.min(100, ls.stepPercentage)}%` }}></div>
             </div>
             <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-              <span>Sedentary</span>
+              <span>Bed Rest</span>
               <span>Active Target</span>
             </div>
           </div>
         </div>
 
-        {/* Stress Resilience Metric - Overflow Free */}
+        {/* Stress Resilience Metric */}
         <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-5 md:p-6 flex flex-col justify-between space-y-5 shadow-sm hover:border-error transition-all overflow-hidden">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="p-2.5 rounded-xl bg-error/10 text-error border border-error/20 shrink-0">
+              <div className={`p-2.5 rounded-xl border shrink-0 ${ls.stressScore > 70 ? 'bg-error/10 text-error border-error/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
                 <span className="material-symbols-outlined text-2xl">psychology_alt</span>
               </div>
               <div className="min-w-0">
                 <h3 className="font-bold text-base text-on-surface truncate">Stress Resilience</h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-primary shrink-0"></span>
-                  <span className="text-[11px] font-bold text-primary truncate">High HRV Balance</span>
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${ls.stressScore > 70 ? 'bg-error' : 'bg-primary'}`}></span>
+                  <span className={`text-[11px] font-bold truncate ${ls.stressScore > 70 ? 'text-error' : 'text-primary'}`}>{ls.stressLabel}</span>
                 </div>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-xl md:text-2xl font-black text-on-surface leading-tight">Stable</div>
-              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">HRV: 74ms</span>
+              <div className="text-xl md:text-2xl font-black text-on-surface leading-tight">{ls.stressScore}%</div>
+              <span className="text-[10px] font-medium text-on-surface-variant block whitespace-nowrap">Acuity Index</span>
             </div>
           </div>
 
           {/* Pulse Visualization */}
           <div className="h-16 w-full relative flex items-center justify-center overflow-hidden rounded-xl bg-surface-container border border-outline-variant/30">
             <svg className="w-full h-full" viewBox="0 0 400 100">
-              <path className="animate-heartbeat" d="M0 50 L120 50 L135 20 L150 80 L165 50 L180 50 L200 40 L220 60 L240 50 L400 50" fill="none" stroke="#4edea3" strokeWidth="3"></path>
+              <path className="animate-heartbeat" d="M0 50 L120 50 L135 20 L150 80 L165 50 L180 50 L200 40 L220 60 L240 50 L400 50" fill="none" stroke={ls.stressScore > 70 ? '#ff5252' : '#4edea3'} strokeWidth="3"></path>
             </svg>
             <div className="absolute inset-0 bg-gradient-to-r from-surface-container via-transparent to-surface-container"></div>
           </div>
@@ -213,10 +216,10 @@ function LifestyleAuditContent() {
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
             <span className="material-symbols-outlined text-xl">lightbulb</span>
           </div>
-          <h3 className="font-bold text-base md:text-lg text-on-surface uppercase tracking-wider">Autonomous Clinical Recommendation</h3>
+          <h3 className="font-bold text-base md:text-lg text-on-surface uppercase tracking-wider">Autonomous Clinical Recommendation for {patient.name}</h3>
         </div>
         <p className="font-body-md text-sm md:text-base text-on-surface-variant leading-relaxed mb-6 bg-background/50 p-5 rounded-xl border border-outline-variant/40">
-          Zeeshan is exhibiting consistent sleep cycles and high autonomic balance. Recommend maintaining the current circadian anchor at 22:30. A slight increase in morning cardiovascular movement (approximately 1,500 steps before 10:00 AM) could further optimize evening HRV and insulin sensitivity.
+          {patient.name} is undergoing clinical management for {patient.diagnosis}. {ls.summary} Core resting heart rate is {patient.hr || patient.heartRate || 75} bpm with oxygen saturation at {patient.spo2 || patient.spO2 || 98}%. Continue individualized protocol and monitor telemetry trends.
         </p>
         <button 
           onClick={handleCommit}
@@ -236,7 +239,7 @@ function LifestyleAuditContent() {
           ) : (
             <>
               <span className="material-symbols-outlined text-base sm:text-lg shrink-0">verified</span>
-              <span className="text-center">Endorse Clinical Recommendation to Patient Profile</span>
+              <span className="text-center">Endorse Clinical Recommendation to {patient.name}&apos;s Profile</span>
             </>
           )}
         </button>

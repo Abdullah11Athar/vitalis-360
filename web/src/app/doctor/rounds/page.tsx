@@ -15,7 +15,9 @@ export default function DoctorVirtualRounds() {
   const [endorseCount, setEndorseCount] = useState<number>(3);
   const [rowStatus, setRowStatus] = useState<{ [key: string]: string }>({
     'CCU-402': 'Critical',
-    'CCU-415': 'Stable'
+    'CCU-415': 'Stable',
+    'CCU-420': 'Critical',
+    'CCU-428': 'Critical'
   });
   const [filterRiskOnly, setFilterRiskOnly] = useState<boolean>(false);
   const [sortByTime, setSortByTime] = useState<boolean>(false);
@@ -68,7 +70,8 @@ export default function DoctorVirtualRounds() {
     if (e) e.stopPropagation();
     setRowStatus(prev => ({ ...prev, [patientId]: 'Approved' }));
     setEndorseCount(prev => Math.max(0, prev - 1));
-    showToast("✅ Intervention Approved! IV Labetalol protocols activated in EMR.");
+    const name = patientId === 'CCU-420' ? 'Umar Farooq' : patientId === 'CCU-428' ? 'Sadia Khan' : 'Zeeshan Ali';
+    showToast(`✅ Intervention Approved for ${name}! Care plan activated in EMR.`);
   };
 
   const handleRejectIntervention = (patientId: string, e?: React.MouseEvent) => {
@@ -221,6 +224,122 @@ export default function DoctorVirtualRounds() {
                   <div className="flex flex-col pl-2">
                     <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Pending</span>
                     <span className="font-title-md text-title-md text-on-surface-variant font-bold">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Patient Card 3: Umar Farooq (Febrile Syndrome) */}
+            <div className="bg-surface-container rounded-xl overflow-hidden border border-outline-variant transition-all duration-300">
+              <div className="p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-title-md text-title-md text-on-surface font-bold truncate">Umar Farooq</h3>
+                    <p className="font-label-sm text-label-sm text-on-surface-variant truncate">ID: CCU-420 • Acute Care</p>
+                  </div>
+                  <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full border whitespace-nowrap shrink-0 ${
+                    rowStatus['CCU-420'] === 'Approved' ? 'bg-primary/20 border-primary/30 text-primary' :
+                    rowStatus['CCU-420'] === 'Rejected' ? 'bg-surface-container-highest border-outline-variant text-on-surface-variant' :
+                    'bg-error-container/20 border-error/30 text-error'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${rowStatus['CCU-420'] === 'Approved' ? 'bg-primary' : rowStatus['CCU-420'] === 'Rejected' ? 'bg-outline' : 'bg-error animate-pulse'}`}></span>
+                    <span className="font-label-sm text-[11px] font-bold">{rowStatus['CCU-420']}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30 text-center">
+                  <div className="flex flex-col">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">BPM</span>
+                    <span className="font-title-md text-title-md text-error font-bold">108</span>
+                  </div>
+                  <div className="flex flex-col border-x border-outline-variant/30 px-2">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Temp</span>
+                    <span className="font-title-md text-title-md text-error font-bold">102.4°F</span>
+                  </div>
+                  <div className="flex flex-col pl-2">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">SpO2</span>
+                    <span className="font-title-md text-title-md text-primary font-bold">95%</span>
+                  </div>
+                </div>
+                <div className="bg-surface-container-high/50 p-3 rounded-lg border-l-4 border-error flex flex-col gap-2">
+                  <div className="flex items-center gap-1 text-tertiary">
+                    <span className="material-symbols-outlined text-sm">psychology</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider">Glass.ai DDx</span>
+                  </div>
+                  <p className="text-xs text-on-surface italic">
+                    &ldquo;Acute Febrile Bronchitis. Temp 102.4°F. CRP 48 mg/L. Recommend STAT PA Chest X-Ray.&rdquo;
+                  </p>
+                  <div className="flex gap-2 justify-end mt-1">
+                    <Link 
+                      href="/patient/detail?id=5512-UF"
+                      className="px-3 py-1 bg-surface-container border border-outline-variant text-primary rounded text-xs font-bold"
+                    >
+                      View Vault
+                    </Link>
+                    <button 
+                      onClick={() => handleApproveIntervention('CCU-420')}
+                      disabled={rowStatus['CCU-420'] !== 'Critical'}
+                      className="px-3 py-1 bg-primary text-on-primary rounded font-bold text-xs shadow-sm disabled:opacity-50"
+                    >
+                      {rowStatus['CCU-420'] === 'Approved' ? 'Approved ✓' : 'Approve Rx'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Patient Card 4: Sadia Khan (Appendicitis) */}
+            <div className="bg-surface-container rounded-xl overflow-hidden border border-outline-variant transition-all duration-300">
+              <div className="p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-title-md text-title-md text-on-surface font-bold truncate">Sadia Khan</h3>
+                    <p className="font-label-sm text-label-sm text-on-surface-variant truncate">ID: CCU-428 • Surgical Obs</p>
+                  </div>
+                  <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full border whitespace-nowrap shrink-0 ${
+                    rowStatus['CCU-428'] === 'Approved' ? 'bg-primary/20 border-primary/30 text-primary' :
+                    rowStatus['CCU-428'] === 'Rejected' ? 'bg-surface-container-highest border-outline-variant text-on-surface-variant' :
+                    'bg-error-container/20 border-error/30 text-error'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${rowStatus['CCU-428'] === 'Approved' ? 'bg-primary' : rowStatus['CCU-428'] === 'Rejected' ? 'bg-outline' : 'bg-error animate-pulse'}`}></span>
+                    <span className="font-label-sm text-[11px] font-bold">{rowStatus['CCU-428']}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30 text-center">
+                  <div className="flex flex-col">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">BPM</span>
+                    <span className="font-title-md text-title-md text-error font-bold">96</span>
+                  </div>
+                  <div className="flex flex-col border-x border-outline-variant/30 px-2">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">WBC</span>
+                    <span className="font-title-md text-title-md text-error font-bold">16.8k</span>
+                  </div>
+                  <div className="flex flex-col pl-2">
+                    <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Pending</span>
+                    <span className="font-title-md text-title-md text-primary font-bold">Surgery</span>
+                  </div>
+                </div>
+                <div className="bg-surface-container-high/50 p-3 rounded-lg border-l-4 border-error flex flex-col gap-2">
+                  <div className="flex items-center gap-1 text-tertiary">
+                    <span className="material-symbols-outlined text-sm">psychology</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider">Glass.ai DDx</span>
+                  </div>
+                  <p className="text-xs text-on-surface italic">
+                    &ldquo;Acute Appendicitis with McBurney&apos;s guarding. NPO confirmed. Surgical team consult active.&rdquo;
+                  </p>
+                  <div className="flex gap-2 justify-end mt-1">
+                    <Link 
+                      href="/patient/detail?id=3389-SK"
+                      className="px-3 py-1 bg-surface-container border border-outline-variant text-primary rounded text-xs font-bold"
+                    >
+                      View Vault
+                    </Link>
+                    <button 
+                      onClick={() => handleApproveIntervention('CCU-428')}
+                      disabled={rowStatus['CCU-428'] !== 'Critical'}
+                      className="px-3 py-1 bg-primary text-on-primary rounded font-bold text-xs shadow-sm disabled:opacity-50"
+                    >
+                      {rowStatus['CCU-428'] === 'Approved' ? 'Approved ✓' : 'Approve Consult'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -396,6 +515,178 @@ export default function DoctorVirtualRounds() {
                         >
                           <span className="material-symbols-outlined">chevron_right</span>
                         </Link>
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* Row 3: Umar Farooq (Febrile Syndrome) */}
+                  <tr className="hover:bg-surface-container-high transition-colors cursor-pointer" onClick={() => toggleRow('CCU-420')}>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 min-w-[40px] rounded-full border-2 flex items-center justify-center font-bold ${
+                          rowStatus['CCU-420'] === 'Approved' ? 'border-primary bg-primary/20 text-primary' :
+                          rowStatus['CCU-420'] === 'Rejected' ? 'border-outline bg-surface-container-highest text-on-surface-variant' :
+                          'border-error animate-pulse bg-error/20 text-error'
+                        }`}>UF</div>
+                        <div>
+                          <p className="font-label-md text-label-md text-on-surface">Umar Farooq</p>
+                          <p className="text-xs text-on-surface-variant">ID: CCU-420 • Acute Care</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`flex items-center gap-1.5 font-label-sm ${
+                        rowStatus['CCU-420'] === 'Approved' ? 'text-primary' :
+                        rowStatus['CCU-420'] === 'Rejected' ? 'text-on-surface-variant' : 'text-error font-bold'
+                      }`}>
+                        <span className={`w-2 h-2 min-w-[8px] rounded-full ${
+                          rowStatus['CCU-420'] === 'Approved' ? 'bg-primary' :
+                          rowStatus['CCU-420'] === 'Rejected' ? 'bg-outline' : 'bg-error animate-pulse'
+                        }`}></span>
+                        {rowStatus['CCU-420']}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="space-y-1">
+                        <p className="font-label-md text-label-md text-error font-bold">108 BPM • 102.4°F</p>
+                        <p className="text-xs text-on-surface-variant">122/80 mmHg • SpO2 95%</p>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${
+                        rowStatus['CCU-420'] === 'Critical' ? 'bg-error-container text-on-error-container' : 'bg-surface-container-highest text-on-surface-variant'
+                      }`}>
+                        {rowStatus['CCU-420'] === 'Critical' ? '1 Rx Antipyretic' : '0 Pending'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-right">
+                      <button className="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+                        <span className="material-symbols-outlined">{expandedRow === 'CCU-420' ? 'expand_less' : 'expand_more'}</span>
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  {/* Row 3 Expanded Content */}
+                  {expandedRow === 'CCU-420' && (
+                    <tr className="bg-surface-container-high/50">
+                      <td className="px-4 py-4" colSpan={5}>
+                        <div className="bg-surface-container/70 p-5 rounded-xl border-l-4 border-error flex flex-col gap-3">
+                          <div className="flex items-center gap-2 text-tertiary">
+                            <span className="material-symbols-outlined text-sm">psychology</span>
+                            <span className="font-label-sm text-label-sm uppercase tracking-wider font-bold">Glass.ai DDx Draft (Umar Farooq)</span>
+                          </div>
+                          <p className="text-sm text-on-surface leading-relaxed italic">
+                            &ldquo;Acute Infectious Bronchitis with High Pyrexia. Core temp spiked to 102.4°F with severe shivering and tachypnea. CRP elevated at 48 mg/L. Recommend STAT PA Chest X-Ray and antipyretic protocol.&rdquo;
+                          </p>
+                          <div className="flex flex-wrap gap-2 justify-end mt-1">
+                            <Link 
+                              href="/patient/detail?id=5512-UF"
+                              prefetch={true}
+                              className="px-4 py-1.5 bg-surface-container border border-outline-variant text-primary rounded-lg font-label-sm text-label-sm font-bold flex items-center gap-1 hover:bg-surface-container-high transition-all cursor-pointer"
+                            >
+                              <span>Full Patient Vault</span>
+                              <span className="material-symbols-outlined text-sm">open_in_new</span>
+                            </Link>
+                            <button 
+                              onClick={(e) => handleRejectIntervention('CCU-420', e)}
+                              disabled={rowStatus['CCU-420'] !== 'Critical'}
+                              className="px-4 py-1.5 bg-surface-container-low border border-outline text-on-surface rounded-lg hover:bg-surface-container-highest transition-all font-label-sm text-label-sm disabled:opacity-50 cursor-pointer">
+                              Reject
+                            </button>
+                            <button 
+                              onClick={(e) => handleApproveIntervention('CCU-420', e)}
+                              disabled={rowStatus['CCU-420'] !== 'Critical'}
+                              className="px-4 py-1.5 bg-primary text-on-primary rounded-lg hover:brightness-110 transition-all font-label-sm text-label-sm shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer font-bold">
+                              {rowStatus['CCU-420'] === 'Approved' ? 'Intervention Approved ✓' : 'Approve Antipyretics'}
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* Row 4: Sadia Khan (Acute Appendicitis) */}
+                  <tr className="hover:bg-surface-container-high transition-colors cursor-pointer" onClick={() => toggleRow('CCU-428')}>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 min-w-[40px] rounded-full border-2 flex items-center justify-center font-bold ${
+                          rowStatus['CCU-428'] === 'Approved' ? 'border-primary bg-primary/20 text-primary' :
+                          rowStatus['CCU-428'] === 'Rejected' ? 'border-outline bg-surface-container-highest text-on-surface-variant' :
+                          'border-error animate-pulse bg-error/20 text-error'
+                        }`}>SK</div>
+                        <div>
+                          <p className="font-label-md text-label-md text-on-surface">Sadia Khan</p>
+                          <p className="text-xs text-on-surface-variant">ID: CCU-428 • Surgical Obs</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`flex items-center gap-1.5 font-label-sm ${
+                        rowStatus['CCU-428'] === 'Approved' ? 'text-primary' :
+                        rowStatus['CCU-428'] === 'Rejected' ? 'text-on-surface-variant' : 'text-error font-bold'
+                      }`}>
+                        <span className={`w-2 h-2 min-w-[8px] rounded-full ${
+                          rowStatus['CCU-428'] === 'Approved' ? 'bg-primary' :
+                          rowStatus['CCU-428'] === 'Rejected' ? 'bg-outline' : 'bg-error animate-pulse'
+                        }`}></span>
+                        {rowStatus['CCU-428']}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="space-y-1">
+                        <p className="font-label-md text-label-md text-error font-bold">96 BPM • 99.8°F</p>
+                        <p className="text-xs text-on-surface-variant">112/70 mmHg • WBC 16.8k</p>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${
+                        rowStatus['CCU-428'] === 'Critical' ? 'bg-error-container text-on-error-container' : 'bg-surface-container-highest text-on-surface-variant'
+                      }`}>
+                        {rowStatus['CCU-428'] === 'Critical' ? '1 Surgical Consult' : '0 Pending'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-right">
+                      <button className="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+                        <span className="material-symbols-outlined">{expandedRow === 'CCU-428' ? 'expand_less' : 'expand_more'}</span>
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  {/* Row 4 Expanded Content */}
+                  {expandedRow === 'CCU-428' && (
+                    <tr className="bg-surface-container-high/50">
+                      <td className="px-4 py-4" colSpan={5}>
+                        <div className="bg-surface-container/70 p-5 rounded-xl border-l-4 border-error flex flex-col gap-3">
+                          <div className="flex items-center gap-2 text-tertiary">
+                            <span className="material-symbols-outlined text-sm">psychology</span>
+                            <span className="font-label-sm text-label-sm uppercase tracking-wider font-bold">Glass.ai DDx Draft (Sadia Khan)</span>
+                          </div>
+                          <p className="text-sm text-on-surface leading-relaxed italic">
+                            &ldquo;Suspected Acute Appendicitis with positive McBurney&apos;s guarding and Rovsing&apos;s sign. Leukocytosis at 16,800 /µL with 88% neutrophil shift. Fasting NPO confirmed. Emergency surgical consult and STAT abdominal ultrasound indicated.&rdquo;
+                          </p>
+                          <div className="flex flex-wrap gap-2 justify-end mt-1">
+                            <Link 
+                              href="/patient/detail?id=3389-SK"
+                              prefetch={true}
+                              className="px-4 py-1.5 bg-surface-container border border-outline-variant text-primary rounded-lg font-label-sm text-label-sm font-bold flex items-center gap-1 hover:bg-surface-container-high transition-all cursor-pointer"
+                            >
+                              <span>Full Patient Vault</span>
+                              <span className="material-symbols-outlined text-sm">open_in_new</span>
+                            </Link>
+                            <button 
+                              onClick={(e) => handleRejectIntervention('CCU-428', e)}
+                              disabled={rowStatus['CCU-428'] !== 'Critical'}
+                              className="px-4 py-1.5 bg-surface-container-low border border-outline text-on-surface rounded-lg hover:bg-surface-container-highest transition-all font-label-sm text-label-sm disabled:opacity-50 cursor-pointer">
+                              Reject
+                            </button>
+                            <button 
+                              onClick={(e) => handleApproveIntervention('CCU-428', e)}
+                              disabled={rowStatus['CCU-428'] !== 'Critical'}
+                              className="px-4 py-1.5 bg-primary text-on-primary rounded-lg hover:brightness-110 transition-all font-label-sm text-label-sm shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer font-bold">
+                              {rowStatus['CCU-428'] === 'Approved' ? 'Intervention Approved ✓' : 'Approve Surgical Consult'}
+                            </button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   )}

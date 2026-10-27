@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function PatientDashboard() {
+  const [user, setUser] = useState<any>(null);
   const [lastUpdated, setLastUpdated] = useState('Just now');
   const [reports, setReports] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -24,6 +25,13 @@ export default function PatientDashboard() {
     const timer = setInterval(() => {
       setLastUpdated('1 minute ago');
     }, 60000);
+
+    const savedUser = localStorage.getItem('vitalis_user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {}
+    }
 
     const saved = localStorage.getItem('vitalis_uploaded_reports');
     if (saved) {
@@ -104,7 +112,7 @@ export default function PatientDashboard() {
     const content = `VITALIS-360 CLINICAL VAULT REPORT
 ==================================================
 Document: ${rep.title}
-Patient: Zeeshan Ali (ID: 8829-XL)
+Patient: ${user?.username || 'Zeeshan Ali'} (ID: 8829-XL)
 Ward: Telemetry Ward 4B
 Uploader: ${rep.uploader}
 Date: ${rep.date}
@@ -140,7 +148,7 @@ CLINICAL FINDINGS & AI SYNTHESIS:
       {/* Welcome Header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Good Morning, Zeeshan. <span className="text-primary">Your vitals are stable.</span></h1>
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Good Morning, {user?.username?.split(' ')[0] || 'Zeeshan'}. <span className="text-primary">Your vitals are stable.</span></h1>
           <p className="font-body-md text-outline-variant mt-1">Last updated: {lastUpdated}</p>
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <span className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 border border-primary/20 text-primary font-bold text-[9px] uppercase tracking-wider rounded-full">

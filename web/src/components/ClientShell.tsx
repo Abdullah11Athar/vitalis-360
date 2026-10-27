@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileBottomNav from "./MobileBottomNav";
 import { getAssetPath, getApiPath } from "@/lib/config";
+import { createDynamicPatient } from "@/lib/patientData";
 
 interface UserSession {
   role: string;
@@ -31,11 +32,13 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   const [newName, setNewName] = useState('');
   const [newAge, setNewAge] = useState('');
   const [newGender, setNewGender] = useState('Female');
-  const [newWard, setNewWard] = useState('Telemetry Ward 4B');
+  const [newWard, setNewWard] = useState('Acute Care Wing');
   const [newPhone, setNewPhone] = useState('+923000000000');
-  const [newHR, setNewHR] = useState('72');
+  const [newHR, setNewHR] = useState('78');
   const [newBP, setNewBP] = useState('120/80');
   const [newSpO2, setNewSpO2] = useState('98');
+  const [newTemp, setNewTemp] = useState('98.6°F');
+  const [newDiagnosis, setNewDiagnosis] = useState('Acute Febrile Syndrome');
 
   // Add Doctor Form State
   const [newDocName, setNewDocName] = useState('');
@@ -154,33 +157,32 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Add Patient Action
   const submitNewPatient = (e: React.FormEvent) => {
     e.preventDefault();
-    const newPatient = {
-      id: `#${Math.floor(1000 + Math.random() * 9000)}-XL`,
+    const newPatient = createDynamicPatient({
       name: newName,
       age: parseInt(newAge) || 30,
       gender: newGender,
       ward: newWard,
       phone: newPhone,
-      heartRate: parseInt(newHR) || 75,
+      hr: parseInt(newHR) || 75,
       bp: newBP,
-      spO2: parseInt(newSpO2) || 98,
-      status: 'Stable',
-      statusColor: 'primary',
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCXqExv10sRv1IgSPkyPagbhtvMDvis5EuV0gWegJwK78JgXLB-EQTVHdriSNrzC5ZDIYUOMe30boTila8AtMzEWEYJz7VdPZgZFq12y1ed6t2CPCDawKlvnIOXUcoaRIABr0TA553VZTGjCcAfF8595zBzmXx0HJlpqwgVzN2Ep3vyT4Y_2b3IhWuByM5gmewc2AR04B6pdhtD2KVJreP3ro_CM5MD9o8Uj9o3eX7qhdUe37tE899oeA"
-    };
+      spo2: parseInt(newSpO2) || 98,
+      temp: newTemp,
+      diagnosis: newDiagnosis
+    });
 
     const currentPatients = JSON.parse(localStorage.getItem('vitalis_patients') || '[]');
-    currentPatients.push(newPatient);
+    currentPatients.unshift(newPatient);
     localStorage.setItem('vitalis_patients', JSON.stringify(currentPatients));
 
     // Reset Form
     setNewName('');
     setNewAge('');
+    setNewDiagnosis('Acute Febrile Syndrome');
     setShowAddPatientModal(false);
 
     // Notify directory page to sync state
     window.dispatchEvent(new Event('patients-updated'));
-    window.dispatchEvent(new CustomEvent('show-toast', { detail: `✅ Patient "${newPatient.name}" registered! WhatsApp Gateway linked: ${newPhone}` }));
+    window.dispatchEvent(new CustomEvent('show-toast', { detail: `✅ Patient "${newPatient.name}" admitted with clinical profile: "${newDiagnosis}"!` }));
   };
 
   const submitNewDoctor = (e: React.FormEvent) => {
@@ -359,6 +361,39 @@ export default function ClientShell({ children }: { children: React.ReactNode })
                 </div>
               </div>
               <div className="space-y-1">
+                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Primary Diagnosis / Chief Complaint</label>
+                <input 
+                  type="text" 
+                  value={newDiagnosis} 
+                  onChange={(e) => setNewDiagnosis(e.target.value)}
+                  className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2.5 text-xs text-on-surface focus:outline-none focus:border-primary font-bold"
+                  placeholder="e.g. Acute High Fever & Chills"
+                  required
+                />
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {[
+                    { label: 'High Fever', dx: 'High-Grade Febrile Syndrome', hr: '106', temp: '102.4°F' },
+                    { label: 'Appendicitis', dx: 'Acute Appendicitis & RLQ Guarding', hr: '94', temp: '99.8°F' },
+                    { label: 'Severe Migraine', dx: 'Intractable Migraine with Visual Aura', hr: '74', temp: '98.6°F' },
+                    { label: 'Asthma/Bronchitis', dx: 'Acute Bronchitis & Respiratory Wheeze', hr: '102', temp: '101.2°F' },
+                    { label: 'Tachycardia', dx: 'Paroxysmal Supraventricular Tachycardia', hr: '138', temp: '99.0°F' }
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => {
+                        setNewDiagnosis(preset.dx);
+                        setNewHR(preset.hr);
+                        setNewTemp(preset.temp);
+                      }}
+                      className="text-[9px] px-2 py-0.5 rounded-lg bg-surface-container border border-outline-variant/50 text-primary hover:bg-primary/10 transition-colors cursor-pointer font-medium"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1">
                 <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Assigned Ward</label>
                 <input 
                   type="text" 
@@ -368,24 +403,24 @@ export default function ClientShell({ children }: { children: React.ReactNode })
                   required
                 />
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Heart Rate</label>
+                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">HR (bpm)</label>
                   <input 
                     type="number" 
                     value={newHR} 
                     onChange={(e) => setNewHR(e.target.value)}
-                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2.5 text-xs text-on-surface focus:outline-none"
+                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2 text-xs text-on-surface focus:outline-none"
                     required
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">BP (systolic/dia)</label>
+                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">BP</label>
                   <input 
                     type="text" 
                     value={newBP} 
                     onChange={(e) => setNewBP(e.target.value)}
-                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2.5 text-xs text-on-surface focus:outline-none"
+                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2 text-xs text-on-surface focus:outline-none"
                     required
                   />
                 </div>
@@ -395,7 +430,18 @@ export default function ClientShell({ children }: { children: React.ReactNode })
                     type="number" 
                     value={newSpO2} 
                     onChange={(e) => setNewSpO2(e.target.value)}
-                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2.5 text-xs text-on-surface focus:outline-none"
+                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2 text-xs text-on-surface focus:outline-none"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Temp (°F)</label>
+                  <input 
+                    type="text" 
+                    value={newTemp} 
+                    onChange={(e) => setNewTemp(e.target.value)}
+                    className="w-full bg-surface-container-high border border-outline-variant/40 rounded-xl p-2 text-xs text-on-surface focus:outline-none"
+                    placeholder="98.6°F"
                     required
                   />
                 </div>

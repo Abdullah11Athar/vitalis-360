@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { getApiPath } from '@/lib/config';
+import { getPatientById, PatientRecord } from '@/lib/patientData';
 
 function MedicalAdvisorContent() {
   const searchParams = useSearchParams();
@@ -12,11 +13,17 @@ function MedicalAdvisorContent() {
   const [syncComplete, setSyncComplete] = useState(false);
   const [txnId, setTxnId] = useState('');
   const [role, setRole] = useState('patient');
-  const [patient, setPatient] = useState({
-    id: '8829-XL',
-    name: 'Zeeshan Ali',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
-  });
+  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(patientId));
+
+  const [isPlayingSpeech, setIsPlayingSpeech] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+  const [isRecording, setIsRecording] = useState(true);
+  const [transcripts, setTranscripts] = useState<Array<{ time: string; text: string; isLive?: boolean }>>(() => patient.advisor?.transcripts || []);
+  const [orders, setOrders] = useState<Array<{ id: number; type: string; name: string; accepted?: boolean }>>(() => patient.advisor?.orders || []);
+
+  const [isMuted, setIsMuted] = useState(true);
+  const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('vitalis_user');
@@ -27,17 +34,11 @@ function MedicalAdvisorContent() {
       } catch (e) {}
     }
 
-    const savedPatients = localStorage.getItem('vitalis_patients');
-    if (savedPatients) {
-      const list = JSON.parse(savedPatients);
-      const found = list.find((p: any) => p.id === patientId);
-      if (found) {
-        setPatient(found);
-      }
-    }
+    const currentRecord = getPatientById(patientId);
+    setPatient(currentRecord);
+    setTranscripts(currentRecord.advisor?.transcripts || []);
+    setOrders(currentRecord.advisor?.orders || []);
   }, [patientId]);
-
-  const portalBase = role === 'doctor' ? '/portal/doctor/patient' : role === 'staff' ? '/portal/staff/patient' : '/portal/patient';
 
   const handleCommit = () => {
     setIsSyncing(true);
@@ -49,9 +50,6 @@ function MedicalAdvisorContent() {
     }, 1200);
   };
 
-  const [isPlayingSpeech, setIsPlayingSpeech] = useState(false);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
-
   const fallbackSpeak = (text: string) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -61,7 +59,7 @@ function MedicalAdvisorContent() {
       utterance.onend = () => setIsPlayingSpeech(false);
       utterance.onerror = () => setIsPlayingSpeech(false);
       window.speechSynthesis.speak(utterance);
-      window.dispatchEvent(new CustomEvent('show-toast', { detail: "🔊 Playing AI Clinical Synthesis readout..." }));
+      window.dispatchEvent(new CustomEvent('show-toast', { detail: `🔊 Playing AI Clinical Synthesis readout for ${patient.name}...` }));
     } else {
       setIsPlayingSpeech(false);
     }
@@ -82,7 +80,7 @@ function MedicalAdvisorContent() {
     }
 
     setIsPlayingSpeech(true);
-    const textToSpeak = "Primary suggested diagnosis mapping is R 10.32, Left Lower Quadrant Abdominal Pain. Differential considerations: Acute diverticulitis versus colonic spasm. Recommend immediate complete blood count and imaging confirmation.";
+    const textToSpeak = patient.advisor?.speechText || `Primary suggested diagnosis mapping is ${patient.advisor?.icd10 || 'R69'}, for ${patient.name}. Continue active ward monitoring.`;
 
     try {
       const res = await fetch(getApiPath('/api/elevenlabs'), {
@@ -105,7 +103,7 @@ function MedicalAdvisorContent() {
           fallbackSpeak(textToSpeak);
         };
         await audio.play();
-        window.dispatchEvent(new CustomEvent('show-toast', { detail: "🔊 Playing ElevenLabs HD AI Voice Note..." }));
+        window.dispatchEvent(new CustomEvent('show-toast', { detail: `🔊 Playing ElevenLabs HD AI Voice Note for ${patient.name}...` }));
       } else {
         fallbackSpeak(textToSpeak);
       }
@@ -113,21 +111,6 @@ function MedicalAdvisorContent() {
       fallbackSpeak(textToSpeak);
     }
   };
-
-  const [isRecording, setIsRecording] = useState(true);
-  const [transcripts, setTranscripts] = useState([
-    { time: '10:24', text: 'Patient reports recurring sharp pain in the left lower quadrant, worsening after meals.', isLive: false },
-    { time: '10:25', text: 'No history of similar pain. BP is stable at 128/82. Heart rate 74.', isLive: false },
-    { time: 'Live', text: 'Analyzing symptoms for diagnostic mapping and differential ICD-10 correlation...', isLive: true }
-  ]);
-
-  const [orders, setOrders] = useState([
-    { id: 1, type: 'biotech', name: 'Order CBC Lab Panel', accepted: false },
-    { id: 2, type: 'radiology', name: 'Schedule Abdominal US', accepted: false }
-  ]);
-
-  const [isMuted, setIsMuted] = useState(true);
-  const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -206,7 +189,7 @@ function MedicalAdvisorContent() {
       {/* Header Profile Section */}
       <section className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant pb-6">
         <div className="flex items-center gap-4">
-          <Link href={`/patient/detail?id=${patient.id}`} prefetch={true} className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 duration-150 border border-outline-variant">
+          <Link href={`/patient/detail?id=${patient.id}`} prefetch={true} className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 duration-150 border border-outline-variant cursor-pointer">
             <span className="material-symbols-outlined text-primary">arrow_back</span>
           </Link>
           <div className="w-14 h-14 rounded-full bg-surface-container-high border-2 border-primary/40 overflow-hidden flex items-center justify-center shadow-md shrink-0">
@@ -260,7 +243,7 @@ function MedicalAdvisorContent() {
         <div className="flex items-center gap-6 md:gap-8">
           <button 
             onClick={() => setIsRecording(!isRecording)}
-            className="w-14 h-14 rounded-full border border-outline-variant bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-90 transition-all shadow-sm"
+            className="w-14 h-14 rounded-full border border-outline-variant bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-90 transition-all shadow-sm cursor-pointer"
             title={isRecording ? "Pause" : "Resume"}
           >
             <span className="material-symbols-outlined text-2xl">{isRecording ? 'pause' : 'play_arrow'}</span>
@@ -268,9 +251,9 @@ function MedicalAdvisorContent() {
           <button 
             onClick={() => {
               setIsRecording(false);
-              window.dispatchEvent(new CustomEvent('show-toast', { detail: "🧠 Recording stopped. Finalizing AI diagnostic synthesis and clinical notes..." }));
+              window.dispatchEvent(new CustomEvent('show-toast', { detail: `🧠 Recording stopped. Finalized AI diagnostic synthesis for ${patient.name}.` }));
             }}
-            className="w-20 h-20 rounded-full bg-error text-white flex items-center justify-center shadow-lg shadow-error/30 active:scale-95 transition-transform hover:opacity-90"
+            className="w-20 h-20 rounded-full bg-error text-white flex items-center justify-center shadow-lg shadow-error/30 active:scale-95 transition-transform hover:opacity-90 cursor-pointer"
             title="Stop & Synthesize"
           >
             <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>stop</span>
@@ -292,7 +275,7 @@ function MedicalAdvisorContent() {
       {/* Real-time Transcription Feed */}
       <section className="mb-8">
         <h2 className="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-2 mb-4">
-          <span className="material-symbols-outlined text-xl">text_snippet</span> Live Clinical Transcription Feed
+          <span className="material-symbols-outlined text-xl">text_snippet</span> Live Clinical Transcription Feed ({patient.name})
         </h2>
         <div className="space-y-3 bg-surface-container-low p-6 rounded-2xl border border-outline-variant max-h-64 overflow-y-auto shadow-sm">
           {transcripts.map((item, idx) => (
@@ -322,12 +305,12 @@ function MedicalAdvisorContent() {
             </div>
             <div>
               <h3 className="font-bold text-xl text-on-surface">AI Clinical Synthesis & Triage</h3>
-              <p className="text-xs text-on-surface-variant font-medium">Real-time differential diagnosis and clinical order generation</p>
+              <p className="text-xs text-on-surface-variant font-medium">Real-time differential diagnosis and clinical order generation for {patient.name}</p>
             </div>
           </div>
           <div className="bg-primary/20 text-primary px-4 py-1.5 rounded-full text-xs font-bold border border-primary/30 w-fit flex items-center gap-1.5">
             <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-            <span>94% Diagnostic Confidence</span>
+            <span>{patient.advisor?.confidence || 94}% Diagnostic Confidence</span>
           </div>
         </div>
 
@@ -336,15 +319,15 @@ function MedicalAdvisorContent() {
           <span className="text-[11px] sm:text-xs font-bold text-on-surface-variant uppercase tracking-wider block">Primary Suggested Diagnosis (ICD-10 Mapping)</span>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
             <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0">
-              <span className="text-xl sm:text-2xl font-black text-primary shrink-0">R10.32</span>
-              <span className="text-sm sm:text-base font-bold text-on-surface leading-snug">Left Lower Quadrant (LLQ) Abdominal Pain</span>
+              <span className="text-xl sm:text-2xl font-black text-primary shrink-0">{patient.advisor?.icd10 || 'R69'}</span>
+              <span className="text-sm sm:text-base font-bold text-on-surface leading-snug">{patient.advisor?.title || patient.diagnosis}</span>
             </div>
             <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pt-1 sm:pt-0">
               <button 
                 onClick={playDiagnosticSpeech}
                 disabled={isPlayingSpeech}
                 className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center gap-1.5 hover:bg-primary/20 transition-all cursor-pointer disabled:opacity-50 text-xs font-bold shrink-0"
-                title="Speak Clinical Note (ElevenLabs)"
+                title="Speak Clinical Note (ElevenLabs HD)"
               >
                 <span className="material-symbols-outlined text-base">{isPlayingSpeech ? 'graphic_eq' : 'volume_up'}</span>
                 <span>Listen Note</span>
@@ -355,7 +338,7 @@ function MedicalAdvisorContent() {
             </div>
           </div>
           <p className="text-xs text-on-surface-variant mt-2 border-t border-outline-variant/30 pt-2 leading-relaxed">
-            Differential considerations: Acute diverticulitis vs. colonic spasm. Recommend immediate CBC and imaging confirmation.
+            {patient.advisor?.differential || 'Differential considerations actively monitored. Telemetry within safe range.'}
           </p>
         </div>
 
@@ -433,7 +416,7 @@ function MedicalAdvisorContent() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-on-surface-variant font-medium">Patient Signature</span>
-                    <span className="text-on-surface font-bold">Zeeshan Ali</span>
+                    <span className="text-on-surface font-bold">{patient.name}</span>
                   </div>
                   <div className="flex flex-col gap-1 pt-1.5 border-t border-outline-variant/30">
                     <span className="text-on-surface-variant font-medium text-left">Ledger Transaction Hash</span>
@@ -454,8 +437,6 @@ function MedicalAdvisorContent() {
     </div>
   );
 }
-
-import { Suspense } from 'react';
 
 export default function MedicalAdvisor() {
   return (

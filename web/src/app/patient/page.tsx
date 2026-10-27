@@ -1,85 +1,23 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { initializePatients, DEFAULT_PATIENTS, PatientRecord } from '@/lib/patientData';
 
 export default function PatientDirectory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterWard, setFilterWard] = useState('All');
-  const [patients, setPatients] = useState<any[]>([]);
-
-  const defaultPatients = [
-    {
-      id: '8829-XL',
-      name: 'Zeeshan Ali',
-      age: 34,
-      gender: 'Male',
-      ward: 'Telemetry Ward 4B',
-      status: 'Critical Alert',
-      statusColor: 'error',
-      hr: 142,
-      bp: '138/88',
-      spo2: 94,
-      diagnosis: 'Tachycardia / Type 2 DM / Hyperlipidemia',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-      href: '/patient/detail'
-    },
-    {
-      id: '9912-KA',
-      name: 'Elena Rostova',
-      age: 48,
-      gender: 'Female',
-      ward: 'ICU Bed 2',
-      status: 'Monitoring',
-      statusColor: 'primary',
-      hr: 76,
-      bp: '120/78',
-      spo2: 98,
-      diagnosis: 'Post-op Cardiac Bypass / Stable Recovery',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-      href: '/patient/detail'
-    },
-    {
-      id: '7734-BM',
-      name: 'Marcus Vance',
-      age: 62,
-      gender: 'Male',
-      ward: 'Telemetry Ward 4A',
-      status: 'Stable',
-      statusColor: 'primary',
-      hr: 68,
-      bp: '128/82',
-      spo2: 97,
-      diagnosis: 'Hypertension / Mild Arrhythmia',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-      href: '/patient/detail'
-    },
-    {
-      id: '4421-SP',
-      name: 'Sarah Jenkins',
-      age: 29,
-      gender: 'Female',
-      ward: 'Maternity Wing',
-      status: 'Observation',
-      statusColor: 'amber',
-      hr: 88,
-      bp: '118/74',
-      spo2: 99,
-      diagnosis: 'Gestational Diabetes Triage',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-      href: '/patient/detail'
-    }
-  ];
-
+  const [patients, setPatients] = useState<PatientRecord[]>([]);
   const [user, setUser] = useState<any>(null);
 
   const loadPatients = () => {
-    const saved = localStorage.getItem('vitalis_patients');
-    if (saved) {
-      setPatients(JSON.parse(saved));
-    } else {
-      localStorage.setItem('vitalis_patients', JSON.stringify(defaultPatients));
-      setPatients(defaultPatients);
-    }
+    const list = initializePatients();
+    setPatients(list);
+  };
+
+  const handleResetCensus = () => {
+    localStorage.setItem('vitalis_patients', JSON.stringify(DEFAULT_PATIENTS));
+    setPatients(DEFAULT_PATIENTS);
+    window.dispatchEvent(new CustomEvent('show-toast', { detail: '🔄 Clinical Census refreshed to all 7 standard patients!' }));
   };
 
   useEffect(() => {
@@ -95,13 +33,14 @@ export default function PatientDirectory() {
   }, []);
 
   const filteredPatients = patients.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesWard = filterWard === 'All' || p.ward.includes(filterWard);
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          p.diagnosis.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesWard = filterWard === 'All' || p.ward.toLowerCase().includes(filterWard.toLowerCase());
     return matchesSearch && matchesWard;
   });
 
-  const prefix = user?.role === 'Doctor' ? '/portal/doctor' : '/portal/staff';
-  const dashboardHref = user?.role === 'Doctor' ? '/portal/doctor/rounds' : '/portal/staff';
+  const dashboardHref = user?.role === 'Doctor' ? '/doctor/rounds' : '/patient';
 
   return (
     <div className="py-6 px-4 md:px-8 max-w-6xl mx-auto w-full pb-36 md:pb-12">
@@ -119,6 +58,14 @@ export default function PatientDirectory() {
             Dashboard
           </Link>
           <button 
+            onClick={handleResetCensus}
+            title="Reset to 7 standard patients"
+            className="px-3 py-2.5 bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">restart_alt</span>
+            <span className="hidden sm:inline">Reset Census</span>
+          </button>
+          <button 
             onClick={() => window.dispatchEvent(new Event('open-add-patient-modal'))}
             className="flex-1 sm:flex-none justify-center px-4 py-2.5 bg-primary text-on-primary text-xs font-bold rounded-xl hover:opacity-90 transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
           >
@@ -134,19 +81,19 @@ export default function PatientDirectory() {
           <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
           <input 
             type="text" 
-            placeholder="Search by patient name or ID..."
+            placeholder="Search by patient name, ID, or diagnosis..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-surface-container pl-10 pr-4 py-2.5 rounded-xl text-sm text-on-surface border border-outline-variant/50 focus:outline-none focus:border-primary placeholder:text-on-surface-variant/60"
           />
         </div>
 
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-          {['All', 'Telemetry', 'ICU', 'Maternity'].map((ward) => (
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+          {['All', 'Telemetry', 'ICU', 'Maternity', 'Acute', 'Surgical', 'Neurological'].map((ward) => (
             <button 
               key={ward}
               onClick={() => setFilterWard(ward)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 filterWard === ward 
                   ? 'bg-primary text-on-primary shadow-sm' 
                   : 'bg-surface-container text-on-surface-variant hover:text-on-surface border border-outline-variant/50'
@@ -196,36 +143,44 @@ export default function PatientDirectory() {
             {/* Diagnosis */}
             <div className="bg-surface-container/50 p-3.5 rounded-xl border border-outline-variant/30">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Primary Clinical Profile</span>
-              <p className="text-xs font-bold text-on-surface">{patient.diagnosis || 'Post-op Recovery / Telemetry Logged'}</p>
+              <p className="text-xs font-bold text-on-surface truncate" title={patient.diagnosis}>{patient.diagnosis || 'Post-op Recovery / Telemetry Logged'}</p>
             </div>
 
             {/* Vital Telemetry Bento */}
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-outline-variant/30">
-              <div className="bg-surface-container/30 p-2.5 rounded-xl text-center border border-outline-variant/20">
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase">Heart Rate</span>
-                <div className={`text-base font-black mt-0.5 ${patient.hr > 100 ? 'text-error' : 'text-on-surface'}`}>{patient.hr} <span className="text-[10px] font-normal">bpm</span></div>
+            <div className="grid grid-cols-4 gap-2 pt-2 border-t border-outline-variant/30">
+              <div className="bg-surface-container/30 p-2 rounded-xl text-center border border-outline-variant/20">
+                <span className="text-[9px] sm:text-[10px] font-bold text-on-surface-variant uppercase">HR</span>
+                <div className={`text-sm sm:text-base font-black mt-0.5 ${(patient.hr || patient.heartRate || 0) > 100 ? 'text-error' : 'text-on-surface'}`}>
+                  {patient.hr || patient.heartRate || 75} <span className="text-[9px] font-normal">bpm</span>
+                </div>
               </div>
-              <div className="bg-surface-container/30 p-2.5 rounded-xl text-center border border-outline-variant/20">
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase">Blood Press.</span>
-                <div className="text-base font-black text-on-surface mt-0.5">{patient.bp}</div>
+              <div className="bg-surface-container/30 p-2 rounded-xl text-center border border-outline-variant/20">
+                <span className="text-[9px] sm:text-[10px] font-bold text-on-surface-variant uppercase">BP</span>
+                <div className="text-sm sm:text-base font-black text-on-surface mt-0.5 truncate">{patient.bp || '120/80'}</div>
               </div>
-              <div className="bg-surface-container/30 p-2.5 rounded-xl text-center border border-outline-variant/20">
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase">SpO2</span>
-                <div className="text-base font-black text-primary mt-0.5">{patient.spo2}%</div>
+              <div className="bg-surface-container/30 p-2 rounded-xl text-center border border-outline-variant/20">
+                <span className="text-[9px] sm:text-[10px] font-bold text-on-surface-variant uppercase">SpO2</span>
+                <div className="text-sm sm:text-base font-black text-primary mt-0.5">{patient.spo2 || patient.spO2 || 98}%</div>
+              </div>
+              <div className="bg-surface-container/30 p-2 rounded-xl text-center border border-outline-variant/20">
+                <span className="text-[9px] sm:text-[10px] font-bold text-on-surface-variant uppercase">Temp</span>
+                <div className={`text-sm sm:text-base font-black mt-0.5 ${parseFloat(patient.temp || '98.6') >= 100.4 ? 'text-error' : 'text-on-surface'}`}>
+                  {patient.temp || '98.6°F'}
+                </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex gap-2.5 pt-2">
               <Link 
-                href={`${prefix}/patient/detail?id=${patient.id}`}
+                href={`/patient/detail?id=${patient.id}`}
                 className="flex-1 py-2.5 bg-primary text-on-primary text-center font-bold text-xs rounded-xl hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>View Full Record & Audit</span>
                 <span className="material-symbols-outlined text-base">arrow_forward</span>
               </Link>
               <Link 
-                href={`${prefix}/patient/advisor?id=${patient.id}`}
+                href={`/patient/advisor?id=${patient.id}`}
                 className="px-3.5 py-2.5 bg-surface-container text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-high transition-colors border border-outline-variant flex items-center justify-center cursor-pointer"
                 title="Launch AI Medical Advisor"
               >

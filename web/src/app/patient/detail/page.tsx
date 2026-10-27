@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { getPatientById, PatientRecord, AlarmItem } from '@/lib/patientData';
 
 function PatientDetailContent() {
   const searchParams = useSearchParams();
@@ -10,25 +11,8 @@ function PatientDetailContent() {
   const [reports, setReports] = useState<any[]>([]);
   const [selectedReportForReview, setSelectedReportForReview] = useState<any | null>(null);
   const [role, setRole] = useState('patient');
-  const [patient, setPatient] = useState({
-    id: '8829-XL',
-    name: 'Zeeshan Ali',
-    age: 34,
-    gender: 'Male',
-    ward: 'Telemetry Ward 4B',
-    status: 'Critical Alert',
-    statusColor: 'error',
-    hr: 142,
-    bp: '138/88',
-    spo2: 94,
-    diagnosis: 'Tachycardia / Type 2 DM / Hyperlipidemia',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
-  });
-  
-  const [alarms, setAlarms] = useState([
-    { id: 1, title: 'Tachycardia Event', time: '2m ago', desc: 'HR spiked to 142 bpm during sleep cycle.', type: 'error' },
-    { id: 2, title: 'Glucose Spike Warning', time: '18m ago', desc: 'Post-prandial glucose reached 185 mg/dL.', type: 'warning' }
-  ]);
+  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(patientId));
+  const [alarms, setAlarms] = useState<AlarmItem[]>(() => patient.alarms || []);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('vitalis_user');
@@ -39,23 +23,9 @@ function PatientDetailContent() {
       } catch (e) {}
     }
 
-    const savedPatients = localStorage.getItem('vitalis_patients');
-    if (savedPatients) {
-      const list = JSON.parse(savedPatients);
-      const found = list.find((p: any) => p.id === patientId);
-      if (found) {
-        setPatient(found);
-        
-        if (found.statusColor !== 'error') {
-          setAlarms([]);
-        } else {
-          setAlarms([
-            { id: 1, title: 'Tachycardia Event', time: '2m ago', desc: `HR spiked to ${found.hr} bpm during sleep cycle.`, type: 'error' },
-            { id: 2, title: 'Glucose Spike Warning', time: '18m ago', desc: 'Post-prandial glucose reached 185 mg/dL.', type: 'warning' }
-          ]);
-        }
-      }
-    }
+    const currentRecord = getPatientById(patientId);
+    setPatient(currentRecord);
+    setAlarms(currentRecord.alarms || []);
 
     const saved = localStorage.getItem('vitalis_uploaded_reports');
     if (saved) {
@@ -71,7 +41,8 @@ function PatientDetailContent() {
   }, [patientId]);
 
   const resolveAlarm = (id: number) => {
-    setAlarms(alarms.filter(a => a.id !== id));
+    setAlarms(prev => prev.filter(a => a.id !== id));
+    window.dispatchEvent(new CustomEvent('show-toast', { detail: "✅ Alarm acknowledged and logged to EMR audit log." }));
   };
 
   const handleDelete = (id: string, title: string) => {
@@ -82,31 +53,35 @@ function PatientDetailContent() {
   };
 
   const handleDownload = (rep: any) => {
+    const biomarkerSummary = patient.labPanel?.metrics?.map(m => `${m.name}: ${m.value} (${m.status})`).join(', ') || 'Normal';
     const content = `VITALIS-360 CLINICAL VAULT REPORT
 ==================================================
 Document: ${rep.title}
 Patient: ${patient.name} (ID: ${patient.id})
+Age/Gender: ${patient.age} yrs / ${patient.gender}
 Ward: ${patient.ward}
+Primary Diagnosis: ${patient.diagnosis}
 Uploader: ${rep.uploader}
 Date: ${rep.date}
 SHA-256 Hash: ${rep.hash}
 Security Audit: VERIFIED & COMPLIANT
 
 CLINICAL FINDINGS & AI SYNTHESIS:
-- Primary Biomarkers: HbA1c 6.1%, LDL 112 mg/dL, Resting HR 74 bpm.
-- Diagnostic Status: Stable circadian rhythm with mild post-prandial glycemic excursions.
+- Core Telemetry: HR ${patient.hr || patient.heartRate || 75} bpm, BP ${patient.bp}, SpO2 ${patient.spo2 || patient.spO2 || 98}%, Temp ${patient.temp || '98.6°F'}.
+- Laboratory Biomarkers: ${biomarkerSummary}
+- Diagnostic Synthesis: ${patient.advisor?.differential || 'Stable under continuous clinical observation.'}
 - Regulatory Standard: HIPAA / GDPR Cryptographically Sealed by VITALIS-360 Guardian.
 ==================================================`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${rep.title.replace(/\.[^/.]+$/, "")}_VITALIS_Report.txt`;
+    a.download = `${rep.title.replace(/\.[^/.]+$/, "")}_${patient.name.replace(/\s+/g, '_')}_Report.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    window.dispatchEvent(new CustomEvent('show-toast', { detail: `📥 Downloaded "${rep.title}" successfully!` }));
+    window.dispatchEvent(new CustomEvent('show-toast', { detail: `📥 Downloaded "${rep.title}" for ${patient.name} successfully!` }));
   };
 
   const backHref = role === 'doctor' ? '/doctor/rounds' : role === 'staff' ? '/patient' : '/patient/dashboard';
@@ -129,7 +104,7 @@ CLINICAL FINDINGS & AI SYNTHESIS:
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="font-headline-lg text-lg md:text-xl text-on-surface font-bold truncate">{patient.name}</h1>
-              <span className={`w-2.5 h-2.5 rounded-full shrink-0 bg-${patient.statusColor === 'error' ? 'error' : patient.statusColor === 'amber' ? 'amber-500' : 'primary'} ${patient.statusColor === 'error' ? 'animate-pulse' : ''}`}></span>
+              <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${patient.statusColor === 'error' ? 'bg-error animate-pulse' : patient.statusColor === 'amber' ? 'bg-amber-500' : 'bg-primary'}`}></span>
             </div>
             <p className="font-label-md text-xs text-on-surface-variant font-medium truncate">ID: {patient.id} • {patient.age} yrs • {patient.gender} • {patient.ward}</p>
           </div>
@@ -151,16 +126,62 @@ CLINICAL FINDINGS & AI SYNTHESIS:
         </div>
       </section>
 
+      {/* Patient Vitals & Clinical Profile Banner */}
+      <section className="mb-8 bg-surface-container-low rounded-2xl p-5 border border-outline-variant shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant/40">
+          <div>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-wider block">Active Clinical Profile</span>
+            <h2 className="text-base sm:text-lg font-black text-on-surface mt-0.5">{patient.diagnosis}</h2>
+          </div>
+          <span className={`px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5 w-fit ${
+            patient.statusColor === 'error' ? 'bg-error/10 text-error border-error/30' : patient.statusColor === 'amber' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-primary/10 text-primary border-primary/30'
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${patient.statusColor === 'error' ? 'bg-error animate-pulse' : patient.statusColor === 'amber' ? 'bg-amber-500' : 'bg-primary'}`}></span>
+            {patient.status}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Heart Rate</span>
+            <div className={`text-lg sm:text-xl font-black mt-1 ${(patient.hr || patient.heartRate || 0) > 100 ? 'text-error' : 'text-on-surface'}`}>
+              {patient.hr || patient.heartRate || 75} <span className="text-xs font-normal">bpm</span>
+            </div>
+          </div>
+          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Blood Pressure</span>
+            <div className="text-lg sm:text-xl font-black text-on-surface mt-1">{patient.bp || '120/80'}</div>
+          </div>
+          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Oxygen (SpO2)</span>
+            <div className="text-lg sm:text-xl font-black text-primary mt-1">{patient.spo2 || patient.spO2 || 98}%</div>
+          </div>
+          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Body Temp</span>
+            <div className={`text-lg sm:text-xl font-black mt-1 ${parseFloat(patient.temp || '98.6') >= 100.4 ? 'text-error' : 'text-on-surface'}`}>
+              {patient.temp || '98.6°F'}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Active Alarms Section */}
-      {alarms.length > 0 && (
-        <section className="mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Active Alarms</h2>
+      <section className="mb-8">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Active Clinical Alarms</h2>
+          {alarms.length > 0 ? (
             <span className="bg-error/20 text-error px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-error/30">
               <span className="w-2 h-2 rounded-full bg-error animate-ping"></span>
               {alarms.length} Unresolved Alerts
             </span>
-          </div>
+          ) : (
+            <span className="bg-primary/20 text-primary px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-primary/30">
+              <span className="material-symbols-outlined text-sm">check_circle</span>
+              All Clear • Telemetry Within Limits
+            </span>
+          )}
+        </div>
+        {alarms.length > 0 ? (
           <div className="space-y-3">
             {alarms.map((alarm) => (
               <div key={alarm.id} className="p-4 bg-error/10 border border-error/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -181,8 +202,13 @@ CLINICAL FINDINGS & AI SYNTHESIS:
               </div>
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-2xl">verified</span>
+            <p className="text-xs text-on-surface-variant font-medium">Continuous telemetry demonstrates normal circadian waveform. No threshold violations detected in the past 24 hours.</p>
+          </div>
+        )}
+      </section>
 
       {/* Medical History & Labs Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -190,26 +216,29 @@ CLINICAL FINDINGS & AI SYNTHESIS:
         <div className="space-y-4">
           <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Active Clinical History</h2>
           <div className="space-y-3">
-            <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant space-y-3 shadow-sm">
-              <div className="flex justify-between items-start">
-                <h3 className="font-bold text-sm text-on-surface">Type 2 Diabetes Mellitus</h3>
-                <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">Diagnosed 2021</span>
+            {patient.clinicalHistory && patient.clinicalHistory.length > 0 ? (
+              patient.clinicalHistory.map((item, idx) => (
+                <div key={idx} className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant space-y-3 shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-bold text-sm text-on-surface">{item.condition}</h3>
+                    <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">{item.diagnosed}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {item.medications.map((med, mIdx) => (
+                      <span key={mIdx} className="text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg font-bold">{med}</span>
+                    ))}
+                    {item.management && (
+                      <span className="text-xs bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-lg font-medium">{item.management}</span>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant space-y-2 shadow-sm">
+                <h3 className="font-bold text-sm text-on-surface">{patient.diagnosis}</h3>
+                <span className="text-xs text-on-surface-variant block">No prior chronic conditions recorded in primary health vault.</span>
               </div>
-              <div className="flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg font-bold">Metformin 500mg (BID)</span>
-                <span className="text-xs bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-lg font-medium">Diet Managed</span>
-              </div>
-            </div>
-
-            <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant space-y-3 shadow-sm">
-              <div className="flex justify-between items-start">
-                <h3 className="font-bold text-sm text-on-surface">Hyperlipidemia</h3>
-                <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">Active Monitoring</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg font-bold">Atorvastatin 20mg (QHS)</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -218,37 +247,34 @@ CLINICAL FINDINGS & AI SYNTHESIS:
           <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Recent Lab Panels</h2>
           <div className="bg-surface-container-low rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
             <div className="p-4 border-b border-outline-variant/50 flex items-center justify-between bg-surface-container/30">
-              <span className="font-bold text-sm text-on-surface">Metabolic & Lipid Profile</span>
-              <span className="text-xs text-on-surface-variant font-medium">Oct 12, 2023</span>
+              <span className="font-bold text-sm text-on-surface">{patient.labPanel?.panelName || 'Clinical Biomarkers'}</span>
+              <span className="text-xs text-on-surface-variant font-medium">{patient.labPanel?.date || 'Today'}</span>
             </div>
             <div className="divide-y divide-outline-variant/30">
-              <div className="flex items-center justify-between p-4 hover:bg-surface-container/20 transition-colors">
-                <div>
-                  <span className="font-bold text-sm text-on-surface block">HbA1c</span>
-                  <span className="text-xs text-on-surface-variant">Glycated Hemoglobin</span>
+              {patient.labPanel?.metrics?.map((metric, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 hover:bg-surface-container/20 transition-colors">
+                  <div>
+                    <span className="font-bold text-sm text-on-surface block">{metric.name}</span>
+                    <span className="text-xs text-on-surface-variant">{metric.description}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-lg font-black ${metric.statusColor === 'error' ? 'text-error' : metric.statusColor === 'amber' ? 'text-amber-500' : 'text-primary'}`}>
+                      {metric.value}
+                    </span>
+                    <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                      metric.statusColor === 'error' ? 'bg-error/10 text-error' : metric.statusColor === 'amber' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'
+                    }`}>
+                      {metric.status}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-lg font-black text-primary">6.1%</span>
-                  <div className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded">Normal Range</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 hover:bg-surface-container/20 transition-colors">
-                <div>
-                  <span className="font-bold text-sm text-on-surface block">LDL Cholesterol</span>
-                  <span className="text-xs text-on-surface-variant">Low-Density Lipoprotein</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-lg font-black text-error">112 mg/dL</span>
-                  <div className="text-[10px] font-bold text-error uppercase tracking-wider bg-error/10 px-2 py-0.5 rounded">Elevated</div>
-                </div>
-              </div>
+              ))}
             </div>
             <button 
-              onClick={() => window.dispatchEvent(new CustomEvent('show-toast', { detail: "🧪 Opening comprehensive Laboratory Panel report and historical trends for Zeeshan Ali..." }))}
+              onClick={() => window.dispatchEvent(new CustomEvent('show-toast', { detail: `🧪 Opening comprehensive Laboratory Panel report and historical trends for ${patient.name}...` }))}
               className="w-full p-3.5 bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors text-center border-t border-outline-variant/50 block cursor-pointer"
             >
-              View Full Laboratory Panel & Historical Trends
+              View Full Laboratory Panel & Historical Trends for {patient.name}
             </button>
           </div>
         </div>
@@ -261,7 +287,7 @@ CLINICAL FINDINGS & AI SYNTHESIS:
             <span className="material-symbols-outlined text-primary text-2xl">folder_shared</span>
             <h2 className="text-base font-bold text-on-surface uppercase tracking-wider">Patient Uploaded Medical Reports Vault</h2>
           </div>
-          <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-xl text-xs font-bold border border-primary/20 whitespace-nowrap">SHARED WITH PATIENT</span>
+          <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-xl text-xs font-bold border border-primary/20 whitespace-nowrap">SHARED WITH {patient.name.toUpperCase()}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -340,18 +366,18 @@ CLINICAL FINDINGS & AI SYNTHESIS:
               </div>
 
               <div className="bg-surface-container-high p-4 rounded-xl border border-outline-variant/30 space-y-2">
-                <span className="font-bold text-on-surface block text-sm">Key Diagnostic Extraction:</span>
+                <span className="font-bold text-on-surface block text-sm">Key Diagnostic Extraction ({patient.name}):</span>
                 <ul className="space-y-1.5 text-on-surface-variant list-disc pl-4">
-                  <li><strong className="text-on-surface">Glycemic Control:</strong> HbA1c at 6.1% indicates well-regulated long-term glycemic control under current Metformin regimen.</li>
-                  <li><strong className="text-on-surface">Lipid Profile:</strong> LDL cholesterol mildly elevated at 112 mg/dL. Recommending dietary fat restriction.</li>
-                  <li><strong className="text-on-surface">Cardiology Status:</strong> Sinus tachycardia observed during nocturnal cycle. Correlating with autonomic stress telemetry.</li>
+                  <li><strong className="text-on-surface">Primary Condition:</strong> {patient.diagnosis}</li>
+                  <li><strong className="text-on-surface">Biomarkers ({patient.labPanel?.panelName}):</strong> {patient.labPanel?.metrics?.map(m => `${m.name}: ${m.value}`).join(', ')}</li>
+                  <li><strong className="text-on-surface">Telemetry Status:</strong> Resting HR {patient.hr || patient.heartRate || 75} bpm, BP {patient.bp}, SpO2 {patient.spo2 || patient.spO2 || 98}%, Temp {patient.temp || '98.6°F'}.</li>
                 </ul>
               </div>
 
               <div className="bg-primary/10 p-3.5 rounded-xl border border-primary/20">
                 <span className="font-bold text-primary block text-xs mb-1">Recommended Clinician Action:</span>
                 <p className="text-on-surface text-[11px] leading-relaxed">
-                  Schedule follow-up telemetry check in 7 days. Maintain Metformin 500mg BID and Atorvastatin 20mg QHS.
+                  {patient.advisor?.differential || 'Maintain continuous clinical telemetry surveillance and vital monitoring.'}
                 </p>
               </div>
             </div>
@@ -383,7 +409,7 @@ CLINICAL FINDINGS & AI SYNTHESIS:
           <span className="font-bold text-xs text-primary uppercase tracking-widest">SENTINEL AI CONTINUOUS INSIGHT</span>
         </div>
         <p className="text-base font-medium text-on-surface italic leading-relaxed relative z-10 bg-surface-container/40 p-4 rounded-xl border border-outline-variant/30">
-          &ldquo;Zeeshan&apos;s circadian rhythm has stabilized over the last 48 hours. However, post-prandial spikes are correlating with low activity levels. Suggesting a 10-minute walk post-lunch to dampen glucose response and optimize nocturnal HRV.&rdquo;
+          &ldquo;{patient.name}&apos;s clinical parameters are under active automated surveillance. Core diagnosis &apos;{patient.diagnosis}&apos; tracked with real-time biometric safeguards.&rdquo;
         </p>
       </section>
     </div>
