@@ -825,80 +825,104 @@ export function createDynamicPatient(input: {
   };
 }
 
+const PATIENTS_SCHEMA_VERSION = "v4_clinical_clean_2026";
+
 export function initializePatients(): PatientRecord[] {
   if (typeof window === 'undefined') {
     return DEFAULT_PATIENTS;
   }
 
+  const currentVersion = localStorage.getItem('vitalis_patients_schema_v');
   const saved = localStorage.getItem('vitalis_patients');
-  if (!saved) {
+
+  // If schema version is outdated or missing, refresh with pristine 7 clinical standard patients
+  if (!saved || currentVersion !== PATIENTS_SCHEMA_VERSION) {
     localStorage.setItem('vitalis_patients', JSON.stringify(DEFAULT_PATIENTS));
+    localStorage.setItem('vitalis_patients_schema_v', PATIENTS_SCHEMA_VERSION);
     return DEFAULT_PATIENTS;
   }
 
   try {
     const list: any[] = JSON.parse(saved);
-    // If the list is older format (less than 7 patients or missing clinicalHistory), upgrade it!
-    const hasFullSchema = list.length >= 4 && list[0] && Array.isArray(list[0].clinicalHistory) && list[0].labPanel && list[0].advisor;
-    
-    // Check if Umar, Sadia, or Tani exist in the list. If not, append them!
-    const names = list.map(p => p.name?.toLowerCase());
-    let updated = false;
+    if (!Array.isArray(list) || list.length === 0) {
+      localStorage.setItem('vitalis_patients', JSON.stringify(DEFAULT_PATIENTS));
+      return DEFAULT_PATIENTS;
+    }
 
+    // Ensure all 7 standard patients exist in the list with their rich clinical data
+    let updated = false;
     DEFAULT_PATIENTS.forEach(defPatient => {
-      const idx = list.findIndex(p => p.id === defPatient.id || p.name?.toLowerCase() === defPatient.name.toLowerCase());
+      const idx = list.findIndex(p => p.id === defPatient.id);
       if (idx === -1) {
         list.push(defPatient);
         updated = true;
-      } else if (!list[idx].clinicalHistory || !list[idx].labPanel || !list[idx].advisor || !list[idx].temp) {
-        // Upgrade existing with rich clinical data
-        list[idx] = { ...defPatient, ...list[idx], clinicalHistory: defPatient.clinicalHistory, labPanel: defPatient.labPanel, advisor: defPatient.advisor, alarms: defPatient.alarms, temp: defPatient.temp, lifestyle: defPatient.lifestyle, sleep: defPatient.sleep };
-        updated = true;
+      } else {
+        // Guarantee pristine condition-specific clinical history, labs, alarms, and advisor
+        const item = list[idx];
+        if (!item.clinicalHistory || item.clinicalHistory.length === 0 || !item.labPanel || !item.advisor || item.name !== defPatient.name) {
+          list[idx] = { ...defPatient };
+          updated = true;
+        }
       }
     });
 
-    if (updated || !hasFullSchema) {
+    if (updated) {
       localStorage.setItem('vitalis_patients', JSON.stringify(list));
     }
     return list;
   } catch (e) {
     localStorage.setItem('vitalis_patients', JSON.stringify(DEFAULT_PATIENTS));
+    localStorage.setItem('vitalis_patients_schema_v', PATIENTS_SCHEMA_VERSION);
     return DEFAULT_PATIENTS;
   }
 }
 
-export function getPatientById(id: string): PatientRecord {
-  const cleanId = (id || '').replace(/^#/, '');
+export function getActivePatientId(): string {
+  if (typeof window !== 'undefined') {
+    const active = localStorage.getItem('vitalis_active_patient_id');
+    if (active) return active;
+  }
+  return '5512-UF'; // Default to Umar Farooq (Acute Febrile Bronchitis)
+}
+
+export function setActivePatientId(id: string): void {
+  if (typeof window !== 'undefined' && id) {
+    const cleanId = id.replace(/^#/, '');
+    localStorage.setItem('vitalis_active_patient_id', cleanId);
+    window.dispatchEvent(new CustomEvent('active-patient-changed', { detail: cleanId }));
+  }
+}
+
+export function getPatientById(id?: string | null): PatientRecord {
   const allPatients = initializePatients();
   
-  const found = allPatients.find(p => p.id === cleanId || p.id === id || p.id.replace(/^#/, '') === cleanId);
-  if (found) {
-    // Ensure all sub-objects exist
-    if (!found.clinicalHistory || !found.labPanel || !found.advisor) {
-      const def = DEFAULT_PATIENTS.find(d => d.id === found.id);
-      if (def) {
-        return { ...def, ...found };
-      }
-      return createDynamicPatient({
-        name: found.name,
-        age: found.age,
-        gender: found.gender,
-        ward: found.ward,
-        phone: found.phone,
-        hr: found.hr || found.heartRate,
-        bp: found.bp,
-        spo2: found.spo2 || found.spO2,
-        temp: found.temp,
-        diagnosis: found.diagnosis,
-        status: found.status
-      });
+  let targetId = id?.replace(/^#/, '')?.trim();
+  
+  // If targetId is not provided, falsy, or "undefined", fall back to active patient ID from storage
+  if (!targetId || targetId === 'undefined' || targetId === 'null') {
+    if (typeof window !== 'undefined') {
+      targetId = localStorage.getItem('vitalis_active_patient_id') || undefined;
     }
-    return found;
   }
 
-  // Fallback to default by id, or first default patient
-  const defMatch = DEFAULT_PATIENTS.find(d => d.id === cleanId);
-  if (defMatch) return defMatch;
+  if (targetId) {
+    const found = allPatients.find(p => 
+      p.id.toLowerCase() === targetId!.toLowerCase() || 
+      p.name.toLowerCase().includes(targetId!.toLowerCase())
+    );
+    if (found) {
+      // Sync active patient
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('vitalis_active_patient_id', found.id);
+      }
+      return found;
+    }
+  }
 
-  return DEFAULT_PATIENTS[0];
+  // Fallback to first default patient (Umar Farooq or Zeeshan Ali)
+  const defaultPatient = DEFAULT_PATIENTS.find(p => p.id === '5512-UF') || DEFAULT_PATIENTS[0];
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('vitalis_active_patient_id', defaultPatient.id);
+  }
+  return defaultPatient;
 }

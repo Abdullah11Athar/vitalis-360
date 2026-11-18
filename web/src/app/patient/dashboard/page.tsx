@@ -70,7 +70,19 @@ export default function PatientDashboard() {
       setEmergencyContactPhone(parsed.emergencyContactPhone || "");
     }
 
-    return () => clearInterval(timer);
+    const handleActiveChanged = (e: any) => {
+      const newId = e?.detail?.patientId;
+      if (newId) {
+        const found = allPatients.find(p => p.id === newId);
+        if (found) setPatient(found);
+      }
+    };
+    window.addEventListener('active-patient-changed', handleActiveChanged);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('active-patient-changed', handleActiveChanged);
+    };
   }, []);
 
   const handleSaveProfile = () => {

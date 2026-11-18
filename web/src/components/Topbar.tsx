@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { setActivePatientId } from '@/lib/patientData';
 
 interface UserSession {
   role: string;
@@ -116,7 +117,12 @@ export default function Topbar({
                       key={n.id}
                       href={n.href}
                       prefetch={true}
-                      onClick={() => setShowNotifications(false)}
+                      onClick={() => {
+                        setShowNotifications(false);
+                        if (n.href.includes('id=')) {
+                          setActivePatientId(n.href.split('id=')[1]);
+                        }
+                      }}
                       className="block p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors border border-outline-variant/20 cursor-pointer"
                     >
                       <div className="flex justify-between items-start">

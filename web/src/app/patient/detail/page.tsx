@@ -1,20 +1,34 @@
 "use client";
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { getPatientById, PatientRecord, AlarmItem } from '@/lib/patientData';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { getPatientById, setActivePatientId, DEFAULT_PATIENTS, PatientRecord, AlarmItem } from '@/lib/patientData';
 
 function PatientDetailContent() {
   const searchParams = useSearchParams();
-  const patientId = searchParams.get('id') || '8829-XL';
+  const router = useRouter();
+  const paramId = searchParams.get('id');
   
+  // Resolve patient synchronously without layout shift
+  const [patientId, setPatientId] = useState<string>(() => {
+    return paramId?.replace(/^#/, '') || (typeof window !== 'undefined' ? localStorage.getItem('vitalis_active_patient_id') || '5512-UF' : '5512-UF');
+  });
+
+  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(paramId));
+  const [alarms, setAlarms] = useState<AlarmItem[]>(() => patient.alarms || []);
   const [reports, setReports] = useState<any[]>([]);
   const [selectedReportForReview, setSelectedReportForReview] = useState<any | null>(null);
   const [role, setRole] = useState('patient');
-  const [patient, setPatient] = useState<PatientRecord>(() => getPatientById(patientId));
-  const [alarms, setAlarms] = useState<AlarmItem[]>(() => patient.alarms || []);
 
+  // Sync when searchParams or patientId changes
   useEffect(() => {
+    const idToUse = paramId?.replace(/^#/, '') || patientId;
+    const current = getPatientById(idToUse);
+    setPatient(current);
+    setPatientId(current.id);
+    setAlarms(current.alarms || []);
+    setActivePatientId(current.id);
+
     const savedUser = localStorage.getItem('vitalis_user');
     if (savedUser) {
       try {
@@ -22,10 +36,6 @@ function PatientDetailContent() {
         if (parsed.role) setRole(parsed.role.toLowerCase());
       } catch (e) {}
     }
-
-    const currentRecord = getPatientById(patientId);
-    setPatient(currentRecord);
-    setAlarms(currentRecord.alarms || []);
 
     const saved = localStorage.getItem('vitalis_uploaded_reports');
     if (saved) {
@@ -38,7 +48,22 @@ function PatientDetailContent() {
       setReports(initial);
       localStorage.setItem('vitalis_uploaded_reports', JSON.stringify(initial));
     }
-  }, [patientId]);
+  }, [paramId]);
+
+  const switchPatient = (newId: string) => {
+    const clean = newId.replace(/^#/, '');
+    const target = getPatientById(clean);
+    setPatient(target);
+    setPatientId(target.id);
+    setAlarms(target.alarms || []);
+    setActivePatientId(target.id);
+    
+    // Smooth URL update without full page reload or jerk
+    try {
+      window.history.replaceState(null, '', `?id=${target.id}`);
+    } catch (e) {}
+    window.dispatchEvent(new CustomEvent('show-toast', { detail: `🩺 Switched to ${target.name} (${target.id}) • ${target.ward}` }));
+  };
 
   const resolveAlarm = (id: number) => {
     setAlarms(prev => prev.filter(a => a.id !== id));
@@ -85,106 +110,182 @@ CLINICAL FINDINGS & AI SYNTHESIS:
   };
 
   const backHref = role === 'doctor' ? '/doctor/rounds' : role === 'staff' ? '/patient' : '/patient/dashboard';
+  
+  const tempVal = parseFloat(patient.temp || '98.6');
+  const isFever = tempVal >= 100.4;
+  const isTachy = (patient.hr || patient.heartRate || 75) >= 100;
 
   return (
-    <div className="py-6 px-4 md:px-8 max-w-5xl mx-auto w-full pb-36 md:pb-12">
-      {/* Header Profile Section */}
-      <section className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-outline-variant pb-6">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <Link href={backHref} prefetch={true} className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 duration-150 border border-outline-variant cursor-pointer shrink-0">
-            <span className="material-symbols-outlined text-primary">arrow_back</span>
-          </Link>
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-surface-container-high border-2 border-primary/40 overflow-hidden flex items-center justify-center shadow-md shrink-0">
-            <img 
-              src={patient.avatar} 
-              alt={patient.name} 
-              className="w-full h-full object-cover"
-            />
+    <div className="py-6 px-4 md:px-8 max-w-6xl mx-auto w-full pb-36 md:pb-16 transition-opacity duration-200">
+      
+      {/* Quick Patient Switcher Bar (Zero-Jerk Instant Navigation) */}
+      <section className="mb-6 bg-surface-container-lowest/80 backdrop-blur-md p-3.5 rounded-2xl border border-outline-variant/40 shadow-sm">
+        <div className="flex items-center justify-between gap-3 mb-2 px-1">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Active Clinical Census Switcher</span>
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h1 className="font-headline-lg text-lg md:text-xl text-on-surface font-bold truncate">{patient.name}</h1>
-              <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${patient.statusColor === 'error' ? 'bg-error animate-pulse' : patient.statusColor === 'amber' ? 'bg-amber-500' : 'bg-primary'}`}></span>
-            </div>
-            <p className="font-label-md text-xs text-on-surface-variant font-medium truncate">ID: {patient.id} • {patient.age} yrs • {patient.gender} • {patient.ward}</p>
-          </div>
+          <span className="text-[10px] text-on-surface-variant font-mono">Select Patient to View Profile</span>
         </div>
 
-        <div className="flex flex-wrap gap-2 shrink-0 max-w-full pb-1 md:pb-0 justify-start">
-          <Link href={`/patient/lifestyle?id=${patient.id}`} prefetch={true} className="px-3 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap">
-            <span className="material-symbols-outlined text-base text-primary">health_metrics</span>
-            <span>Lifestyle Audit</span>
-          </Link>
-          <Link href={`/patient/sleep?id=${patient.id}`} prefetch={true} className="px-3 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant hover:bg-surface-container-high transition-all flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap">
-            <span className="material-symbols-outlined text-base text-tertiary">bedtime</span>
-            <span>Sleep Fidelity</span>
-          </Link>
-          <Link href={`/patient/advisor?id=${patient.id}`} prefetch={true} className="px-3 py-2 bg-primary text-on-primary text-xs font-bold rounded-xl hover:opacity-90 transition-all flex items-center gap-1.5 shadow-md cursor-pointer whitespace-nowrap">
-            <span className="material-symbols-outlined text-base">psychology</span>
-            <span>AI Advisor</span>
-          </Link>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+          {DEFAULT_PATIENTS.map((p) => {
+            const isSelected = p.id === patient.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => switchPatient(p.id)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 shrink-0 cursor-pointer border ${
+                  isSelected
+                    ? 'bg-primary text-on-primary border-primary shadow-md shadow-primary/20 scale-[1.02]'
+                    : 'bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high border-outline-variant/30'
+                }`}
+              >
+                <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-current">
+                  <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
+                </div>
+                <span>{p.name.split(' ')[0]}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
+                  isSelected ? 'bg-black/20 text-on-primary' : 'bg-surface-container-highest text-on-surface-variant'
+                }`}>
+                  {p.id}
+                </span>
+                {parseFloat(p.temp || '98.6') >= 100.4 && (
+                  <span className="w-2 h-2 rounded-full bg-error animate-ping"></span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </section>
 
-      {/* Patient Vitals & Clinical Profile Banner */}
-      <section className="mb-8 bg-surface-container-low rounded-2xl p-5 border border-outline-variant shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant/40">
-          <div>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-wider block">Active Clinical Profile</span>
-            <h2 className="text-base sm:text-lg font-black text-on-surface mt-0.5">{patient.diagnosis}</h2>
-          </div>
-          <span className={`px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5 w-fit ${
-            patient.statusColor === 'error' ? 'bg-error/10 text-error border-error/30' : patient.statusColor === 'amber' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-primary/10 text-primary border-primary/30'
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${patient.statusColor === 'error' ? 'bg-error animate-pulse' : patient.statusColor === 'amber' ? 'bg-amber-500' : 'bg-primary'}`}></span>
-            {patient.status}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Heart Rate</span>
-            <div className={`text-lg sm:text-xl font-black mt-1 ${(patient.hr || patient.heartRate || 0) > 100 ? 'text-error' : 'text-on-surface'}`}>
-              {patient.hr || patient.heartRate || 75} <span className="text-xs font-normal">bpm</span>
+      {/* Header Profile Section */}
+      <section className="mb-8 bg-surface-container-low rounded-3xl p-5 sm:p-6 border border-outline-variant/50 shadow-md relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+          <div className="flex items-center gap-4 min-w-0">
+            <Link 
+              href={backHref} 
+              prefetch={true} 
+              className="w-11 h-11 flex items-center justify-center rounded-2xl bg-surface-container hover:bg-surface-container-high transition-colors active:scale-95 border border-outline-variant/50 cursor-pointer shrink-0 shadow-sm"
+              title="Return to Directory"
+            >
+              <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
+            </Link>
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface-container-high border-2 border-primary/40 overflow-hidden flex items-center justify-center shadow-lg shrink-0">
+              <img 
+                src={patient.avatar} 
+                alt={patient.name} 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="font-headline-lg text-xl sm:text-2xl lg:text-3xl font-black text-on-surface truncate">
+                  {patient.name}
+                </h1>
+                <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg font-bold bg-surface-container border border-outline-variant/40 text-on-surface-variant">
+                  {patient.id}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-on-surface-variant font-medium mt-1">
+                {patient.age} yrs • {patient.gender} • <strong className="text-primary">{patient.ward}</strong>
+              </p>
             </div>
           </div>
-          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Blood Pressure</span>
-            <div className="text-lg sm:text-xl font-black text-on-surface mt-1">{patient.bp || '120/80'}</div>
+
+          {/* Quick Action Navigation Pills */}
+          <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0">
+            <Link 
+              href={`/patient/lifestyle?id=${patient.id}`}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <span className="material-symbols-outlined text-primary text-base">health_metrics</span>
+              <span>Lifestyle Audit</span>
+            </Link>
+            <Link 
+              href={`/patient/sleep?id=${patient.id}`}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <span className="material-symbols-outlined text-tertiary text-base">bedtime</span>
+              <span>Sleep Fidelity</span>
+            </Link>
+            <Link 
+              href={`/patient/advisor?id=${patient.id}`}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-md shadow-primary/10"
+            >
+              <span className="material-symbols-outlined text-base">psychology</span>
+              <span>AI Advisor</span>
+            </Link>
           </div>
-          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Oxygen (SpO2)</span>
-            <div className="text-lg sm:text-xl font-black text-primary mt-1">{patient.spo2 || patient.spO2 || 98}%</div>
+        </div>
+
+        {/* Live Vitals Telemetry Banner */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-outline-variant/30">
+          <div className={`p-3.5 rounded-2xl border text-center transition-all ${
+            isTachy ? 'bg-error/10 border-error/40 text-error' : 'bg-surface-container/60 border-outline-variant/30'
+          }`}>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Heart Rate</span>
+            <div className={`text-xl sm:text-2xl font-black mt-0.5 ${isTachy ? 'text-error animate-pulse' : 'text-on-surface'}`}>
+              {patient.hr || patient.heartRate || 75} <span className="text-xs font-normal">BPM</span>
+            </div>
+            <span className={`text-[10px] font-bold uppercase ${isTachy ? 'text-error' : 'text-primary'}`}>
+              {isTachy ? 'Tachycardia Spike' : 'Sinus Rhythm'}
+            </span>
           </div>
-          <div className="bg-surface-container/40 p-3 rounded-xl border border-outline-variant/30 text-center">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase">Body Temp</span>
-            <div className={`text-lg sm:text-xl font-black mt-1 ${parseFloat(patient.temp || '98.6') >= 100.4 ? 'text-error' : 'text-on-surface'}`}>
+
+          <div className="bg-surface-container/60 p-3.5 rounded-2xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Blood Pressure</span>
+            <div className="text-xl sm:text-2xl font-black text-on-surface mt-0.5">{patient.bp || '120/80'}</div>
+            <span className="text-[10px] font-bold text-primary uppercase">mmHg (MAP Normal)</span>
+          </div>
+
+          <div className="bg-surface-container/60 p-3.5 rounded-2xl border border-outline-variant/30 text-center">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Oxygen (SpO2)</span>
+            <div className="text-xl sm:text-2xl font-black text-primary mt-0.5">{patient.spo2 || patient.spO2 || 98}%</div>
+            <span className="text-[10px] font-bold text-primary uppercase">Adequate Saturation</span>
+          </div>
+
+          <div className={`p-3.5 rounded-2xl border text-center transition-all ${
+            isFever ? 'bg-error/10 border-error/40 text-error' : 'bg-surface-container/60 border-outline-variant/30'
+          }`}>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Core Temperature</span>
+            <div className={`text-xl sm:text-2xl font-black mt-0.5 ${isFever ? 'text-error animate-bounce' : 'text-on-surface'}`}>
               {patient.temp || '98.6°F'}
             </div>
+            <span className={`text-[10px] font-bold uppercase ${isFever ? 'text-error font-black' : 'text-primary'}`}>
+              {isFever ? 'Febrile Pyrexia' : 'Normothermia'}
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Active Alarms Section */}
+      {/* Active Clinical Alarms Section */}
       <section className="mb-8">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Active Clinical Alarms</h2>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-xl">sensors</span>
+            <h2 className="text-xs font-bold text-on-surface uppercase tracking-wider">Active Clinical Alarms for {patient.name}</h2>
+          </div>
           {alarms.length > 0 ? (
-            <span className="bg-error/20 text-error px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-error/30">
-              <span className="w-2 h-2 rounded-full bg-error animate-ping"></span>
+            <span className="bg-error/20 text-error px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border border-error/30 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-error"></span>
               {alarms.length} Unresolved Alerts
             </span>
           ) : (
-            <span className="bg-primary/20 text-primary px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-primary/30">
+            <span className="bg-primary/20 text-primary px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border border-primary/30">
               <span className="material-symbols-outlined text-sm">check_circle</span>
-              All Clear • Telemetry Within Limits
+              All Clear • Telemetry Guard Active
             </span>
           )}
         </div>
+
         {alarms.length > 0 ? (
           <div className="space-y-3">
             {alarms.map((alarm) => (
-              <div key={alarm.id} className="p-4 bg-error/10 border border-error/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div key={alarm.id} className="p-4 bg-error/10 border border-error/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
                 <div className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-error text-2xl mt-0.5">warning</span>
                   <div>
@@ -205,23 +306,30 @@ CLINICAL FINDINGS & AI SYNTHESIS:
         ) : (
           <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-2xl">verified</span>
-            <p className="text-xs text-on-surface-variant font-medium">Continuous telemetry demonstrates normal circadian waveform. No threshold violations detected in the past 24 hours.</p>
+            <p className="text-xs text-on-surface-variant font-medium">Continuous telemetry demonstrates normal circadian waveform. No threshold violations detected for {patient.name} in the past 24 hours.</p>
           </div>
         )}
       </section>
 
-      {/* Medical History & Labs Grid */}
+      {/* Medical History & Labs Grid (100% Patient Specific) */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Active Clinical History */}
         <div className="space-y-4">
-          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Active Clinical History</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-base">history_edu</span>
+              <span>Active Clinical History</span>
+            </h2>
+            <span className="text-[10px] text-on-surface-variant font-mono">EMR Logged</span>
+          </div>
+
           <div className="space-y-3">
             {patient.clinicalHistory && patient.clinicalHistory.length > 0 ? (
               patient.clinicalHistory.map((item, idx) => (
-                <div key={idx} className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant space-y-3 shadow-sm">
+                <div key={idx} className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/40 space-y-3 shadow-sm hover:border-primary/40 transition-colors">
                   <div className="flex justify-between items-start">
                     <h3 className="font-bold text-sm text-on-surface">{item.condition}</h3>
-                    <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">{item.diagnosed}</span>
+                    <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded font-mono">{item.diagnosed}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {item.medications.map((med, mIdx) => (
@@ -244,25 +352,32 @@ CLINICAL FINDINGS & AI SYNTHESIS:
 
         {/* Lab Results */}
         <div className="space-y-4">
-          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">Recent Lab Panels</h2>
-          <div className="bg-surface-container-low rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-outline-variant/50 flex items-center justify-between bg-surface-container/30">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-base">biotech</span>
+              <span>Recent Lab Panels</span>
+            </h2>
+            <span className="text-[10px] text-on-surface-variant font-mono">{patient.labPanel?.date || 'Current Cycle'}</span>
+          </div>
+
+          <div className="bg-surface-container-low rounded-2xl border border-outline-variant/40 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-outline-variant/40 flex items-center justify-between bg-surface-container/30">
               <span className="font-bold text-sm text-on-surface">{patient.labPanel?.panelName || 'Clinical Biomarkers'}</span>
-              <span className="text-xs text-on-surface-variant font-medium">{patient.labPanel?.date || 'Today'}</span>
+              <span className="text-[10px] text-on-surface-variant font-mono">{patient.labPanel?.date || 'Recent'}</span>
             </div>
             <div className="divide-y divide-outline-variant/30">
               {patient.labPanel?.metrics?.map((metric, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 hover:bg-surface-container/20 transition-colors">
+                <div key={idx} className="p-4 flex justify-between items-center hover:bg-surface-container/40 transition-colors">
                   <div>
                     <span className="font-bold text-sm text-on-surface block">{metric.name}</span>
-                    <span className="text-xs text-on-surface-variant">{metric.description}</span>
+                    <span className="text-xs text-on-surface-variant font-medium">{metric.description}</span>
                   </div>
                   <div className="text-right">
-                    <span className={`text-lg font-black ${metric.statusColor === 'error' ? 'text-error' : metric.statusColor === 'amber' ? 'text-amber-500' : 'text-primary'}`}>
-                      {metric.value}
-                    </span>
-                    <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                      metric.statusColor === 'error' ? 'bg-error/10 text-error' : metric.statusColor === 'amber' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'
+                    <span className="font-mono text-sm sm:text-base font-bold text-on-surface block">{metric.value}</span>
+                    <div className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded ${
+                      metric.statusColor === 'error' ? 'bg-error/15 text-error border border-error/30' :
+                      metric.statusColor === 'amber' ? 'bg-amber-500/15 text-amber-500 border border-amber-500/30' : 
+                      'bg-primary/10 text-primary border border-primary/20'
                     }`}>
                       {metric.status}
                     </div>
@@ -271,30 +386,37 @@ CLINICAL FINDINGS & AI SYNTHESIS:
               ))}
             </div>
             <button 
-              onClick={() => window.dispatchEvent(new CustomEvent('show-toast', { detail: `🧪 Opening comprehensive Laboratory Panel report and historical trends for ${patient.name}...` }))}
-              className="w-full p-3.5 bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors text-center border-t border-outline-variant/50 block cursor-pointer"
+              onClick={() => window.dispatchEvent(new CustomEvent('show-toast', { detail: `🧪 Full Laboratory Panel verified for ${patient.name} (${patient.labPanel?.panelName}). All values logged in EMR.` }))}
+              className="w-full p-3.5 bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors text-center border-t border-outline-variant/40 block cursor-pointer"
             >
-              View Full Laboratory Panel & Historical Trends for {patient.name}
+              Verified Laboratory Panel for {patient.name}
             </button>
           </div>
         </div>
       </section>
 
-      {/* Uploaded Patient Medical Reports Review Vault (Full Width Section) */}
-      <section className="mb-8 bg-surface-container-low rounded-2xl p-6 border border-outline-variant shadow-sm">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-outline-variant/50">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-2xl">folder_shared</span>
-            <h2 className="text-base font-bold text-on-surface uppercase tracking-wider">Patient Uploaded Medical Reports Vault</h2>
+      {/* Patient Uploaded Medical Reports Vault */}
+      <section className="bg-surface-container-low rounded-3xl p-6 border border-outline-variant/50 shadow-md mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-outline-variant/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-2xl">folder_shared</span>
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-on-surface">Patient Medical Reports Vault</h2>
+              <p className="text-xs text-on-surface-variant">Cryptographically signed clinical documents for {patient.name}</p>
+            </div>
           </div>
-          <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-xl text-xs font-bold border border-primary/20 whitespace-nowrap">SHARED WITH {patient.name.toUpperCase()}</span>
+          <span className="bg-primary/10 text-primary px-3 py-1 rounded-xl text-xs font-bold border border-primary/20 whitespace-nowrap self-start sm:self-auto">
+            VAULT: {patient.name.toUpperCase()}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {reports.map((rep) => (
-            <div key={rep.id} className="p-5 bg-surface-container/40 hover:bg-surface-container rounded-2xl border border-outline-variant/60 flex flex-col justify-between gap-4 transition-all group shadow-sm">
+            <div key={rep.id} className="bg-surface-container rounded-2xl p-4 sm:p-5 border border-outline-variant/40 space-y-4 hover:border-primary/40 transition-all shadow-sm">
               <div className="flex items-start gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20 mt-0.5">
+                <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shrink-0 border border-outline-variant/30">
                   <span className="material-symbols-outlined text-2xl">description</span>
                 </div>
                 <div className="min-w-0 flex-1">
@@ -338,7 +460,7 @@ CLINICAL FINDINGS & AI SYNTHESIS:
       {/* AI Review Report Modal */}
       {selectedReportForReview && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-surface-container border-2 border-primary/30 rounded-3xl p-5 sm:p-6 shadow-2xl relative animate-pulse-soft max-h-[85vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-lg bg-surface-container border-2 border-primary/30 rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
             <button 
               onClick={() => setSelectedReportForReview(null)}
               className="absolute right-4 top-4 text-on-surface-variant hover:text-on-surface p-1.5 rounded-full cursor-pointer bg-surface-container-high"
@@ -366,11 +488,11 @@ CLINICAL FINDINGS & AI SYNTHESIS:
               </div>
 
               <div className="bg-surface-container-high p-4 rounded-xl border border-outline-variant/30 space-y-2">
-                <span className="font-bold text-on-surface block text-sm">Key Diagnostic Extraction ({patient.name}):</span>
+                <span className="font-bold text-on-surface block text-sm">Diagnostic Synthesis for {patient.name}:</span>
                 <ul className="space-y-1.5 text-on-surface-variant list-disc pl-4">
                   <li><strong className="text-on-surface">Primary Condition:</strong> {patient.diagnosis}</li>
-                  <li><strong className="text-on-surface">Biomarkers ({patient.labPanel?.panelName}):</strong> {patient.labPanel?.metrics?.map(m => `${m.name}: ${m.value}`).join(', ')}</li>
-                  <li><strong className="text-on-surface">Telemetry Status:</strong> Resting HR {patient.hr || patient.heartRate || 75} bpm, BP {patient.bp}, SpO2 {patient.spo2 || patient.spO2 || 98}%, Temp {patient.temp || '98.6°F'}.</li>
+                  <li><strong className="text-on-surface">Lab Panel ({patient.labPanel?.panelName}):</strong> {patient.labPanel?.metrics?.map(m => `${m.name}: ${m.value}`).join(', ')}</li>
+                  <li><strong className="text-on-surface">Current Vitals:</strong> HR {patient.hr || patient.heartRate || 75} bpm, BP {patient.bp}, SpO2 {patient.spo2 || patient.spO2 || 98}%, Temp {patient.temp || '98.6°F'}.</li>
                 </ul>
               </div>
 
@@ -401,24 +523,38 @@ CLINICAL FINDINGS & AI SYNTHESIS:
         </div>
       )}
 
-      {/* Sentinel Observation */}
-      <section className="bg-surface-container-low rounded-2xl p-6 border-2 border-primary/30 relative overflow-hidden shadow-lg shadow-primary/5">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full -mr-24 -mt-24 blur-3xl pointer-events-none"></div>
+      {/* Sentinel Observation (100% Dynamic - ZERO Hardcoded Names) */}
+      <section className="bg-surface-container-low rounded-3xl p-6 border-2 border-primary/30 relative overflow-hidden shadow-lg shadow-primary/5">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
         <div className="flex items-center gap-2.5 mb-3 relative z-10">
           <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
-          <span className="font-bold text-xs text-primary uppercase tracking-widest">SENTINEL AI CONTINUOUS INSIGHT</span>
+          <span className="font-bold text-xs text-primary uppercase tracking-widest">SENTINEL AI CONTINUOUS INSIGHT • {patient.name.toUpperCase()}</span>
         </div>
-        <p className="text-base font-medium text-on-surface italic leading-relaxed relative z-10 bg-surface-container/40 p-4 rounded-xl border border-outline-variant/30">
-          &ldquo;{patient.name}&apos;s clinical parameters are under active automated surveillance. Core diagnosis &apos;{patient.diagnosis}&apos; tracked with real-time biometric safeguards.&rdquo;
+        <p className="text-sm sm:text-base font-medium text-on-surface italic leading-relaxed relative z-10 bg-surface-container/50 p-4 rounded-2xl border border-outline-variant/30">
+          &ldquo;{patient.name}&apos;s clinical parameters are under active automated surveillance. Primary diagnosis &apos;{patient.diagnosis}&apos; tracked with continuous biometric safeguards. {patient.advisor?.differential || 'All telemetry streams within calibrated thresholds.'}&rdquo;
         </p>
       </section>
     </div>
   );
 }
 
+// Zero-jerk Skeleton fallback with matching dimensions
+function PatientDetailSkeleton() {
+  return (
+    <div className="py-6 px-4 md:px-8 max-w-6xl mx-auto w-full pb-36 md:pb-16 animate-pulse">
+      <div className="h-16 bg-surface-container-low rounded-2xl mb-6 border border-outline-variant/30"></div>
+      <div className="h-48 bg-surface-container-low rounded-3xl mb-8 border border-outline-variant/30"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="h-64 bg-surface-container-low rounded-2xl border border-outline-variant/30"></div>
+        <div className="h-64 bg-surface-container-low rounded-2xl border border-outline-variant/30"></div>
+      </div>
+    </div>
+  );
+}
+
 export default function PatientDetail() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-on-surface-variant font-medium">Loading clinical insights...</div>}>
+    <Suspense fallback={<PatientDetailSkeleton />}>
       <PatientDetailContent />
     </Suspense>
   );

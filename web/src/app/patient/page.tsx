@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { initializePatients, DEFAULT_PATIENTS, PatientRecord } from '@/lib/patientData';
+import { initializePatients, DEFAULT_PATIENTS, setActivePatientId, PatientRecord } from '@/lib/patientData';
 
 export default function PatientDirectory() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -113,18 +113,22 @@ export default function PatientDirectory() {
             className="bg-surface-container-low rounded-2xl p-4 sm:p-6 border border-outline-variant shadow-sm hover:border-primary transition-all flex flex-col justify-between space-y-4 sm:space-y-6 relative overflow-hidden group"
           >
             <div className="flex items-start justify-between gap-2.5">
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-surface-container-high border-2 border-primary/30 overflow-hidden shrink-0 shadow-md">
+              <Link 
+                href={`/patient/detail?id=${patient.id}`}
+                onClick={() => setActivePatientId(patient.id)}
+                className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 hover:opacity-90 transition-opacity cursor-pointer group/link"
+              >
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-surface-container-high border-2 border-primary/30 overflow-hidden shrink-0 shadow-md group-hover/link:border-primary transition-colors">
                   <img src={patient.avatar} alt={patient.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                    <h3 className="font-bold text-base sm:text-lg text-on-surface group-hover:text-primary transition-colors truncate">{patient.name}</h3>
+                    <h3 className="font-bold text-base sm:text-lg text-on-surface group-hover/link:text-primary transition-colors truncate">{patient.name}</h3>
                     <span className="text-[10px] sm:text-xs font-mono font-bold text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded shrink-0">{patient.id}</span>
                   </div>
                   <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">{patient.age} yrs • {patient.gender} • {patient.ward}</p>
                 </div>
-              </div>
+              </Link>
 
               <span className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl text-[10px] sm:text-xs font-bold border flex items-center gap-1.5 whitespace-nowrap shrink-0 self-start ${
                 patient.statusColor === 'error' 
@@ -174,6 +178,7 @@ export default function PatientDirectory() {
             <div className="flex gap-2.5 pt-2">
               <Link 
                 href={`/patient/detail?id=${patient.id}`}
+                onClick={() => setActivePatientId(patient.id)}
                 className="flex-1 py-2.5 bg-primary text-on-primary text-center font-bold text-xs rounded-xl hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>View Full Record & Audit</span>
@@ -181,6 +186,7 @@ export default function PatientDirectory() {
               </Link>
               <Link 
                 href={`/patient/advisor?id=${patient.id}`}
+                onClick={() => setActivePatientId(patient.id)}
                 className="px-3.5 py-2.5 bg-surface-container text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-high transition-colors border border-outline-variant flex items-center justify-center cursor-pointer"
                 title="Launch AI Medical Advisor"
               >

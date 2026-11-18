@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { getApiPath } from '@/lib/config';
+import { setActivePatientId } from '@/lib/patientData';
 
 export default function DoctorVirtualRounds() {
   const [expandedRow, setExpandedRow] = useState<string | null>('CCU-402');
@@ -271,6 +272,7 @@ export default function DoctorVirtualRounds() {
                   <div className="flex gap-2 justify-end mt-1">
                     <Link 
                       href="/patient/detail?id=5512-UF"
+                      onClick={() => setActivePatientId('5512-UF')}
                       className="px-3 py-1 bg-surface-container border border-outline-variant text-primary rounded text-xs font-bold"
                     >
                       View Vault
@@ -329,6 +331,7 @@ export default function DoctorVirtualRounds() {
                   <div className="flex gap-2 justify-end mt-1">
                     <Link 
                       href="/patient/detail?id=3389-SK"
+                      onClick={() => setActivePatientId('3389-SK')}
                       className="px-3 py-1 bg-surface-container border border-outline-variant text-primary rounded text-xs font-bold"
                     >
                       View Vault
@@ -455,6 +458,7 @@ export default function DoctorVirtualRounds() {
                           <div className="flex flex-wrap gap-2 justify-end mt-1">
                             <Link 
                               href="/patient/detail?id=8829-XL"
+                              onClick={() => setActivePatientId('8829-XL')}
                               prefetch={true}
                               className="px-4 py-1.5 bg-surface-container border border-outline-variant text-primary rounded-lg font-label-sm text-label-sm font-bold flex items-center gap-1 hover:bg-surface-container-high transition-all cursor-pointer"
                             >
@@ -509,6 +513,7 @@ export default function DoctorVirtualRounds() {
                       <td className="px-3 py-3 text-right">
                         <Link 
                           href="/patient/detail?id=9912-KA"
+                          onClick={() => setActivePatientId('9912-KA')}
                           prefetch={true}
                           className="text-on-surface-variant hover:text-primary p-2 rounded-full transition-colors inline-flex items-center justify-center"
                           title="View Elena Rodriguez Record"
@@ -581,6 +586,7 @@ export default function DoctorVirtualRounds() {
                           <div className="flex flex-wrap gap-2 justify-end mt-1">
                             <Link 
                               href="/patient/detail?id=5512-UF"
+                              onClick={() => setActivePatientId('5512-UF')}
                               prefetch={true}
                               className="px-4 py-1.5 bg-surface-container border border-outline-variant text-primary rounded-lg font-label-sm text-label-sm font-bold flex items-center gap-1 hover:bg-surface-container-high transition-all cursor-pointer"
                             >
@@ -667,6 +673,7 @@ export default function DoctorVirtualRounds() {
                           <div className="flex flex-wrap gap-2 justify-end mt-1">
                             <Link 
                               href="/patient/detail?id=3389-SK"
+                              onClick={() => setActivePatientId('3389-SK')}
                               prefetch={true}
                               className="px-4 py-1.5 bg-surface-container border border-outline-variant text-primary rounded-lg font-label-sm text-label-sm font-bold flex items-center gap-1 hover:bg-surface-container-high transition-all cursor-pointer"
                             >

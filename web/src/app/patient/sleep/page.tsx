@@ -2,11 +2,11 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getPatientById, PatientRecord } from '@/lib/patientData';
+import { getPatientById, getActivePatientId, PatientRecord } from '@/lib/patientData';
 
 function SleepAuditContent() {
   const searchParams = useSearchParams();
-  const patientId = searchParams.get('id') || '8829-XL';
+  const patientId = searchParams.get('id') || (typeof window !== 'undefined' ? getActivePatientId() : '8829-XL');
   
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncComplete, setSyncComplete] = useState(false);
@@ -266,9 +266,33 @@ function SleepAuditContent() {
   );
 }
 
+function SleepAuditSkeleton() {
+  return (
+    <div className="py-6 px-4 md:px-8 max-w-5xl mx-auto w-full pb-36 md:pb-12 animate-pulse">
+      <div className="mb-8 flex items-center justify-between border-b border-outline-variant pb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-surface-container-high"></div>
+          <div className="w-14 h-14 rounded-full bg-surface-container-high"></div>
+          <div className="space-y-2">
+            <div className="h-5 w-40 bg-surface-container-high rounded"></div>
+            <div className="h-3 w-28 bg-surface-container-high rounded"></div>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="h-32 bg-surface-container rounded-2xl"></div>
+        <div className="h-32 bg-surface-container rounded-2xl"></div>
+        <div className="h-32 bg-surface-container rounded-2xl"></div>
+        <div className="h-32 bg-surface-container rounded-2xl"></div>
+      </div>
+      <div className="h-64 bg-surface-container rounded-2xl"></div>
+    </div>
+  );
+}
+
 export default function SleepAudit() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-on-surface-variant font-medium">Loading clinical insights...</div>}>
+    <Suspense fallback={<SleepAuditSkeleton />}>
       <SleepAuditContent />
     </Suspense>
   );

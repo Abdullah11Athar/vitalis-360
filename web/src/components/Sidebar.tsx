@@ -189,12 +189,25 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const [currentLang, setCurrentLang] = useState('English');
+  const [activePatientId, setActivePatientId] = useState('5512-UF');
 
   useEffect(() => {
     const savedLang = localStorage.getItem('vitalis_lang');
     if (savedLang) {
       setCurrentLang(savedLang);
     }
+
+    const savedActiveId = localStorage.getItem('vitalis_active_patient_id');
+    if (savedActiveId) {
+      setActivePatientId(savedActiveId);
+    }
+
+    const handlePatientChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        setActivePatientId(customEvent.detail);
+      }
+    };
 
     const handleLangChange = (e: Event) => {
       const customEvent = e as CustomEvent;
@@ -204,11 +217,12 @@ export default function Sidebar({
     };
 
     window.addEventListener('language-changed', handleLangChange);
+    window.addEventListener('active-patient-changed', handlePatientChange);
     return () => {
       window.removeEventListener('language-changed', handleLangChange);
+      window.removeEventListener('active-patient-changed', handlePatientChange);
     };
   }, []);
-
 
   const navGroups = [
     {
@@ -216,10 +230,10 @@ export default function Sidebar({
       items: [
         { name: 'Patient Directory', href: '/patient', icon: 'groups' },
         { name: 'Dashboard', href: '/patient/dashboard', icon: 'dashboard' },
-        { name: 'Patient Detail', href: '/patient/detail', icon: 'person' },
-        { name: 'Lifestyle Audit', href: '/patient/lifestyle', icon: 'health_metrics' },
-        { name: 'Sleep Fidelity', href: '/patient/sleep', icon: 'bedtime' },
-        { name: 'AI Medical Advisor', href: '/patient/advisor', icon: 'psychology' },
+        { name: 'Patient Detail', href: `/patient/detail?id=${activePatientId}`, icon: 'person' },
+        { name: 'Lifestyle Audit', href: `/patient/lifestyle?id=${activePatientId}`, icon: 'health_metrics' },
+        { name: 'Sleep Fidelity', href: `/patient/sleep?id=${activePatientId}`, icon: 'bedtime' },
+        { name: 'AI Medical Advisor', href: `/patient/advisor?id=${activePatientId}`, icon: 'psychology' },
       ]
     },
     {
