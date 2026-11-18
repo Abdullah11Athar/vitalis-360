@@ -663,7 +663,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
             user={user}
             onAddPatientClick={() => setShowAddPatientModal(true)}
           />
-          <div className={`flex flex-col flex-1 min-w-0 ${isSidebarPinned ? 'md:ml-64' : 'ml-0'} transition-all duration-300 overflow-x-hidden w-full max-w-full`}>
+          <div className={`flex flex-col flex-1 min-w-0 ${isSidebarExpanded ? 'md:ml-64' : 'ml-0'} transition-all duration-300 overflow-x-hidden w-full max-w-full`}>
             <Topbar 
               onMenuClick={handleToggleSidebar} 
               onLogout={handleLogout} 
