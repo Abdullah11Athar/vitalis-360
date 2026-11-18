@@ -77,17 +77,17 @@ export default function LandingPage() {
   }, [currentCase]);
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0d0e] text-[#e0e3e5] relative selection:bg-[#4edea3] selection:text-[#003824] overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#080c14] text-[#f8fafc] relative selection:bg-[#0ea5e9] selection:text-white overflow-x-hidden">
       {/* Background Ambient Glows (Fixed dimensions, no jerk, zero layout shifts) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-[#4edea3]/8 rounded-full blur-[140px] pointer-events-none animate-pulse-soft"></div>
-        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-[#adc6ff]/6 rounded-full blur-[140px] pointer-events-none"></div>
-        <div className="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-[#4edea3]/5 rounded-full blur-[140px] pointer-events-none"></div>
+        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[140px] pointer-events-none animate-pulse-soft"></div>
+        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-[#6366f1]/8 rounded-full blur-[140px] pointer-events-none"></div>
+        <div className="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-[#0ea5e9]/8 rounded-full blur-[140px] pointer-events-none"></div>
         {/* Subtle Cyber Grid lines */}
         <div 
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, #4edea3 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, #38bdf8 1px, transparent 0)`,
             backgroundSize: '32px 32px'
           }}
         ></div>
@@ -95,38 +95,38 @@ export default function LandingPage() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Top Header Bar */}
-        <header className="w-full border-b border-[#3c4a42]/30 bg-[#101415]/80 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3.5 transition-colors">
+        <header className="w-full border-b border-slate-800 bg-[#0c121e]/85 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3.5 transition-colors">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-[#4edea3]/10 border border-[#4edea3]/30 flex items-center justify-center p-1.5 shadow-sm shadow-[#4edea3]/20 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-[#0ea5e9]/15 border border-[#0ea5e9]/40 flex items-center justify-center p-1.5 shadow-sm shadow-[#0ea5e9]/20 group-hover:scale-105 transition-transform">
                 <img 
                   src={getAssetPath('/logo.png')} 
                   alt="VITALIS-360" 
-                  className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(78,222,163,0.4)]" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(14,165,233,0.4)]" 
                 />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-lg md:text-xl tracking-tight text-[#e0e3e5]">VITALIS</span>
-                  <span className="text-[#4edea3] font-black text-lg md:text-xl tracking-tight">360</span>
-                  <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/30 hidden sm:inline-block">v4.0 AI</span>
+                  <span className="font-extrabold text-lg md:text-xl tracking-tight text-white">VITALIS</span>
+                  <span className="text-[#0ea5e9] font-black text-lg md:text-xl tracking-tight">360</span>
+                  <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-[#0ea5e9]/15 text-[#38bdf8] border border-[#0ea5e9]/30 hidden sm:inline-block">v4.0 AI</span>
                 </div>
-                <span className="text-[10px] text-[#bbcabf]/70 font-mono hidden md:block">AUTONOMOUS EMR CLINICAL SENTINEL</span>
+                <span className="text-[10px] text-[#94a3b8] font-mono hidden md:block">AUTONOMOUS EMR CLINICAL SENTINEL</span>
               </div>
             </Link>
 
             {/* Live Sentinel Heartbeat Pill */}
-            <div className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#191c1e] border border-[#3c4a42]/60 text-xs shadow-inner">
+            <div className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs shadow-inner">
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4edea3] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#4edea3]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0ea5e9] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#0ea5e9]"></span>
               </span>
-              <span className="font-mono text-[11px] text-[#bbcabf] font-semibold">
+              <span className="font-mono text-[11px] text-[#94a3b8] font-semibold">
                 SENTINEL TELEMETRY ACTIVE
               </span>
-              <span className="text-[#3c4a42]">|</span>
-              <span className="font-mono text-[11px] text-[#4edea3] font-bold">
+              <span className="text-slate-700">|</span>
+              <span className="font-mono text-[11px] text-[#38bdf8] font-bold">
                 0.38s LATENCY
               </span>
             </div>
@@ -136,23 +136,23 @@ export default function LandingPage() {
               <Link
                 href="/doctor/rounds"
                 prefetch={true}
-                className="px-3.5 py-2 rounded-lg bg-[#191c1e] hover:bg-[#272a2c] text-[#e0e3e5] border border-[#3c4a42]/50 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm text-[#4edea3]">stethoscope</span>
+                <span className="material-symbols-outlined text-sm text-[#0ea5e9]">stethoscope</span>
                 <span className="hidden sm:inline">Doctor Rounds</span>
               </Link>
               <Link
-                href="/patient"
+                href="/patient/dashboard"
                 prefetch={true}
-                className="px-3.5 py-2 rounded-lg bg-[#191c1e] hover:bg-[#272a2c] text-[#e0e3e5] border border-[#3c4a42]/50 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm text-[#adc6ff]">person</span>
+                <span className="material-symbols-outlined text-sm text-[#38bdf8]">person</span>
                 <span className="hidden sm:inline">Patient Portal</span>
               </Link>
               <Link
                 href="/login"
                 prefetch={true}
-                className="px-4 py-2 rounded-lg bg-[#4edea3] text-[#003824] hover:bg-[#4edea3]/90 text-xs font-extrabold shadow-md shadow-[#4edea3]/20 transition-all flex items-center gap-1 cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-[#0ea5e9] hover:bg-[#0284c7] text-white text-xs font-extrabold shadow-md shadow-[#0ea5e9]/20 transition-all flex items-center gap-1 cursor-pointer"
               >
                 <span>Login</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -167,21 +167,21 @@ export default function LandingPage() {
           {/* Hero Section */}
           <section className="flex flex-col items-center text-center max-w-4xl mx-auto pt-2 sm:pt-4">
             {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#4edea3]/10 border border-[#4edea3]/30 text-[#4edea3] text-xs font-bold uppercase tracking-wider mb-5 shadow-sm shadow-[#4edea3]/10 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0ea5e9]/10 border border-[#0ea5e9]/30 text-[#38bdf8] text-xs font-bold uppercase tracking-wider mb-5 shadow-sm shadow-[#0ea5e9]/10 animate-fade-in">
               <span className="material-symbols-outlined text-sm animate-spin" style={{ animationDuration: '6s' }}>verified</span>
               <span>Next-Gen Autonomous Clinical EMR &bull; Powered by Gemini AI</span>
             </div>
 
             {/* Hero Title */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#e0e3e5] tracking-tight leading-[1.1] mb-5">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-5">
               Autonomous Medical Telemetry <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-[#4edea3] via-[#71a1ff] to-[#adc6ff] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#0ea5e9] via-[#6366f1] to-[#38bdf8] bg-clip-text text-transparent">
                 Engineered for Zero Latency.
               </span>
             </h1>
 
             {/* Hero Subtitle */}
-            <p className="text-sm sm:text-base md:text-lg text-[#bbcabf] font-normal max-w-2xl leading-relaxed mb-8">
+            <p className="text-sm sm:text-base md:text-lg text-[#94a3b8] font-normal max-w-2xl leading-relaxed mb-8">
               Continuous multi-modal bio-telemetry ingestion, zero-shot Glass.ai differential diagnostics, NIH RxNav contraindication firewall, and SHA-256 cryptographic clinical vaulting.
             </p>
 
@@ -190,62 +190,62 @@ export default function LandingPage() {
               <Link
                 href="/doctor/rounds"
                 prefetch={true}
-                className="flex-1 min-w-[160px] py-3.5 px-6 rounded-xl bg-[#4edea3] text-[#003824] font-black text-sm shadow-lg shadow-[#4edea3]/25 hover:shadow-xl hover:shadow-[#4edea3]/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 min-w-[160px] py-3.5 px-6 rounded-xl bg-[#0ea5e9] text-white font-black text-sm shadow-lg shadow-[#0ea5e9]/25 hover:shadow-xl hover:shadow-[#0ea5e9]/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-base">emergency_recording</span>
                 <span>Enter Doctor Rounds</span>
               </Link>
               <Link
-                href="/patient/detail"
+                href="/patient/dashboard"
                 prefetch={true}
                 onClick={() => setActivePatientId(currentCase.id)}
-                className="flex-1 min-w-[160px] py-3.5 px-6 rounded-xl bg-[#191c1e] hover:bg-[#272a2c] text-[#e0e3e5] border border-[#3c4a42] font-bold text-sm shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 min-w-[160px] py-3.5 px-6 rounded-xl bg-[#0f172a] hover:bg-[#1e293b] text-white border border-slate-700 font-bold text-sm shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-base text-[#adc6ff]">folder_shared</span>
+                <span className="material-symbols-outlined text-base text-[#38bdf8]">folder_shared</span>
                 <span>Live Patient Vault</span>
               </Link>
               <Link
                 href="/emergency"
                 prefetch={true}
-                className="w-full sm:w-auto py-3 px-5 rounded-xl bg-[#93000a]/20 hover:bg-[#93000a]/40 text-[#ffb4ab] border border-[#ffb4ab]/30 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full sm:w-auto py-3 px-5 rounded-xl bg-[#f43f5e]/15 hover:bg-[#f43f5e]/30 text-[#f43f5e] border border-[#f43f5e]/30 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm text-[#ffb4ab] animate-pulse">crisis_alert</span>
+                <span className="material-symbols-outlined text-sm text-[#f43f5e] animate-pulse">crisis_alert</span>
                 <span>Emergency SOS Triage Matrix</span>
               </Link>
             </div>
           </section>
 
           {/* Interactive Clinical Command Telemetry HUD Simulator (Hero Visual) */}
-          <section className="w-full bg-[#14181a] border border-[#3c4a42]/60 rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl">
+          <section className="w-full bg-[#0f172a] border border-slate-800 rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl">
             {/* HUD Header */}
-            <div className="px-5 py-4 bg-[#191c1e] border-b border-[#3c4a42]/50 flex flex-wrap items-center justify-between gap-4">
+            <div className="px-5 py-4 bg-[#1e293b]/70 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-[#4edea3] animate-pulse"></div>
+                <div className="w-3 h-3 rounded-full bg-[#0ea5e9] animate-pulse"></div>
                 <div>
-                  <h3 className="font-extrabold text-sm md:text-base text-[#e0e3e5] tracking-wide flex items-center gap-2">
+                  <h3 className="font-extrabold text-sm md:text-base text-white tracking-wide flex items-center gap-2">
                     <span>LIVE INPATIENT TELEMETRY HUD</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#4edea3]/10 text-[#4edea3] border border-[#4edea3]/30">REAL-TIME INFERENCE</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0ea5e9]/10 text-[#38bdf8] border border-[#0ea5e9]/30">REAL-TIME INFERENCE</span>
                   </h3>
-                  <p className="text-xs text-[#bbcabf]/70 font-mono">Continuous 12-lead EKG & Sentinel Neural Diagnostic Feed</p>
+                  <p className="text-xs text-[#94a3b8] font-mono">Continuous 12-lead EKG & Sentinel Neural Diagnostic Feed</p>
                 </div>
               </div>
 
               {/* Live Status Indicators */}
               <div className="flex items-center gap-4 text-xs font-mono">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[#bbcabf]">STREAM:</span>
-                  <span className="text-[#4edea3] font-bold">STABLE 1000Hz</span>
+                  <span className="text-[#94a3b8]">STREAM:</span>
+                  <span className="text-[#38bdf8] font-bold">STABLE 1000Hz</span>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5">
-                  <span className="text-[#bbcabf]">ICD-10 MAPPING:</span>
-                  <span className="text-[#adc6ff] font-bold">AUTONOMOUS</span>
+                  <span className="text-[#94a3b8]">ICD-10 MAPPING:</span>
+                  <span className="text-[#a5b4fc] font-bold">AUTONOMOUS</span>
                 </div>
               </div>
             </div>
 
             {/* Interactive Patient Switcher Strip */}
-            <div className="px-4 py-3 bg-[#101415] border-b border-[#3c4a42]/40 flex items-center gap-2 overflow-x-auto custom-scrollbar">
-              <span className="text-[10px] uppercase font-mono text-[#bbcabf]/60 font-bold px-2 shrink-0">SELECT WARD CASE:</span>
+            <div className="px-4 py-3 bg-[#080c14] border-b border-slate-800 flex items-center gap-2 overflow-x-auto custom-scrollbar">
+              <span className="text-[10px] uppercase font-mono text-[#94a3b8]/60 font-bold px-2 shrink-0">SELECT WARD CASE:</span>
               {DEMO_CASES.map((c, idx) => {
                 const isActive = idx === selectedCaseIndex;
                 return (
@@ -257,7 +257,7 @@ export default function LandingPage() {
                     }}
                     className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
                       isActive 
-                        ? 'bg-[#4edea3] text-[#003824] shadow-md shadow-[#4edea3]/20 scale-100 font-extrabold'
+                        ? 'bg-[#0ea5e9] text-white shadow-md shadow-[#0ea5e9]/20 scale-100 font-extrabold'
                         : 'bg-[#191c1e] text-[#bbcabf] hover:bg-[#272a2c] hover:text-[#e0e3e5] border border-[#3c4a42]/40'
                     }`}
                   >
